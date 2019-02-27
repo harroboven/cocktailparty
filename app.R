@@ -1,3 +1,15 @@
 # This is the main file of the Cocktail Shiny App :)
 
-# This is a test edit. Another test..
+library(shiny)
+# UI
+ui <- fluidPage(
+  
+)
+
+# Server
+server <- function(input, output) {
+  
+}
+
+#shinyApp()
+shinyApp(ui = ui, server = server)
