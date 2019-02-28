@@ -5,7 +5,7 @@ library(shiny)
 ui <- fluidPage(
   
 )
-
+print("Zanis is not so cool")
 # Server
 server <- function(input, output) {
   
