@@ -4,12 +4,8 @@ library(shiny)
 # UI
 # Define UI for cocktail app ----
 ui <- fluidPage(
-<<<<<<< HEAD
   titlePanel("Hello boys! Your group seems to be awesome but I need your names!"),
   mainPanel(
-    # testing code, remove later
-    actionButton('showimage', 'Click me!', icon = NULL),
-    img(src = 'A.png', height = 140, width = 300),
     
     # RadioButtons - distribution of obs.
     radioButtons('dist.obs', 'Drinks distributed by:', 
@@ -18,13 +14,21 @@ ui <- fluidPage(
                    'Glass type' = 'gt',
                    'Complexity' = 'cc',
                    'Popularity' = 'pp',
-                   'Price' = 'pp')),
+                   'Price' = 'pp'))
+    
     
     
     ),
+  # SliderInput - Network of drinks
+  sliderInput('weight.edges',
+              label = 'Min. weight of edges:', 
+              min = 1, max = 20, value = c(1,20), step = 1
+  ),
   
-  sidebarPanel()
-=======
+  
+  
+  
+
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
             # 1st Drop-down tabpanels
@@ -64,27 +68,24 @@ ui <- fluidPage(
             # 2nd tabpanel
             tabPanel("tab 3", "contents")
   )
->>>>>>> 3eee614d33f1ca50da45a2d3ad6c4e68d07ba594
+
 )
 
 
 # Server
 server <- function(input, output) {
 
-<<<<<<< HEAD
+  # RadioButtons - distr. of obs. 
   d <- reactive({
     dist.obst <- switch (input$dist.obs,
       an = action
     )
   })
-  # testing code 
-  output$showimage <- renderImage({paste(img(src = 'B.png'))})
+  # SliderInput - Network of drinks 
+  output$scatterplot <- renderPlot({})
 
   
   }
-=======
-}
->>>>>>> 3eee614d33f1ca50da45a2d3ad6c4e68d07ba594
 
 
 #shinyApp()
