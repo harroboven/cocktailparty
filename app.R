@@ -25,10 +25,14 @@ ui <- fluidPage(
               min = 1, max = 20, value = c(1,20), step = 1
   ),
   
+  # SelectInput (Dropdown) - Network of one drink 
+  selectInput('d',
+              label = 'Choose drink',
+              choices = c('',
+                          ''),
+              selected = 'Other'),
+  plotOutput(),
   
-  
-  
-
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
             # 1st Drop-down tabpanels
@@ -84,6 +88,8 @@ server <- function(input, output) {
   # SliderInput - Network of drinks 
   output$scatterplot <- renderPlot({})
 
+  # SelectInput (Dropdown) - Network of one drink 
+  
   
   }
 
