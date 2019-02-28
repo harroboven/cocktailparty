@@ -87,11 +87,6 @@ server <- function(input, output) {
       an = action
     )
   })
-  # SliderInput - Network of drinks 
-  output$scatterplot <- renderPlot({})
-
-  
-  }
 
 
 #shinyApp()
