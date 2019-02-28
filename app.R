@@ -29,7 +29,17 @@ ui <- fluidPage(
                         tabPanel("Data by Drinks", "content 2")
                         ),
             # 2nd tabpanel
-            tabPanel("tab 2", "contents"),
+            navbarMenu("Networking Exploration",
+                       tabPanel("Exploration by drinks", 
+                                verticalLayout(
+                                  titlePanel("Exploration by drinks"),
+                                  (splitLayout(
+                                    verticalLayout(
+                                      titlePanel("Summary Statistics of the Network by DRINKS"), 
+                                      img(src = 'A.png', height = 300, width = 300)),
+                                    titlePanel("Table with summary statistics"))))),
+                       tabPanel("Exploration by ingredients", "contents"),
+                       tabPanel("Bipartite visualization", "contents")),
             # 2nd tabpanel
             tabPanel("tab 3", "contents")
             )
