@@ -7,7 +7,7 @@ ui <- fluidPage(
   
 # IloveUli ....
 )
-
+print("Zanis is not so cool")
 # Server
 server <- function(input, output) {
   
