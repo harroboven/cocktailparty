@@ -8,32 +8,32 @@ ui <- fluidPage(
   navbarPage(title = "Shiny Drinks",
             # 1st Drop-down tabpanels
              navbarMenu("Data Desription", 
-                            tabPanel("Summary of Data",   
-                                     splitLayout( 
-                                       # object 1
-                                       verticalLayout( 
-                                         # object 1
-                                         titlePanel("Header Object 1"),
-                                         # object 2,
-                                         img(src ='A.png', height = 140, width =300)
-                                         ),
-                                       # object 2
-                                       verticalLayout( 
-                                         # object 1
-                                         titlePanel("Header Object 2"),
-                                         # object 2,
-                                         img(src ='A.png', height = 140, width =300)
-                                         )
-                                       )
+                        tabPanel("Summary of Data",   
+                                 splitLayout( 
+                                   # left object 
+                                   verticalLayout( 
+                                     # object 1
+                                     titlePanel("Header Object 1"),
+                                     # object 2,
+                                     img(src ='A.png', height = 140, width =300)
                                      ),
+                                   # right object 
+                                   verticalLayout( 
+                                     # object 1
+                                     titlePanel("Header Object 2"),
+                                     # object 2,
+                                     img(src ='A.png', height = 140, width =300)
+                                     )
+                                   )
+                                 ),
                         tabPanel("Data by Drinks", "content 2")
                         ),
             # 2nd tabpanel
             tabPanel("tab 2", "contents"),
             # 2nd tabpanel
             tabPanel("tab 3", "contents")
+            )
   )
-)
 
 
 # Server
