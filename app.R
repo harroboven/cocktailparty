@@ -4,6 +4,31 @@ library(shiny)
 # UI
 # Define UI for cocktail app ----
 ui <- fluidPage(
+  titlePanel("Hello boys! Your group seems to be awesome but I need your names!"),
+  mainPanel(
+    
+    # RadioButtons - distribution of obs.
+    radioButtons('dist.obs', 'Drinks distributed by:', 
+                 c('Alcoholic nature' = 'an',
+                   'Drink type' = 'dt',
+                   'Glass type' = 'gt',
+                   'Complexity' = 'cc',
+                   'Popularity' = 'pp',
+                   'Price' = 'pp'))
+    
+    
+    
+    ),
+  # SliderInput - Network of drinks
+  sliderInput('weight.edges',
+              label = 'Min. weight of edges:', 
+              min = 1, max = 20, value = c(1,20), step = 1
+  ),
+  
+  
+  
+  
+
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
             # 1st Drop-down tabpanels
@@ -43,6 +68,7 @@ ui <- fluidPage(
             # 2nd tabpanel
             tabPanel("tab 3", "contents")
   )
+
 )
 
 
@@ -55,6 +81,19 @@ server <- function(input, output) {
   })
 }
 
+  # RadioButtons - distr. of obs. 
+  d <- reactive({
+    dist.obst <- switch (input$dist.obs,
+      an = action
+    )
+  })
+  # SliderInput - Network of drinks 
+  output$scatterplot <- renderPlot({})
+
+  
+  }
+
 
 #shinyApp()
 shinyApp(ui = ui, server = server)
+
