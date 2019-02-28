@@ -6,6 +6,7 @@ library(shiny)
 ui <- fluidPage(
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
+             #Start Page
              img(src = 'cocktail-glass.png', height = 300, width = 300),
             # 1st Drop-down tabpanels
              navbarMenu("Data Desription",
@@ -15,7 +16,7 @@ ui <- fluidPage(
                                  verticalLayout(
                                    # header of whole page
                                    titlePanel("Summary of Data"),
-                                   # 1st Object of page
+                                   # 1st block of page
                                    splitLayout( 
                                      # left object 
                                      verticalLayout(
@@ -75,8 +76,58 @@ ui <- fluidPage(
                                  ),
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
                         # 2nd Drop-down item
-                        tabPanel("Data by Drinks", "content 2")
-                        ),
+                        tabPanel("Data by Drinks", 
+                                 verticalLayout(
+                                   # header of whole page
+                                   titlePanel("Data by Drinks"),
+                                   # 1st Object of page
+                                   splitLayout( 
+                                     # left object 
+                                     verticalLayout(
+                                       #Header of left object
+                                       titlePanel("Data by Drinks"),
+                                       #content of left object
+                                       p("INTROTEXT", 
+                                         style = "font-family: 'times'; font-si16pt"
+                                         )
+                                       ),
+                                     # right object 
+                                     verticalLayout( 
+                                       # Header right object
+                                       titlePanel("Header Object 2"),
+                                       # content of right object
+                                       p("TOP TABLE: Shows top results based on selection", 
+                                         style = "font-family: 'times'; font-si16pt"
+                                         )
+                                       )
+                                     ),
+                                   # 2nd Object of page
+                                   splitLayout( 
+                                     # left object 
+                                     verticalLayout(
+                                       #Header of left object
+                                       titlePanel("Header?"),
+                                       #content of left object
+                                       # RadioButtons - distribution of obs.
+                                       radioButtons('drinks.ordered', 'Drinks ordered by:', 
+                                                    c('Complexity' = 'cp',
+                                                      'Popularity' = 'pp',
+                                                      'Price' = 'pr'
+                                                      )
+                                                    )
+                                       ),
+                                     # right object 
+                                     verticalLayout(
+                                       # Header right object
+                                       titlePanel("Header Object 2"),
+                                       # content of right object
+                                       # Alcoholic nature histogram
+                                       img(src = 'cocktail-glass.png', height = 50, width = 50)
+                                       )
+                                     )
+                                   )
+                                 )
+                      ),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
 ############################################################# PAGE 3 PROPOSAL #############################################################
@@ -120,11 +171,14 @@ ui <- fluidPage(
                        ),
 ############################################################# PAGE XX PROPOSAL #############################################################
             # 2nd tabpanel
-            tabPanel("tab 3", 
+            tabPanel("Network Analysis", 
                      "contents"
                      )
-            )
-)
+          )
+  )
+
+
+
 
 
 
@@ -137,13 +191,18 @@ server <- function(input, output) {
   })
 }
 
-  # RadioButtons - distr. of obs. 
+  # RadioButtons - distr. of obs. - Proposal Page 1
   d <- reactive({
     dist.obst <- switch (input$dist.obs,
       an = action
     )
   })
-
+  # RadioButtons - Proposal Page 2
+  g <- reactive({
+    drinks.ordered <- switch (input$drinks.ordered,
+                              an = action
+                              )
+    })
 
 #shinyApp()
 shinyApp(ui = ui, server = server)
