@@ -90,7 +90,7 @@ ui <- fluidPage(
                                               titlePanel("Header Object 2"),
                                               # content of right object
                                               # Alcoholic nature histogram
-                                              plotOutput(outputId = "hist.alc.nat")
+                                              plotOutput(outputId = "histogram")
                                               )
                                             )
 
@@ -401,8 +401,6 @@ tabPanel("Bipartite visualization",
 
 
 
-
-
 # Server
 server <- function(input, output) {
 
@@ -420,18 +418,7 @@ server <- function(input, output) {
     ggplot(drinks.filtered, aes(var.choice)) +
       geom_bar()
     })
-  
-  
-  output$distPlot <- renderPlot({
-    dist <- switch(input$dist,
-                   norm = rnorm,
-                   unif = runif,
-                   lnorm = rlnorm,
-                   exp = rexp,
-                   rnorm)
-    
-    hist(dist(500))
-  })
+
   }
 
 #shinyApp()
