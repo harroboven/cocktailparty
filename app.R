@@ -3,7 +3,7 @@
 library(shiny)
 # UI
 ui <- fluidPage(
-  titlePanel("Hello boys! Your group seems to be awesome but I need your names!"),
+  titlePanel("Hello boys and girls! Your group seems to be awesome but I need your names!"),
   mainPanel(
     # testing code, remove later
     actionButton('showimage', 'Click me!', icon = NULL),
