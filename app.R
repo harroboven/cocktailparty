@@ -7,17 +7,18 @@ ui <- fluidPage(
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
             # 1st Drop-down tabpanels
-             navbarMenu("Data Desription", 
+             navbarMenu("Data Desription",
+############################################################# PAGE 1 PROPOSAL ############################################################# 
                         # 1st Drop-down item
                         tabPanel("Summary of Data", 
                                  verticalLayout(
                                    # header of whole page
                                    titlePanel("Summary of Data"),
-                                   # rest of page
+                                   # 1st Object of page
                                    splitLayout( 
                                      # left object 
                                      verticalLayout(
-                                       #title of left object
+                                       #Header of left object
                                        titlePanel("Explanation of Summary"),
                                        #content of left object
                                        p("INTROTEXT", 
@@ -25,19 +26,56 @@ ui <- fluidPage(
                                        ),
                                      # right object 
                                      verticalLayout( 
-                                       # object 1
+                                       # Header right object
                                        titlePanel("Header Object 2"),
-                                       # object 2,
-                                       img(src ='A.png', height = 140, width =300)
+                                       # content of right object
+                                       p("Summary Statistics: Table with number of observations etc.", 
+                                         style = "font-family: 'times'; font-si16pt")
                                        )
+                                     ),
+                                   # 2nd Object of page
+                                   splitLayout( 
+                                     # left object 
+                                     verticalLayout(
+                                       #Header of left object
+                                       titlePanel("Distribution of Observations"),
+                                       #content of left object
+                                       p("INTROTEXT", 
+                                         style = "font-family: 'times'; font-si16pt"),
+                                       p("Drinks distributed by:", 
+                                         style = "font-family: 'times'; font-si16pt"),
+                                       flowLayout( 
+                                         # Element 1
+                                         img(src = 'A.png', height = 15, width = 15),
+                                         # Element 2
+                                         img(src = 'A.png', height = 15, width = 15),
+                                         # Element 3
+                                         img(src = 'A.png', height = 15, width = 15),
+                                         # Element 4
+                                         img(src = 'A.png', height = 15, width = 15),
+                                         # Element 5
+                                         img(src = 'A.png', height = 15, width = 15),
+                                         # Element 6
+                                         img(src = 'A.png', height = 15, width = 15)
+                                       )
+                                     ),
+                                     # right object 
+                                     verticalLayout( 
+                                       # Header right object
+                                       titlePanel("Header Object 2"),
+                                       # content of right object
+                                       img(src = 'A.png', height = 150, width = 150)
                                      )
                                    )
+                                   )
                         ),
+############################################################# PAGE 2 PROPOSAL ############################################################# 
                         # 2nd Drop-down item
                         tabPanel("Data by Drinks", "content 2")
                         ),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
+############################################################# PAGE 3 PROPOSAL #############################################################
                        # 1st Drop-down item
                        tabPanel("Exploration by drinks", 
                                 verticalLayout(
@@ -61,10 +99,12 @@ ui <- fluidPage(
                                     )
                                   )
                                 ),
+############################################################# PAGE 4 PROPOSAL #############################################################
                        # 2nd Drop-down item
                        tabPanel("Exploration by ingredients", 
                                 "contents"
                                 ),
+############################################################# PAGE 5 PROPOSAL #############################################################
                        # 3rd Drop-down item
                        tabPanel("Bipartite visualization", 
                                 "contents"
