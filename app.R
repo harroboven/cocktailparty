@@ -1,5 +1,5 @@
 # This is the main file of the Cocktail Shiny App :)
-
+library(ggplot2)
 library(shiny)
 # UI
 # Define UI for cocktail app ----
@@ -21,8 +21,8 @@ ui <- fluidPage(
                                        verticalLayout( 
                                          # object 1
                                          titlePanel("Header Object 2"),
-                                         # object 2,
-                                         img(src ='A.png', height = 140, width =300)
+                                         # Alcoholic nature histogram
+                                         plotOutput(outputId = "hist.alc.nat")
                                          )
                                        )
                                      ),
@@ -48,7 +48,11 @@ ui <- fluidPage(
 
 # Server
 server <- function(input, output) {
-
+  
+  # histogram alcoholic nature
+  output$hist.alc.nat <- renderPlot({
+    ggplot(drinks[unique(id), ], aes(x = is_alcoholic)) + geom_bar()
+  })
 }
 
 
