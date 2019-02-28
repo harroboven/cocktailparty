@@ -1,5 +1,6 @@
 # Global.R here
 
 # Instruction that loads prepared data into memory
-drinks <- readRDS("./data/longdrinks.rds")
-drinks.filtered <- drinks[unique(id), ]
+dt.drinks <- readRDS("./data/longdrinks.rds")
+dt.drinks.filtered <- drinks[unique(id), ]
+l.is_alcoholic_values <- unique(drinks$is_alcoholic)
