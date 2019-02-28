@@ -3,7 +3,7 @@
 library(shiny)
 # UI
 ui <- fluidPage(
-  titlePanel("Hello boys! Your group seems to be awesome but I need your names!"),
+  titlePanel("Hello boys and girls! Your group seems to be awesome but I need your names!"),
   mainPanel(
     # testing code, remove later
     actionButton('showimage', 'Click me!', icon = NULL),
@@ -12,9 +12,7 @@ ui <- fluidPage(
   textInput("user.name.2", "The second name", ""),
   textInput("user.name.3", "The third name", ""),
   textInput("user.name.4", "The fourth name", ""),
-  textOutput("salutation"),
-  
-  sidebarPanel()
+  textOutput("salutation")
   
 )
 # Server
@@ -27,6 +25,7 @@ server <- function(input, output) {
     })
   # testing code wjltn
   output$showimage <- renderImage({img(src = 'B.png')})
+  
 }
 
 #shinyApp()
