@@ -3,7 +3,8 @@
 library(shiny)
 library(markdown)
 # UI
-ui <- navbarPage(title = "Shiny Drinks",
+ui <- fluidPage(
+  navbarPage(title = "Shiny Drinks",
   tabPanel("tab 1", "contents"),
   navbarMenu("Networking Exploration",
     tabPanel("Exploration by drinks", 
