@@ -1,7 +1,8 @@
 # This is the main file of the Cocktail Shiny App :)
 library(ggplot2)
 library(shiny)
-# UI
+library(data.table)
+
 # Define UI for cocktail app ----
 ui <- fluidPage(
   # Title and tabpanels with drop-downs
@@ -21,8 +22,13 @@ ui <- fluidPage(
                                        #Header of left object
                                        titlePanel("Explanation of Summary"),
                                        #content of left object
-                                       p("INTROTEXT", 
-                                         style = "font-family: 'times'; font-si16pt")
+                                       radioButtons("dist", "Distribution type:",
+                                                    c("Normal" = "norm",
+                                                      "Uniform" = "unif",
+                                                      "Log-normal" = "lnorm",
+                                                      "Exponential" = "exp")),
+                                       plotOutput("distPlot")
+
                                        ),
                                      # right object 
                                      verticalLayout( 
@@ -46,13 +52,17 @@ ui <- fluidPage(
                                          style = "font-family: 'times'; font-si16pt"),
                                        flowLayout(
                                          # RadioButtons - distribution of obs.
-                                         radioButtons('var.choice', 'Drinks distributed by:', 
-                                                      c('Alcoholic nature' = 'an',
-                                                      'Drink type' = 'dt',
-                                                      'Glass type' = 'gt',
-                                                      'Complexity' = 'cc',
-                                                      'Popularity' = 'pp',
-                                                      'Price' = 'pp'))
+                                         radioButtons(inputId = 'var.choice', 
+                                                      label = 'Drinks distributed by:', 
+                                                      choices = 
+                                                        list('Alcoholic nature' = 'an',
+                                                             'Drink type' = 'dt',
+                                                             'Glass type' = 'gt'
+                                                             #'Complexity' = 'cc',
+                                                             #'Popularity' = 'pp', 
+                                                             #'Price' = 'pp'
+                                                             )
+                                                      )
                                        )
                                      ),
                                      # right object 
@@ -118,33 +128,36 @@ ui <- fluidPage(
 )
 
 
-
 # Server
 server <- function(input, output) {
-  
-  # Seeing which radio button is checked
-  
-  
-  # Define the input types of the radio
-  hist_variable <- reactive({
-    switch(input$var.choice,
-            'an' = 'is_alcoholic',
-            'dt' = 'name',
-            'gt' = 'glass_type',
-            'cc' = 'instructions',
-            'pp' = 'popularity',
-            'p' = 'price')
-  })
-  
   # Make the histogram based on the radio input
   output$histogram <- renderPlot({
-    ggplot(drinks[unique(id), ], aes(x = hist_variable())) + geom_bar(width = 0.2)
-  })
-}
-
+    var.choice <- switch(input$var.choice,
+                         an = drinks.filtered$is_alcoholic,
+                         dt = drinks.filtered$category,
+                         gt = drinks.filtered$glass_type
+                         #cc = drinks.filtered$instructions,
+                         #pp = drinks.filtered$popularity,
+                         #p = drinks.filtered$price
+    )
+    
+    ggplot(drinks.filtered, aes(var.choice)) +
+      geom_bar()
+    })
   
+  
+  output$distPlot <- renderPlot({
+    dist <- switch(input$dist,
+                   norm = rnorm,
+                   unif = runif,
+                   lnorm = rlnorm,
+                   exp = rexp,
+                   rnorm)
+    
+    hist(dist(500))
+  })
+  }
 
 
 #shinyApp()
 shinyApp(ui = ui, server = server)
-
