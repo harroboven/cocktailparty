@@ -26,7 +26,7 @@ server <- function(input, output) {
     "Hello ", input$user.name.4, "! ")
     })
   # testing code wjltn
-  output$showimage <- renderImage({img(src = 'B.png')})
+  output$showimage <- renderImage({paste(img(src = 'B.png'))})
 }
 
 #shinyApp()
