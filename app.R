@@ -99,53 +99,61 @@ ui <- fluidPage(
                                  verticalLayout(
                                    # header of whole page
                                    titlePanel("Data by Drinks"),
-                                   # 1st Object of page
-                                   splitLayout( 
-                                     # left object 
-                                     verticalLayout(
-                                       #Header of left object
-                                       titlePanel("Data by Drinks"),
-                                       #content of left object
-                                       p("INTROTEXT", 
-                                         style = "font-family: 'times'; font-si16pt"
-                                         )
-                                       ),
-                                     # right object 
-                                     verticalLayout( 
-                                       # Header right object
-                                       titlePanel("Header1?"),
-                                       # content of right object
-                                       p("TOP TABLE: Shows top results based on selection", 
-                                         style = "font-family: 'times'; font-si16pt"
-                                         )
-                                       )
+                                   # 1st block of page
+                                   fluidRow(
+                                     # left column
+                                     column(6,
+                                            verticalLayout(
+                                              #Header of left object
+                                              titlePanel("Data by Drinks"),
+                                              #content of left object
+                                              p("INTROTEXT", 
+                                                style = "font-family: 'times'; font-si16pt"
+                                                )
+                                              )
+                                            ),
+                                     # right column  
+                                     column(6,
+                                            verticalLayout(
+                                              # Header right object
+                                              titlePanel("Header1?"),
+                                              # content of right object
+                                              p("TOP TABLE: Shows top results based on selection", 
+                                                style = "font-family: 'times'; font-si16pt"
+                                                )
+                                              )
+                                            )
+                                   ),
+                                   # 2nd block of page
+                                   fluidRow(
+                                     # left column
+                                     column(6,
+                                            verticalLayout(
+                                              #Header of left column
+                                              titlePanel("Header2?"),
+                                              #content of left column
+                                              # RadioButtons - drinks ordered
+                                              radioButtons('drinks.ordered', 'Drinks ordered by:', 
+                                                           c('Complexity' = 'cp',
+                                                             'Popularity' = 'pp',
+                                                             'Price' = 'pr'
+                                                             )
+                                                           )
+                                              )
                                      ),
-                                   # 2nd Object of page
-                                   splitLayout( 
-                                     # left object 
-                                     verticalLayout(
-                                       #Header of left object
-                                       titlePanel("Header2?"),
-                                       #content of left object
-                                       # RadioButtons - distribution of obs.
-                                       radioButtons('drinks.ordered', 'Drinks ordered by:', 
-                                                    c('Complexity' = 'cp',
-                                                      'Popularity' = 'pp',
-                                                      'Price' = 'pr'
-                                                      )
-                                                    )
-                                       ),
-                                     # right object 
-                                     verticalLayout(
-                                       # Header right object
-                                       titlePanel("Header3?"),
-                                       # content of right object
-                                       # Alcoholic nature histogram
-                                       img(src = 'cocktail-glass.png', height = 50, width = 50)
-                                       )
+                                     #right column
+                                     column(6,
+                                            verticalLayout(
+                                              # Header right column
+                                              titlePanel("Header3?"),
+                                              # content of right object
+                                              # Alcoholic nature histogram
+                                              img(src = 'cocktail-glass.png', height = 50, width = 50)
+                                              )
+                                            )
                                      )
                                    )
-                                 )
+                        )
                       ),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
