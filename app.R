@@ -36,16 +36,10 @@ ui <- fluidPage(
 )
 
 
-
-  
-
-
-           
-
 # Server
 server <- function(input, output) {
-
 }
+
 
 #shinyApp()
 shinyApp(ui = ui, server = server)
