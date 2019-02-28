@@ -2,6 +2,7 @@
 library(ggplot2)
 library(shiny)
 library(data.table)
+library(stringr)
 
 # Define UI for cocktail app ----
 ui <- fluidPage(
@@ -27,7 +28,9 @@ ui <- fluidPage(
                ),
             # 1st Drop-down tabpanels
              navbarMenu("Data Desription",
+                        
 ############################################################# PAGE 1 PROPOSAL ############################################################# 
+
                         # 1st Drop-down item
                         tabPanel("Summary of Data", 
                                  verticalLayout(
@@ -75,8 +78,8 @@ ui <- fluidPage(
                                                       choices = 
                                                         list('Alcoholic nature' = 'an',
                                                              'Drink type' = 'dt',
-                                                             'Glass type' = 'gt'
-                                                             #'Complexity' = 'cc',
+                                                             'Glass type' = 'gt',
+                                                             'Complexity' = 'cc'
                                                              #'Popularity' = 'pp', 
                                                              #'Price' = 'pp'
                                                              )
@@ -97,7 +100,9 @@ ui <- fluidPage(
                                      )
                                  )
                                  ),
+
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
+
                         # 2nd Drop-down item
                         tabPanel("Data by Drinks", 
                                  verticalLayout(
@@ -140,8 +145,8 @@ ui <- fluidPage(
                                               radioButtons('drinks.ordered', 'Drinks ordered by:', 
                                                            c('Drink type' = 'dt',
                                                              'Glass type' = 'gt'
+                                                             # 'Complexity' = 'cp'
                                                              # VALUES NEED TO BE CHANGED ACCORDING TO PROPOSAL
-                                                             # 'Complexity' = 'cp',
                                                              #'Popularity' = 'pp',
                                                              #'Price' = 'p'
                                                              )
@@ -170,7 +175,9 @@ ui <- fluidPage(
                       ),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
+                       
 ############################################################# PAGE 3 PROPOSAL #############################################################
+
                        # 1st Drop-down item
                        tabPanel("Exploration by drinks",
                                 verticalLayout(
@@ -251,7 +258,9 @@ ui <- fluidPage(
                                     )
                                   )
                                 ),
+
 ############################################################# PAGE 4 PROPOSAL #############################################################
+
                        # 2nd Drop-down item
                        tabPanel("Exploration by ingredients",
                                 verticalLayout(
@@ -334,8 +343,8 @@ ui <- fluidPage(
                                 ),
 
 ############################################################# PAGE 5 PROPOSAL #############################################################
-                       # 3rd Drop-down item
-                       
+
+# 3rd Drop-down item
 tabPanel("Bipartite visualization",
          verticalLayout(
            # header of whole page
@@ -396,13 +405,10 @@ tabPanel("Bipartite visualization",
 )
 ),
          
-
 ############################################################# PAGE 5 PROPOSAL #############################################################
 
             # 3nd tab
             navbarMenu("tab 3", 
-
-                      
                      "contents"
                      )
           )
@@ -421,8 +427,8 @@ server <- function(input, output) {
     drinks.dist <- switch(input$drinks.dist,
                          an = dt.drinks.filtered$is_alcoholic,
                          dt = dt.drinks.filtered$category,
-                         gt = dt.drinks.filtered$glass_type
-                         #cc = drinks.filtered$instructions,
+                         gt = dt.drinks.filtered$glass_type,
+                         cc = dt.drinks.filtered$complexity
                          #pp = drinks.filtered$popularity,
                          #p = drinks.filtered$price
     )
@@ -431,24 +437,20 @@ server <- function(input, output) {
       geom_bar()
     })
   
-  
   # Make the histogram based on the radio input
   output$drinks.ordered.filtering.barChart <- renderPlot({
-    dt.drinks.alcoholic.filter <- drinks[is_alcoholic == input$alcoholic.filter, ]
+    dt.drinks.alcoholic.filter <- dt.drinks.filtered[is_alcoholic == input$alcoholic.filter, ]
     alcoholic.filter <- switch(input$drinks.ordered,
                           dt = dt.drinks.alcoholic.filter$category,
                           gt = dt.drinks.alcoholic.filter$glass_type
-                          #cc = drinks.filtered$instructions,
+                          # cc = dt.drinks.alcoholic.filter$complexity 
                           #pp = drinks.filtered$popularity,
                           #p = drinks.filtered$price
-    )
+                          )
     
     ggplot(dt.drinks.alcoholic.filter, aes(alcoholic.filter)) +
       geom_bar()
   })
-  # selectInput("alcoholic.filter", "Alcoholic nature:", choices = is_alcoholic_values)
-  
-  
   }
 
 #shinyApp()
