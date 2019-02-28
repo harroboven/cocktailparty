@@ -17,7 +17,7 @@ ui <- navbarPage(title = "Shiny Drinks",
 )
 # Server
 server <- function(input, output) {
-  
+  output$showimage <- renderImage({img(src = 'B.png')}
 
 }
 
