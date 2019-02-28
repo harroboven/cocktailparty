@@ -46,7 +46,7 @@ ui <- fluidPage(
                                          style = "font-family: 'times'; font-si16pt"),
                                        flowLayout(
                                          # RadioButtons - distribution of obs.
-                                         radioButtons('dist.obs', 'Drinks distributed by:', 
+                                         radioButtons('var.choice', 'Drinks distributed by:', 
                                                       c('Alcoholic nature' = 'an',
                                                       'Drink type' = 'dt',
                                                       'Glass type' = 'gt',
@@ -59,9 +59,8 @@ ui <- fluidPage(
                                      verticalLayout( 
                                        # Header right object
                                        titlePanel("Header Object 2"),
-                                       # content of right object
-                                       # Alcoholic nature histogram
-                                       plotOutput(outputId = "hist.alc.nat")
+                                       # histogram
+                                       plotOutput(outputId = "histogram")
                                        )
                                      )
                                    )
@@ -123,18 +122,27 @@ ui <- fluidPage(
 # Server
 server <- function(input, output) {
   
-  # histogram alcoholic nature
-  output$hist.alc.nat <- renderPlot({
-    ggplot(drinks[unique(id), ], aes(x = is_alcoholic)) + geom_bar()
+  # Seeing which radio button is checked
+  
+  
+  # Define the input types of the radio
+  hist_variable <- reactive({
+    switch(input$var.choice,
+            'an' = 'is_alcoholic',
+            'dt' = 'name',
+            'gt' = 'glass_type',
+            'cc' = 'instructions',
+            'pp' = 'popularity',
+            'p' = 'price')
+  })
+  
+  # Make the histogram based on the radio input
+  output$histogram <- renderPlot({
+    ggplot(drinks[unique(id), ], aes(x = hist_variable())) + geom_bar(width = 0.2)
   })
 }
 
-  # RadioButtons - distr. of obs. 
-  d <- reactive({
-    dist.obst <- switch (input$dist.obs,
-      an = action
-    )
-  })
+  
 
 
 #shinyApp()
