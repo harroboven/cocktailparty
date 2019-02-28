@@ -7,7 +7,23 @@ ui <- fluidPage(
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
              #Start Page
-             img(src = 'cocktail-glass.png', height = 300, width = 300),
+             fluidRow(
+               #left column
+               column(4,
+                      img(src = 'cocktail-glass.png', height = 300, width = 300)
+                      ),
+               #right column
+               column(8,
+                      verticalLayout(
+                        # header of right column
+                        titlePanel("Let's have some drinks!"),
+                        # content of right column
+                        p("***Relevance Text***", 
+                          style = "font-family: 'times'; font-si16pt"
+                        )
+                      )
+                      )
+               ),
             # 1st Drop-down tabpanels
              navbarMenu("Data Desription",
 ############################################################# PAGE 1 PROPOSAL ############################################################# 
@@ -94,7 +110,7 @@ ui <- fluidPage(
                                      # right object 
                                      verticalLayout( 
                                        # Header right object
-                                       titlePanel("Header Object 2"),
+                                       titlePanel("Header1?"),
                                        # content of right object
                                        p("TOP TABLE: Shows top results based on selection", 
                                          style = "font-family: 'times'; font-si16pt"
@@ -106,7 +122,7 @@ ui <- fluidPage(
                                      # left object 
                                      verticalLayout(
                                        #Header of left object
-                                       titlePanel("Header?"),
+                                       titlePanel("Header2?"),
                                        #content of left object
                                        # RadioButtons - distribution of obs.
                                        radioButtons('drinks.ordered', 'Drinks ordered by:', 
@@ -119,7 +135,7 @@ ui <- fluidPage(
                                      # right object 
                                      verticalLayout(
                                        # Header right object
-                                       titlePanel("Header Object 2"),
+                                       titlePanel("Header3?"),
                                        # content of right object
                                        # Alcoholic nature histogram
                                        img(src = 'cocktail-glass.png', height = 50, width = 50)
