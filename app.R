@@ -6,6 +6,7 @@ library(shiny)
 ui <- fluidPage(
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
+             img(src = 'cocktail-glass.png', height = 300, width = 300),
             # 1st Drop-down tabpanels
              navbarMenu("Data Desription",
 ############################################################# PAGE 1 PROPOSAL ############################################################# 
@@ -22,7 +23,8 @@ ui <- fluidPage(
                                        titlePanel("Explanation of Summary"),
                                        #content of left object
                                        p("INTROTEXT", 
-                                         style = "font-family: 'times'; font-si16pt")
+                                         style = "font-family: 'times'; font-si16pt"
+                                         )
                                        ),
                                      # right object 
                                      verticalLayout( 
@@ -30,7 +32,8 @@ ui <- fluidPage(
                                        titlePanel("Header Object 2"),
                                        # content of right object
                                        p("Summary Statistics: Table with number of observations etc.", 
-                                         style = "font-family: 'times'; font-si16pt")
+                                         style = "font-family: 'times'; font-si16pt"
+                                         )
                                        )
                                      ),
                                    # 2nd Object of page
@@ -41,18 +44,22 @@ ui <- fluidPage(
                                        titlePanel("Distribution of Observations"),
                                        #content of left object
                                        p("INTROTEXT", 
-                                         style = "font-family: 'times'; font-si16pt"),
+                                         style = "font-family: 'times'; font-si16pt"
+                                         ),
                                        p("Drinks distributed by:", 
-                                         style = "font-family: 'times'; font-si16pt"),
+                                         style = "font-family: 'times'; font-si16pt"
+                                         ),
                                        flowLayout(
                                          # RadioButtons - distribution of obs.
                                          radioButtons('dist.obs', 'Drinks distributed by:', 
                                                       c('Alcoholic nature' = 'an',
-                                                      'Drink type' = 'dt',
-                                                      'Glass type' = 'gt',
-                                                      'Complexity' = 'cc',
-                                                      'Popularity' = 'pp',
-                                                      'Price' = 'pp'))
+                                                        'Drink type' = 'dt',
+                                                        'Glass type' = 'gt',
+                                                        'Complexity' = 'cc',
+                                                        'Popularity' = 'pp',
+                                                        'Price' = 'pp'
+                                                        )
+                                                      )
                                        )
                                      ),
                                      # right object 
@@ -111,6 +118,7 @@ ui <- fluidPage(
                                 "contents"
                                 )
                        ),
+############################################################# PAGE XX PROPOSAL #############################################################
             # 2nd tabpanel
             tabPanel("tab 3", 
                      "contents"
