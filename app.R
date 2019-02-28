@@ -2,6 +2,7 @@
 library(ggplot2)
 library(shiny)
 library(data.table)
+library(stringr)
 
 # Define UI for cocktail app ----
 ui <- fluidPage(
@@ -27,7 +28,9 @@ ui <- fluidPage(
                ),
             # 1st Drop-down tabpanels
              navbarMenu("Data Desription",
+                        
 ############################################################# PAGE 1 PROPOSAL ############################################################# 
+
                         # 1st Drop-down item
                         tabPanel("Summary of Data", 
                                  verticalLayout(
@@ -70,13 +73,13 @@ ui <- fluidPage(
                                                 style = "font-family: 'times'; font-si16pt"
                                                 ),
                                               # RadioButtons - distribution of obs.
-                                         radioButtons(inputId = 'var.choice', 
+                                         radioButtons(inputId = 'drinks.dist', 
                                                       label = 'Drinks distributed by:', 
                                                       choices = 
                                                         list('Alcoholic nature' = 'an',
                                                              'Drink type' = 'dt',
-                                                             'Glass type' = 'gt'
-                                                             #'Complexity' = 'cc',
+                                                             'Glass type' = 'gt',
+                                                             'Complexity' = 'cc'
                                                              #'Popularity' = 'pp', 
                                                              #'Price' = 'pp'
                                                              )
@@ -89,15 +92,17 @@ ui <- fluidPage(
                                               # Header right object
                                               titlePanel("Header Object 2"),
                                               # content of right object
-                                              # Alcoholic nature histogram
-                                              plotOutput(outputId = "histogram")
+                                              # Distribution Barchart
+                                              plotOutput(outputId = "drinks.dist.barChart")
                                               )
                                             )
 
                                      )
                                  )
                                  ),
+
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
+
                         # 2nd Drop-down item
                         tabPanel("Data by Drinks", 
                                  verticalLayout(
@@ -138,11 +143,20 @@ ui <- fluidPage(
                                               #content of left column
                                               # RadioButtons - drinks ordered
                                               radioButtons('drinks.ordered', 'Drinks ordered by:', 
-                                                           c('Complexity' = 'cp',
-                                                             'Popularity' = 'pp',
-                                                             'Price' = 'pr'
+                                                           c('Drink type' = 'dt',
+                                                             'Glass type' = 'gt'
+                                                             # 'Complexity' = 'cp'
+                                                             # VALUES NEED TO BE CHANGED ACCORDING TO PROPOSAL
+                                                             #'Popularity' = 'pp',
+                                                             #'Price' = 'p'
                                                              )
-                                                           )
+                                                           ),
+                                              p("Drinks filtered by:", 
+                                                style = "font-family: 'times'; font-si16pt"
+                                              ),
+                                              selectInput("alcoholic.filter", "Alcoholic nature:", 
+                                                          choices = l.is_alcoholic_values
+                                                          )
                                               )
                                      ),
                                      #right column
@@ -151,8 +165,8 @@ ui <- fluidPage(
                                               # Header right column
                                               titlePanel("Header3?"),
                                               # content of right object
-                                              # Alcoholic nature histogram
-                                              img(src = 'cocktail-glass.png', height = 50, width = 50)
+                                              # Ordered and filtered drinks barchart
+                                              plotOutput(outputId = "drinks.ordered.filtering.barChart")
                                               )
                                             )
                                      )
@@ -161,7 +175,9 @@ ui <- fluidPage(
                       ),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
+                       
 ############################################################# PAGE 3 PROPOSAL #############################################################
+
                        # 1st Drop-down item
                        tabPanel("Exploration by drinks",
                                 verticalLayout(
@@ -242,7 +258,9 @@ ui <- fluidPage(
                                     )
                                   )
                                 ),
+
 ############################################################# PAGE 4 PROPOSAL #############################################################
+
                        # 2nd Drop-down item
                        tabPanel("Exploration by ingredients",
                                 verticalLayout(
@@ -325,8 +343,8 @@ ui <- fluidPage(
                                 ),
 
 ############################################################# PAGE 5 PROPOSAL #############################################################
-                       # 3rd Drop-down item
-                       
+
+# 3rd Drop-down item
 tabPanel("Bipartite visualization",
          verticalLayout(
            # header of whole page
@@ -387,38 +405,52 @@ tabPanel("Bipartite visualization",
 )
 ),
          
-
 ############################################################# PAGE 5 PROPOSAL #############################################################
 
             # 3nd tab
             navbarMenu("tab 3", 
-
-                      
                      "contents"
                      )
           )
   )
 
 
+############################################################# SERVER #############################################################
+############################################################# SERVER #############################################################
+############################################################# SERVER #############################################################
 
-# Server
+
 server <- function(input, output) {
 
   # Make the histogram based on the radio input
-  output$histogram <- renderPlot({
-    var.choice <- switch(input$var.choice,
-                         an = drinks.filtered$is_alcoholic,
-                         dt = drinks.filtered$category,
-                         gt = drinks.filtered$glass_type
-                         #cc = drinks.filtered$instructions,
+  output$drinks.dist.barChart <- renderPlot({
+    drinks.dist <- switch(input$drinks.dist,
+                         an = dt.drinks.filtered$is_alcoholic,
+                         dt = dt.drinks.filtered$category,
+                         gt = dt.drinks.filtered$glass_type,
+                         cc = dt.drinks.filtered$complexity
                          #pp = drinks.filtered$popularity,
                          #p = drinks.filtered$price
     )
     
-    ggplot(drinks.filtered, aes(var.choice)) +
+    ggplot(dt.drinks.filtered, aes(drinks.dist)) +
       geom_bar()
     })
-
+  
+  # Make the histogram based on the radio input
+  output$drinks.ordered.filtering.barChart <- renderPlot({
+    dt.drinks.alcoholic.filter <- dt.drinks.filtered[is_alcoholic == input$alcoholic.filter, ]
+    alcoholic.filter <- switch(input$drinks.ordered,
+                          dt = dt.drinks.alcoholic.filter$category,
+                          gt = dt.drinks.alcoholic.filter$glass_type
+                          # cc = dt.drinks.alcoholic.filter$complexity 
+                          #pp = drinks.filtered$popularity,
+                          #p = drinks.filtered$price
+                          )
+    
+    ggplot(dt.drinks.alcoholic.filter, aes(alcoholic.filter)) +
+      geom_bar()
+  })
   }
 
 #shinyApp()
