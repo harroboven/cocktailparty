@@ -4,31 +4,6 @@ library(shiny)
 # UI
 # Define UI for cocktail app ----
 ui <- fluidPage(
-  titlePanel("Hello boys! Your group seems to be awesome but I need your names!"),
-  mainPanel(
-    
-    # RadioButtons - distribution of obs.
-    radioButtons('dist.obs', 'Drinks distributed by:', 
-                 c('Alcoholic nature' = 'an',
-                   'Drink type' = 'dt',
-                   'Glass type' = 'gt',
-                   'Complexity' = 'cc',
-                   'Popularity' = 'pp',
-                   'Price' = 'pp'))
-    
-    
-    
-    ),
-  # SliderInput - Network of drinks
-  sliderInput('weight.edges',
-              label = 'Min. weight of edges:', 
-              min = 1, max = 20, value = c(1,20), step = 1
-  ),
-  
-  
-  
-  
-
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
             # 1st Drop-down tabpanels
@@ -69,19 +44,15 @@ ui <- fluidPage(
                                          style = "font-family: 'times'; font-si16pt"),
                                        p("Drinks distributed by:", 
                                          style = "font-family: 'times'; font-si16pt"),
-                                       flowLayout( 
-                                         # Element 1
-                                         img(src = 'A.png', height = 15, width = 15),
-                                         # Element 2
-                                         img(src = 'A.png', height = 15, width = 15),
-                                         # Element 3
-                                         img(src = 'A.png', height = 15, width = 15),
-                                         # Element 4
-                                         img(src = 'A.png', height = 15, width = 15),
-                                         # Element 5
-                                         img(src = 'A.png', height = 15, width = 15),
-                                         # Element 6
-                                         img(src = 'A.png', height = 15, width = 15)
+                                       flowLayout(
+                                         # RadioButtons - distribution of obs.
+                                         radioButtons('dist.obs', 'Drinks distributed by:', 
+                                                      c('Alcoholic nature' = 'an',
+                                                      'Drink type' = 'dt',
+                                                      'Glass type' = 'gt',
+                                                      'Complexity' = 'cc',
+                                                      'Popularity' = 'pp',
+                                                      'Price' = 'pp'))
                                        )
                                      ),
                                      # right object 
@@ -94,8 +65,7 @@ ui <- fluidPage(
                                        )
                                      )
                                    )
-                                   )
-                        ),
+                                 ),
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
                         # 2nd Drop-down item
                         tabPanel("Data by Drinks", "content 2")
@@ -115,7 +85,11 @@ ui <- fluidPage(
                                       #title of left object
                                       titlePanel("Summary Statistics of the Network by DRINKS"),
                                       #content of left object
-                                      img(src = 'A.png', height = 300, width = 300)),
+                                      # SliderInput - Network of drinks
+                                      sliderInput('weight.edges',
+                                        label = 'Min. weight of edges:', 
+                                        min = 1, max = 20, value = c(1,20), step = 1
+                                      )),
                                     # right object
                                     verticalLayout(
                                       #title of right object
@@ -142,7 +116,9 @@ ui <- fluidPage(
                      "contents"
                      )
             )
-  )
+)
+
+
 
 # Server
 server <- function(input, output) {
