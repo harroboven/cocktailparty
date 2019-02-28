@@ -12,6 +12,8 @@ ui <- fluidPage(
   textInput("user.name.4", "The fourth name", ""),
   textOutput("salutation")
   
+  sidebarPanel()
+  
 )
 # Server
 server <- function(input, output) {
