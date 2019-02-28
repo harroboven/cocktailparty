@@ -33,62 +33,65 @@ ui <- fluidPage(
                                    # header of whole page
                                    titlePanel("Summary of Data"),
                                    # 1st block of page
-                                   splitLayout( 
-                                     # left object 
-                                     verticalLayout(
-                                       #Header of left object
-                                       titlePanel("Explanation of Summary"),
-                                       #content of left object
-                                       p("INTROTEXT", 
-                                         style = "font-family: 'times'; font-si16pt"
-                                         )
-                                       ),
-                                     # right object 
-                                     verticalLayout( 
-                                       # Header right object
-                                       titlePanel("Header Object 2"),
-                                       # content of right object
-                                       p("Summary Statistics: Table with number of observations etc.", 
-                                         style = "font-family: 'times'; font-si16pt"
-                                         )
-                                       )
+                                   fluidRow(
+                                     # left column
+                                     column(6,
+                                            verticalLayout(
+                                              #Header of left column
+                                              titlePanel("Explanation of Summary"),
+                                              #content of left column
+                                              p("INTROTEXT", 
+                                                style = "font-family: 'times'; font-si16pt"
+                                                )
+                                              )
+                                            ),
+                                     # right column
+                                     column(6,
+                                            verticalLayout( 
+                                              # Header right column
+                                              titlePanel("Header Object 2"),
+                                              # content of right column
+                                              p("Summary Statistics: Table with number of observations etc.", 
+                                                style = "font-family: 'times'; font-si16pt"
+                                                )
+                                              )
+                                            )
+                                   ),
+                                   # 2nd block of page
+                                   fluidRow(
+                                     # left column
+                                     column(6,
+                                            verticalLayout(
+                                              #Header of left column
+                                              titlePanel("Distribution of Observations"),
+                                              #content of left column
+                                              p("INTROTEXT", 
+                                                style = "font-family: 'times'; font-si16pt"
+                                                ),
+                                              # RadioButtons - distribution of obs.
+                                              radioButtons('dist.obs', 'Drinks distributed by:', 
+                                                           c('Alcoholic nature' = 'an',
+                                                             'Drink type' = 'dt',
+                                                             'Glass type' = 'gt',
+                                                             'Complexity' = 'cc',
+                                                             'Popularity' = 'pp',
+                                                             'Price' = 'pp'
+                                                             )
+                                              )
+                                              )
                                      ),
-                                   # 2nd Object of page
-                                   splitLayout( 
-                                     # left object 
-                                     verticalLayout(
-                                       #Header of left object
-                                       titlePanel("Distribution of Observations"),
-                                       #content of left object
-                                       p("INTROTEXT", 
-                                         style = "font-family: 'times'; font-si16pt"
-                                         ),
-                                       p("Drinks distributed by:", 
-                                         style = "font-family: 'times'; font-si16pt"
-                                         ),
-                                       flowLayout(
-                                         # RadioButtons - distribution of obs.
-                                         radioButtons('dist.obs', 'Drinks distributed by:', 
-                                                      c('Alcoholic nature' = 'an',
-                                                        'Drink type' = 'dt',
-                                                        'Glass type' = 'gt',
-                                                        'Complexity' = 'cc',
-                                                        'Popularity' = 'pp',
-                                                        'Price' = 'pp'
-                                                        )
-                                                      )
-                                       )
-                                     ),
-                                     # right object 
-                                     verticalLayout( 
-                                       # Header right object
-                                       titlePanel("Header Object 2"),
-                                       # content of right object
-                                       # Alcoholic nature histogram
-                                       plotOutput(outputId = "hist.alc.nat")
-                                       )
+                                     # right column
+                                     column(6, 
+                                            verticalLayout( 
+                                              # Header right object
+                                              titlePanel("Header Object 2"),
+                                              # content of right object
+                                              # Alcoholic nature histogram
+                                              plotOutput(outputId = "hist.alc.nat")
+                                              )
+                                            )
                                      )
-                                   )
+                                 )
                                  ),
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
                         # 2nd Drop-down item
