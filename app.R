@@ -6,6 +6,7 @@ ui <- fluidPage(
   
   
 # IloveUli ....
+  # I hate Uli 
 )
 print("Zanis is not so cool")
 # Server
