@@ -1,7 +1,8 @@
 # This is the main file of the Cocktail Shiny App :)
 library(ggplot2)
 library(shiny)
-# UI
+library(data.table)
+
 # Define UI for cocktail app ----
 ui <- fluidPage(
   # Title and tabpanels with drop-downs
@@ -69,15 +70,17 @@ ui <- fluidPage(
                                                 style = "font-family: 'times'; font-si16pt"
                                                 ),
                                               # RadioButtons - distribution of obs.
-                                              radioButtons('dist.obs', 'Drinks distributed by:', 
-                                                           c('Alcoholic nature' = 'an',
+                                         radioButtons(inputId = 'var.choice', 
+                                                      label = 'Drinks distributed by:', 
+                                                      choices = 
+                                                        list('Alcoholic nature' = 'an',
                                                              'Drink type' = 'dt',
-                                                             'Glass type' = 'gt',
-                                                             'Complexity' = 'cc',
-                                                             'Popularity' = 'pp',
-                                                             'Price' = 'pp'
+                                                             'Glass type' = 'gt'
+                                                             #'Complexity' = 'cc',
+                                                             #'Popularity' = 'pp', 
+                                                             #'Price' = 'pp'
                                                              )
-                                              )
+                                                      )
                                               )
                                      ),
                                      # right column
@@ -90,6 +93,7 @@ ui <- fluidPage(
                                               plotOutput(outputId = "hist.alc.nat")
                                               )
                                             )
+
                                      )
                                  )
                                  ),
@@ -399,29 +403,36 @@ tabPanel("Bipartite visualization",
 
 
 
-
 # Server
 server <- function(input, output) {
-  
-  # histogram alcoholic nature
-  output$hist.alc.nat <- renderPlot({
-    ggplot(drinks[unique(id), ], aes(x = is_alcoholic)) + geom_bar()
-  })
-}
 
-  # RadioButtons - distr. of obs. - Proposal Page 1
-  d <- reactive({
-    dist.obst <- switch (input$dist.obs,
-      an = action
+  # Make the histogram based on the radio input
+  output$histogram <- renderPlot({
+    var.choice <- switch(input$var.choice,
+                         an = drinks.filtered$is_alcoholic,
+                         dt = drinks.filtered$category,
+                         gt = drinks.filtered$glass_type
+                         #cc = drinks.filtered$instructions,
+                         #pp = drinks.filtered$popularity,
+                         #p = drinks.filtered$price
     )
-  })
-  # RadioButtons - Proposal Page 2
-  g <- reactive({
-    drinks.ordered <- switch (input$drinks.ordered,
-                              an = action
-                              )
+    
+    ggplot(drinks.filtered, aes(var.choice)) +
+      geom_bar()
     })
+  
+  
+  output$distPlot <- renderPlot({
+    dist <- switch(input$dist,
+                   norm = rnorm,
+                   unif = runif,
+                   lnorm = rlnorm,
+                   exp = rexp,
+                   rnorm)
+    
+    hist(dist(500))
+  })
+  }
 
 #shinyApp()
 shinyApp(ui = ui, server = server)
-
