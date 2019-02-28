@@ -10,7 +10,7 @@ ui <- fluidPage(
   textInput("user.name.2", "The second name", ""),
   textInput("user.name.3", "The third name", ""),
   textInput("user.name.4", "The fourth name", ""),
-  textOutput("salutation")
+  textOutput("salutation"),
   
   sidebarPanel()
   
