@@ -2,32 +2,55 @@
 
 library(shiny)
 # UI
+# Define UI for cocktail app ----
 ui <- fluidPage(
-  titlePanel("Hello boys! Your group seems to be awesome but I need your names!"),
-  mainPanel(
-    # testing code, remove later
-    actionButton('showimage', 'Click me!', icon = NULL),
-    img(src = 'A.png', height = 140, width = 300)),
-  textInput("user.name.1", "The first name", ""),
-  textInput("user.name.2", "The second name", ""),
-  textInput("user.name.3", "The third name", ""),
-  textInput("user.name.4", "The fourth name", ""),
-  textOutput("salutation"),
-  
-  sidebarPanel()
-  
+  # Title and tabpanels with drop-downs
+  navbarPage(title = "Shiny Drinks",
+            # 1st Drop-down tabpanels
+             navbarMenu("Data Desription", 
+                            tabPanel("Summary of Data",   
+                                     splitLayout( 
+                                       # object 1
+                                       verticalLayout( 
+                                         # object 1
+                                         titlePanel("Header Object 1"),
+                                         # object 2,
+                                         img(src ='A.png', height = 140, width =300)
+                                         ),
+                                       # object 2
+                                       verticalLayout( 
+                                         # object 1
+                                         titlePanel("Header Object 2"),
+                                         # object 2,
+                                         img(src ='A.png', height = 140, width =300)
+                                         )
+                                       )
+                                     ),
+                        tabPanel("Data by Drinks", "content 2")
+                        ),
+            # 2nd tabpanel
+            navbarMenu("Networking Exploration",
+                       tabPanel("Exploration by drinks", 
+                                verticalLayout(
+                                  titlePanel("Exploration by drinks"),
+                                  (splitLayout(
+                                    verticalLayout(
+                                      titlePanel("Summary Statistics of the Network by DRINKS"), 
+                                      img(src = 'A.png', height = 300, width = 300)),
+                                    titlePanel("Table with summary statistics"))))),
+                       tabPanel("Exploration by ingredients", "contents"),
+                       tabPanel("Bipartite visualization", "contents")),
+            # 2nd tabpanel
+            tabPanel("tab 3", "contents")
+  )
 )
+
+
 # Server
 server <- function(input, output) {
-  output$salutation <- renderText({
-    paste0("Hello ", input$user.name.1, ", ",
-    "Hello ", input$user.name.2, ", ",
-    "Hello ", input$user.name.3, ", ",
-    "Hello ", input$user.name.4, "! ")
-    })
-  # testing code wjltn
-  output$showimage <- renderImage({paste(img(src = 'B.png'))})
+
 }
+
 
 #shinyApp()
 shinyApp(ui = ui, server = server)

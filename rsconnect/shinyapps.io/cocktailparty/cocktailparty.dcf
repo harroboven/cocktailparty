@@ -1,0 +1,12 @@
+name: cocktailparty
+title: cocktailparty
+username:
+account: cocktailparty
+server: shinyapps.io
+hostUrl: https://api.shinyapps.io/v1
+appId: 748488
+bundleId: 1905811
+url: https://cocktailparty.shinyapps.io/cocktailparty/
+when: 1551347833.68429
+asMultiple: FALSE
+asStatic: FALSE

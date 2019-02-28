@@ -12,8 +12,8 @@ library(ggplot2)
 library(stringr)
 library(reshape2)
 
-# Set working directory to Collaborative Cocktail Party
-setwd("/Users/Harro/Google Drive/Collaborative Cocktail Party")
+# Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
+setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
 # Load the data set, turn it into a data table, call it "drinks" and call first column "id"
 dt.drinks <- fread("all_drinks.csv", header = TRUE)
@@ -59,22 +59,24 @@ dt.longdrinks[, c("dateModified", "idDrink", "strVideo", "variable", "ingredient
 new.column.names <- c("id", "name", "is_alcoholic", "category", "thumbnail", 
                       "glass_type", "era", "instructions", "ingredient", "amount")
 setnames(dt.longdrinks, c(colnames(dt.longdrinks)), new.column.names)
-View(dt.longdrinks)
+
+# Save it into an RDS file loaded by global.R
+saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 
 # Write cleaned dataset to csv, so you guys can work with it directly :)
 # After comment it out so the whole script can be run without saving a million copies.
-write.csv(dt.longdrinks, file="clean_longdrinks.csv")
+# write.csv(dt.longdrinks, file="clean_longdrinks.csv")
 
 # Get some basic descriptives of the variables
-df.longdrinks <- as.data.frame(dt.longdrinks)
-View(df.longdrinks)
+# df.longdrinks <- as.data.frame(dt.longdrinks)
+# View(df.longdrinks)
 
 # Counts the number of unique values per column after converting to lowercase
-calculate.n.unique <- function(x) {
-  return(length(unique(tolower(x))))
-}
+# calculate.n.unique <- function(x) {
+#  return(length(unique(tolower(x))))
+#}
 
-sapply(dt.longdrinks, calculate.n.unique)
+# sapply(dt.longdrinks, calculate.n.unique)
 
 
 
