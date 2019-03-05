@@ -61,6 +61,13 @@ new.column.names <- c("id", "name", "is_alcoholic", "category", "thumbnail",
 setnames(dt.longdrinks, c(colnames(dt.longdrinks)), new.column.names)
 
 
+length(unique(tolower(dt.longdrinks[, is_alcoholic]))) - length(unique(dt.longdrinks[, is_alcoholic]))
+
+dt.longdrinks$is_alcoholic <- tolower(dt.longdrinks$is_alcoholic)
+dt.longdrinks$ingredient <- tolower(dt.longdrinks$ingredient)
+dt.longdrinks$glass_type <- tolower(dt.longdrinks$glass_type)
+
+
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 
