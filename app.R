@@ -24,10 +24,15 @@ ui <- fluidPage(
 
 )
 View(all.drinks)
+drinks <- drinks[!duplicated(drinks$id)]
 all.drinks <- drinks[, .(id = unique(name), type = TRUE)]
-
 all.ingredients <- drinks[, .(id = unique(ingredient), type = FALSE)]
+
 all.vertices <- rbind(all.drinks, all.ingredients)
+all.vertices <- all.vertices[!duplicated(all.vertices$id)]
+all.vertices[which(all.vertices[,1]=="Applecar"),1] <- "applecarr"
+all.vertices[which(all.vertices[,1]=="Limeade"),1] <- "Llimeade"
+all.vertices[which(all.vertices[,1]=="Applecarr"),1] <- "A.J."
 
 
 g.drinks.ingredients <- graph.data.frame(drinks[, .(name, ingredient)],

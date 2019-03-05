@@ -11,7 +11,7 @@ library(data.table)
 library(ggplot2)
 library(stringr)
 library(reshape2)
-
+library(igraph)
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
@@ -59,6 +59,7 @@ dt.longdrinks[, c("dateModified", "idDrink", "strVideo", "variable", "ingredient
 new.column.names <- c("id", "name", "is_alcoholic", "category", "thumbnail", 
                       "glass_type", "era", "instructions", "ingredient", "amount")
 setnames(dt.longdrinks, c(colnames(dt.longdrinks)), new.column.names)
+
 
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
