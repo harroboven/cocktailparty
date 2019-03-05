@@ -62,9 +62,29 @@ setnames(dt.longdrinks, c(colnames(dt.longdrinks)), new.column.names)
 
 length(unique(tolower(dt.longdrinks[, is_alcoholic]))) - length(unique(dt.longdrinks[, is_alcoholic]))
 
+# Change is_alcoholic, ingredient and glass_type columns to lowercase
 dt.longdrinks$is_alcoholic <- tolower(dt.longdrinks$is_alcoholic)
 dt.longdrinks$ingredient <- tolower(dt.longdrinks$ingredient)
 dt.longdrinks$glass_type <- tolower(dt.longdrinks$glass_type)
+
+# Make two new columns called "quantity" and "unit" from the "amount" column
+dt.longdrinks[, quantity := trimws(gsub("[A-Za-z]*", "", amount))]
+dt.longdrinks[, unit := trimws(gsub("[0-9//.,-]*", "", amount))]
+
+# Standardize the unit as much as possible
+unique(dt.longdrinks[, std.unit])
+standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp")
+
+standardize.unit <- function(unit) {
+  for (i in 1:length(standard.units)) {
+    if (length(grep(standard.units[i], unit) > 0)) {
+      return(standard.units[i])
+    } 
+  }
+  return("")
+}
+
+dt.longdrinks$std.unit <- mapply(standardize.unit, dt.longdrinks$unit)
 
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
