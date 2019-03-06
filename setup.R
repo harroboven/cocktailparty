@@ -12,7 +12,6 @@ library(data.table)
 library(ggplot2)
 library(stringr)
 library(reshape2)
-
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
@@ -127,6 +126,7 @@ standardize.glass <- function(glass) {
 
 dt.longdrinks$std.glass <- mapply(standardize.glass, dt.longdrinks$glass_type)
 
+<<<<<<< HEAD
 # Change is_alcoholic column to "alcoholic" and "non-alcoholic" and indicate that Cherry Electric Lemonade is indeed alcoholic
 unique(dt.longdrinks[, is_alcoholic])
 
@@ -134,6 +134,12 @@ ditch.optional <- function(x) {
   if (x == "") {
     return("alcoholic")
   }
+=======
+# Change is_alcoholic column to "alcoholic" and "non-alcoholic"
+unique(dt.longdrinks[, is_alcoholic])
+
+ditch.optional <- function(x) {
+>>>>>>> 6adfec4fb2fe667db4bc7979aeeb7810752139d3
   gsub("optional alcohol", "non alcoholic", x)
 }
 dt.longdrinks$is_alcoholic <- mapply(ditch.optional, dt.longdrinks$is_alcoholic)
