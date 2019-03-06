@@ -3,6 +3,8 @@
 # Instruction that loads prepared data into memory
 dt.longdrinks <- readRDS("./data/longdrinks.rds")
 dt.drinks <- dt.longdrinks
+
+# Add complexity of drink recipes
 dt.drinks <- dt.drinks[, complexity := str_count(dt.drinks$instructions)]
 
 # Delete non-standardized columns from dt.drinks. They are still in dt.longdrinks, in case you need to access the original ones.
