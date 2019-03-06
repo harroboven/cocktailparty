@@ -247,7 +247,11 @@ ui <- fluidPage(
                                                p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                                # Drink Choice
                                                p("Choose drink", style = "font-family: 'times'; font-si16pt"),
-                                               p("PLACEHOLDER DROP DOWN")
+                                               p("PLACEHOLDER DROP DOWN"),
+                                               selectInput('d',
+                                                           label = 'Choose a drink',
+                                                           choices = drinks$name,
+                                                           selected = NA)
                                                ),
                                         # right sub-column
                                         column(6,
@@ -422,6 +426,27 @@ tabPanel("Bipartite visualization",
 
 server <- function(input, output) {
 
+  
+  
+  # Network of ingredients
+  # Network of drinks 
+  all.drinks <- dt.drinks.filtered[, .(name = unique(name), type = TRUE)]
+  all.ingredients <- dt.drinks[, .(name = unique(ingredient), type = FALSE)]
+  all.vertices <- rbind(all.drinks, all.ingredients)
+  #all.vertices <- all.vertices[!duplicated(all.vertices$id)]
+  #all.vertices[which(all.vertices[,1]=="Applecar"),1] <- "applecarr"
+  #all.vertices[which(all.vertices[,1]=="Limeade"),1] <- "Llimeade"
+  #all.vertices[which(all.vertices[,1]=="Applecarr"),1] <- "A.J."
+  
+  
+  g.drinks.ingredients <- graph.data.frame(dt.drinks[, .(name, ingredient)],
+                                           directed = FALSE,
+                                           vertices = all.vertices)
+  g.drinks <- bipartite.projection(g.drinks.ingredients)$proj1
+  g.ingredients <- bipartite.projection(g.drinks.ingredients)$proj2
+  g.drinks <- 
+  
+  
   # Make the histogram based on the radio input
   output$drinks.dist.barChart <- renderPlot({
     drinks.dist <- switch(input$drinks.dist,
