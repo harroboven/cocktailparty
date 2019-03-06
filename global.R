@@ -16,5 +16,11 @@ dt.drinks[, c("thumbnail", "era") := NULL]
 
 # Making sure dt.drinks.filtered exhibits the changes as well
 dt.drinks.filtered <- dt.drinks[unique(id), ]
+
+# ???
 l.is_alcoholic_values <- unique(dt.drinks$is_alcoholic)
+
+
+
+
 
