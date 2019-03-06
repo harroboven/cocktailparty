@@ -6,14 +6,14 @@
 # install.packages("reshape2")
 # install.packages("stringr")
 
+
 # Load the necessary libraries
 library(data.table)
 library(ggplot2)
 library(stringr)
 library(reshape2)
-
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
-setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
+# setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
 # Load the data set, turn it into a data table, call it "drinks" and call first column "id"
 dt.drinks <- fread("all_drinks.csv", header = TRUE)
@@ -85,6 +85,57 @@ standardize.unit <- function(unit) {
 }
 
 dt.longdrinks$std.unit <- mapply(standardize.unit, dt.longdrinks$unit)
+
+# Make a new column called "std.category" in which to reduce "category" to "cocktail", "shot" and "other"
+nonstandard.categories <- unique(dt.drinks[, category])
+standard.categories <- c("cocktail", "shot", "other")
+
+standardize.category <- function(category) {
+  for (i in 1:length(nonstandard.categories)) {
+    if (category == nonstandard.categories[1] | category == nonstandard.categories[5] | category == nonstandard.categories[8]) {
+      return(standard.categories[1])
+    } else if ( category == nonstandard.categories[2]) {
+      return(standard.categories[2])
+    } else {
+      return(standard.categories[3])
+    }
+  }
+}
+
+dt.longdrinks$std.category <- mapply(standardize.category, dt.longdrinks$category)
+
+# Make a new column called "std.glasstype" in which to reduce "glasstype"
+nonstandard.glasses <- unique(dt.longdrinks[, glass_type])
+
+long.glasses <- c("highball glass", "collins glass")
+short.glasses <- c("old-fashioned glass", "punch bowl")
+chalice.glasses <- c("cocktail glass", "champagne flute", "margarita/coupette glass", "martini glass", "whiskey sour glass", "white wine glass", "wine glass", "brandy snifter")
+shot.glasses <- c("shot glass")
+
+standard.glasses <- list(long.glasses, short.glasses, chalice.glasses, shot.glasses)
+names(standard.glasses) <- c("long.glasses", "short.glasses", "chalice.glasses", "shot.glasses")
+
+standardize.glass <- function(glass) {
+  for (i in 1:length(standard.glasses)) {
+    if (glass %in% standard.glasses[[i]]) {
+      return(names(standard.glasses)[i])
+    } 
+  }
+  return("other")
+}
+
+dt.longdrinks$std.glass <- mapply(standardize.glass, dt.longdrinks$glass_type)
+
+# Change is_alcoholic column to "alcoholic" and "non-alcoholic" and indicate that Cherry Electric Lemonade is indeed alcoholic
+unique(dt.longdrinks[, is_alcoholic])
+
+ditch.optional <- function(x) {
+  if (x == "") {
+    return("alcoholic")
+  }
+  gsub("optional alcohol", "non alcoholic", x)
+}
+dt.longdrinks$is_alcoholic <- mapply(ditch.optional, dt.longdrinks$is_alcoholic)
 
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
