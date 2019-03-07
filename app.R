@@ -4,7 +4,6 @@ library(shiny)
 library(data.table)
 library(stringr)
 
-
 # Define UI for cocktail app ----
 ui <- fluidPage(
   # Title and tabpanels with drop-downs
@@ -475,7 +474,7 @@ server <- function(input, output) {
   # filter ingredients by weight X 
   #g.ingredients <- delete.edges(g.ingredients, E(g.ingredients)[weight > X ])
   # plot a graph for ingredients with weight X
-  plot(g.ingredients, vertex.label = NA, vertex.size = 0,3)
+  # plot(g.ingredients, vertex.label = NA, vertex.size = 0,3)
   
   # create a subgraph with one selected drink X
   #g.one.drink <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients)$name == 'X')
