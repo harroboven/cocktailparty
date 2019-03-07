@@ -12,8 +12,8 @@ dt.drinks <- dt.drinks[, complexity := str_count(dt.drinks$instructions)]
 # Add commonality of drinks
 dt.commonality <- read.csv("./data/common_drinks.csv")
 colnames(dt.commonality)[colnames(dt.commonality)=="x"] <- "name"
-dt.drinks <- merge(dt.drinks, dt.commonality[, c("name", "common_final")], by = "name", all.x = TRUE)
-colnames(dt.drinks)[colnames(dt.drinks)=="common_final"] <- "commonality"
+dt.drinks <- merge(dt.drinks, dt.commonality[, c("name", "common_final")], by = "name")
+colnames(dt.drinks)[colnames(dt.drinks) == "common_final.y"] <- "commonality"
 dt.drinks$commonality <- as.factor(dt.drinks$commonality)
 
 ########### Data cleaning ##############
@@ -28,11 +28,10 @@ dt.drinks[, c("thumbnail", "era") := NULL]
 
 ######## Buttons ##########
 # preparing dt.drinks for button work by ensuring that only unique drinks
-dt.drinks.filtered <- dt.drinks[unique(id), ]
+dt.drinks.filtered <- unique(dt.drinks, by = "id")
 
 # select input button proposal paage 2
 l.is_alcoholic_values <- unique(dt.drinks.filtered$is_alcoholic)
-l.is_alcoholic_values <- c(l.is_alcoholic_values)
 l.category_values <- unique(dt.drinks.filtered$category)
 l.glass_type_values <- unique(dt.drinks.filtered$glass_type)
 
