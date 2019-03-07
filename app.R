@@ -550,9 +550,9 @@ server <- function(input, output) {
   
   dt.drinks.summary.commonality <- dt.drinks.filtered[, .(covariates = "Commonality", 
                                                           num = length(unique(commonality)), 
-                                                          min = min(commonality), 
-                                                          mean = mean(commonality), 
-                                                          max = max(commonality)
+                                                          min = NA, 
+                                                          mean = NA, 
+                                                          max = NA
                                                           )
                                                       ]
   
