@@ -473,12 +473,6 @@ server <- function(input, output) {
                           #p = "Price"
                           )
     
-    chart.theme.1 <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (15)), 
-                          legend.title = element_text(colour = "steelblue",  face = "bold.italic", family = "Helvetica"), 
-                          legend.text = element_text(face = "italic", colour="steelblue4",family = "Helvetica"), 
-                          axis.title = element_text(family = "Helvetica", size = (10), colour = "steelblue4"),
-                          axis.text = element_text(family = "Courier", colour = "cornflowerblue", size = (10)))
-    
     ggplot(dt.drinks.filtered, aes(drinks.dist)) +
       geom_bar(color = "steelblue", fill = "steelblue") + 
       chart.theme.1 +

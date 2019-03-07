@@ -28,5 +28,13 @@ l.is_alcoholic_values <- unique(dt.drinks.filtered$is_alcoholic)
 l.category_values <- unique(dt.drinks.filtered$category)
 l.glass_type_values <- unique(dt.drinks.filtered$glass_type)
 
+############## Graph themes #################
+
+chart.theme.1 <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (15)), 
+                       legend.title = element_text(colour = "steelblue",  face = "bold.italic", family = "Helvetica"), 
+                       legend.text = element_text(face = "italic", colour="steelblue4",family = "Helvetica"), 
+                       axis.title = element_text(family = "Helvetica", size = (10), colour = "steelblue4"),
+                       axis.text = element_text(family = "Courier", colour = "cornflowerblue", size = (10)))
+
 
 
