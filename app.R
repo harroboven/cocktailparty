@@ -3,6 +3,7 @@ library(ggplot2)
 library(shiny)
 library(data.table)
 library(stringr)
+library(igraph)
 
 # Define UI for cocktail app ----
 ui <- fluidPage(
