@@ -1,9 +1,3 @@
-# This is the main file of the Cocktail Shiny App :)
-library(ggplot2)
-library(shiny)
-library(data.table)
-library(stringr)
-library(igraph)
 
 # Define UI for cocktail app ----
 ui <- fluidPage(
