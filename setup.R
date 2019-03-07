@@ -90,7 +90,7 @@ standardize.unit <- function(unit) {
 dt.longdrinks$std.unit <- mapply(standardize.unit, dt.longdrinks$unit)
 
 # Make a new column called "std.category" in which to reduce "category" to "cocktail", "shot" and "other"
-nonstandard.categories <- unique(dt.drinks[, category])
+nonstandard.categories <- unique(dt.longdrinks[, category])
 standard.categories <- c("cocktail", "shot", "other")
 
 standardize.category <- function(category) {
