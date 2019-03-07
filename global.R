@@ -29,6 +29,18 @@ dt.drinks.filtered <- dt.drinks[unique(id), ]
 # ???
 l.is_alcoholic_values <- unique(dt.drinks$is_alcoholic)
 
+# create constant objects - always stay the same
+all.drinks <- dt.drinks[, .(name = unique(name), type = TRUE)]
+all.ingredients <- dt.drinks[, .(name = unique(ingredient), type = FALSE)]
+all.vertices <- rbind(all.drinks, all.ingredients)
+#all.vertices <- all.vertices[!duplicated(all.vertices$id)]
+
+
+g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, .(name, ingredient)],
+                                              directed = FALSE,
+                                              vertices = all.vertices)
+g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
+g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 
 
 
