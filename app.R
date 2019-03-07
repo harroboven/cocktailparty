@@ -1,6 +1,8 @@
 
 # Define UI for cocktail app ----
 ui <- fluidPage(
+  #Overall theme of our Shiny App
+  theme = shinytheme("flatly"),
   # Title and tabpanels with drop-downs
   navbarPage(title = "Shiny Drinks",
              #Start Page
