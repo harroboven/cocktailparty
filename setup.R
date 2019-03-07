@@ -5,7 +5,7 @@
 # install.packages("ggplot2")
 # install.packages("reshape2")
 # install.packages("stringr")
-#install.packages("shinyWidgets")
+# install.packages("shinyWidgets")
 
 
 # Load the necessary libraries
@@ -19,7 +19,7 @@ library(shinyWidgets)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
 # Load the data set, turn it into a data table, call it "drinks" and call first column "id"
-dt.drinks <- fread("all_drinks.csv", header = TRUE)
+dt.drinks <- fread("data/all_drinks.csv", header = TRUE)
 setnames(dt.drinks, "V1", "id")
 
 # Delete the empty columns
