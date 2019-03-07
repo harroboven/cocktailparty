@@ -6,6 +6,7 @@
 # install.packages("reshape2")
 # install.packages("stringr")
 # install.packages("shinyWidgets")
+# install.package("igraph")
 
 
 # Load the necessary libraries
@@ -14,6 +15,7 @@ library(ggplot2)
 library(stringr)
 library(reshape2)
 library(shinyWidgets)
+library(igraph)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
@@ -62,8 +64,6 @@ dt.longdrinks[, c("dateModified", "idDrink", "strVideo", "variable", "ingredient
 new.column.names <- c("id", "name", "is_alcoholic", "category", "thumbnail", 
                       "glass_type", "era", "instructions", "ingredient", "amount")
 setnames(dt.longdrinks, c(colnames(dt.longdrinks)), new.column.names)
-
-length(unique(tolower(dt.longdrinks[, is_alcoholic]))) - length(unique(dt.longdrinks[, is_alcoholic]))
 
 # Change is_alcoholic, ingredient and glass_type columns to lowercase
 dt.longdrinks$is_alcoholic <- tolower(dt.longdrinks$is_alcoholic)
