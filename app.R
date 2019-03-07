@@ -299,7 +299,11 @@ ui <- fluidPage(
                                            titlePanel("Table with summary statistics"),
                                            # content of right object
                                            img(src = 'A.png', height = 300, width = 300)
-                                           )
+                                           ),
+                                    sliderInput('weight.edges.ingredient',
+                                                label = 'Min. weight of edges:', 
+                                                min = 1, max = 15, value = 15, step = 1),
+                                    plotOutput(outputId = 'plot.network.of.ingredients')
                                     ),
                                   # 2nd block of page
                                   fluidRow(
@@ -656,42 +660,21 @@ server <- function(input, output) {
   
   
   ################################### PAGE 3 PROPOSAL ##################################
+  
   # Network of ingredients
   # Network of drinks 
-  # create constant objects - always stay the same
-  all.drinks <- dt.drinks[, .(name = unique(name), type = TRUE)]
-  all.ingredients <- dt.drinks[, .(name = unique(ingredient), type = FALSE)]
-  all.vertices <- rbind(all.drinks, all.ingredients)
-  #all.vertices <- all.vertices[!duplicated(all.vertices$id)]
-  
-  
-  g.drinks.ingredients <- graph.data.frame(dt.drinks[, .(name, ingredient)],
-                                           directed = FALSE,
-                                           vertices = all.vertices)
-  g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
-  g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
-  
   
   
   # filter drinks by weight X
-  g.drinks.bp <- reactive({
-    delete.edges(g.drinks.bp, E(g.drinks.bp)[weight < input$weight.edges.drink])
-  })
+
   # plot a graph for drinks with weight X
   output$plot.network.of.drinks <- renderPlot({
-    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,3)
-  })
-  
-  # filter ingredients by weight X 
-  #g.ingredients <- delete.edges(g.ingredients, E(g.ingredients)[weight > X ])
-  # plot a graph for ingredients with weight X
-  # plot(g.ingredients, vertex.label = NA, vertex.size = 0,3)
-  
-  # create a subgraph with one selected drink X
-  #g.one.drink <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients)$name == 'X')
-  
-  # create a subgraph with one selected ingredient X
-  #g.one.ingredient <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients$name == 'X'))
+    g.drinks.bp <- delete.edges(g.drinks.bp, 
+                                E(g.drinks.bp)[weight < input$weight.edges.drink])
+                                
+    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
+                layout = layout_as_star, edge.arrow.size = 2)
+    })
   
   }
 
