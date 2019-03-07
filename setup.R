@@ -5,6 +5,7 @@
 # install.packages("ggplot2")
 # install.packages("reshape2")
 # install.packages("stringr")
+# install.packages("shinyWidgets")
 
 
 # Load the necessary libraries
@@ -12,11 +13,14 @@ library(data.table)
 library(ggplot2)
 library(stringr)
 library(reshape2)
+library(shinyWidgets)
+library(igraph)
+
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
 # Load the data set, turn it into a data table, call it "drinks" and call first column "id"
-dt.drinks <- fread("all_drinks.csv", header = TRUE)
+dt.drinks <- fread("data/all_drinks.csv", header = TRUE)
 setnames(dt.drinks, "V1", "id")
 
 # Delete the empty columns
@@ -60,8 +64,6 @@ new.column.names <- c("id", "name", "is_alcoholic", "category", "thumbnail",
                       "glass_type", "era", "instructions", "ingredient", "amount")
 setnames(dt.longdrinks, c(colnames(dt.longdrinks)), new.column.names)
 
-length(unique(tolower(dt.longdrinks[, is_alcoholic]))) - length(unique(dt.longdrinks[, is_alcoholic]))
-
 # Change is_alcoholic, ingredient and glass_type columns to lowercase
 dt.longdrinks$is_alcoholic <- tolower(dt.longdrinks$is_alcoholic)
 dt.longdrinks$ingredient <- tolower(dt.longdrinks$ingredient)
@@ -72,7 +74,6 @@ dt.longdrinks[, quantity := trimws(gsub("[A-Za-z]*", "", amount))]
 dt.longdrinks[, unit := trimws(gsub("[0-9//.,-]*", "", amount))]
 
 # Standardize the unit as much as possible
-unique(dt.longdrinks[, std.unit])
 standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp")
 
 standardize.unit <- function(unit) {
@@ -87,7 +88,7 @@ standardize.unit <- function(unit) {
 dt.longdrinks$std.unit <- mapply(standardize.unit, dt.longdrinks$unit)
 
 # Make a new column called "std.category" in which to reduce "category" to "cocktail", "shot" and "other"
-nonstandard.categories <- unique(dt.drinks[, category])
+nonstandard.categories <- unique(dt.longdrinks[, category])
 standard.categories <- c("cocktail", "shot", "other")
 
 standardize.category <- function(category) {
@@ -127,8 +128,6 @@ standardize.glass <- function(glass) {
 dt.longdrinks$std.glass <- mapply(standardize.glass, dt.longdrinks$glass_type)
 
 # Change is_alcoholic column to "alcoholic" and "non-alcoholic" and indicate that Cherry Electric Lemonade is indeed alcoholic
-unique(dt.longdrinks[, is_alcoholic])
-
 ditch.optional <- function(x) {
   if (x == "") {
     return("alcoholic")
@@ -176,6 +175,4 @@ saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 #}
 
 # sapply(dt.longdrinks, calculate.n.unique)/
-
-
 
