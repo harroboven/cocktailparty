@@ -137,6 +137,28 @@ ditch.optional <- function(x) {
 }
 dt.longdrinks$is_alcoholic <- mapply(ditch.optional, dt.longdrinks$is_alcoholic)
 
+# Load the other datasets with the pricing data and commonality data
+dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
+dt.pricing <- fread("data/Ingredients_overview.csv", header = TRUE)
+
+# Remove observation marked as duplicates dt.commonality (may create orphaned ingredients, sth to look out for).
+# Will leave pricing for later because for drinks to be correct, duplicate ingredients will need to be replaced by their synonym.
+dt.commonality <- dt.commonality[is.na(double_Felix), ]
+dt.commonality <- dt.commonality[is.na(DOUBLE_zanis), ]
+
+# Merge dt.commonality with dt.longdrinks for commonality data (assuming drink names are unique)
+setnames(dt.commonality, old = "x", new = "name")
+dt.commonality <- dt.commonality[, c("name", "common_final")]
+dt.commonality.longdrinks <- merge(dt.longdrinks, dt.commonality, by = "name")
+
+# Merge dt.pricing with dt.commonality.longdrinks for pricing data (assuming the ingredient is unique)
+dt.pricing <- dt.pricing[, c("Ingredient", "measurement", "package size", "price", "double_observation")]
+setnames(dt.pricing, old = c("Ingredient", "package size"), new = c("ingredient", "package_size"))
+dt.commonality.longdrinks.pricing <- merge(dt.commonality.longdrinks, dt.pricing, by = "ingredient")
+
+# Turn this rather long and ugly name back into dt.longdrinks for convenience and backwards compatibility
+dt.longdrinks <- dt.commonality.longdrinks.pricing
+
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 
@@ -153,7 +175,7 @@ saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 #  return(length(unique(tolower(x))))
 #}
 
-# sapply(dt.longdrinks, calculate.n.unique)
+# sapply(dt.longdrinks, calculate.n.unique)/
 
 
 

@@ -79,8 +79,8 @@ ui <- fluidPage(
                                                         list('Alcoholic nature' = 'an',
                                                              'Drink type' = 'dt',
                                                              'Glass type' = 'gt',
-                                                             'Complexity' = 'cc'
-                                                             #'Popularity' = 'pp', 
+                                                             'Complexity' = 'cc',
+                                                             'Commonality' = 'cm' 
                                                              #'Price' = 'pp'
                                                              )
                                                       )
@@ -144,10 +144,10 @@ ui <- fluidPage(
                                               # RadioButtons - drinks ordered
                                               radioButtons('drinks.ordered', 'Drinks ordered by:', 
                                                            c('Drink type' = 'dt',
-                                                             'Glass type' = 'gt'
-                                                             # 'Complexity' = 'cp'
+                                                             'Glass type' = 'gt',
+                                                             'Complexity' = 'cp', 
+                                                             'Commonality' = 'cm'
                                                              # VALUES NEED TO BE CHANGED ACCORDING TO PROPOSAL
-                                                             #'Popularity' = 'pp',
                                                              #'Price' = 'p'
                                                              )
                                                            ),
@@ -478,16 +478,16 @@ server <- function(input, output) {
                           an = dt.drinks.filtered$is_alcoholic, 
                           dt = dt.drinks.filtered$category, 
                           gt = dt.drinks.filtered$glass_type, 
-                          cc = dt.drinks.filtered$complexity 
-                          #pp = drinks.filtered$popularity, 
+                          cc = dt.drinks.filtered$complexity,  
+                          cm = dt.drinks.filtered$commonality
                           #p = drinks.filtered$price
                           )
     drinks.dist.title <- switch(input$drinks.dist, 
                                an = "Observation Distribution by Alcoholic Nature",  
                                dt = "Observation Distribution by Drink Type", 
                                gt = "Observation Distribution by Glass Type", 
-                               cc = "Observation Distribution by Complexity" 
-                               #pp = "Popularity", 
+                               cc = "Observation Distribution by Complexity", 
+                               cm = "Observation Distribution by Commonality" 
                                #p = "Price"
                                )
     
@@ -495,8 +495,8 @@ server <- function(input, output) {
                           an = "Alcoholic Nature",  
                           dt = "Drink Type", 
                           gt = "Glass Type", 
-                          cc = "Complexity" 
-                          #pp = "Popularity", 
+                          cc = "Complexity", 
+                          cm = "Commonality" 
                           #p = "Price"
                           )
     
@@ -506,8 +506,8 @@ server <- function(input, output) {
                           axis.title = element_text(family = "Helvetica", size = (10), colour = "steelblue4"),
                           axis.text = element_text(family = "Courier", colour = "cornflowerblue", size = (10)))
     
-    ggplot() +
-      geom_bar(aes(drinks.dist), dt.drinks.filtered, color = "steelblue", fill = "steelblue") + 
+    ggplot(dt.drinks.filtered, aes(drinks.dist)) +
+      geom_bar(color = "steelblue", fill = "steelblue") + 
       chart.theme.1 +
       ggtitle(drinks.dist.title) + 
       xlab(drinks.dist.xlab) + 
@@ -519,9 +519,9 @@ server <- function(input, output) {
     dt.drinks.alcoholic.filter <- dt.drinks.filtered[is_alcoholic == input$alcoholic.filter, ]
     alcoholic.filter <- switch(input$drinks.ordered, 
                                dt = dt.drinks.alcoholic.filter$category, 
-                               gt = dt.drinks.alcoholic.filter$glass_type 
-                               # cc = dt.drinks.alcoholic.filter$complexity 
-                               #pp = drinks.filtered$popularity,
+                               gt = dt.drinks.alcoholic.filter$glass_type, 
+                               cc = dt.drinks.alcoholic.filter$complexity, 
+                               cm = dt.drinks.filtered$commonality
                                #p = drinks.filtered$price
                                )
     
@@ -531,55 +531,63 @@ server <- function(input, output) {
   
   ################ Summary statistics table #####################
   # create data tables with information about each column in dt.drinks
-  dt.drinks.summary.name <- dt.drinks[, .(covariates = "Drinks",
-                                          num = length(unique(name)),
-                                          min = NA, 
-                                          mean = NA, 
-                                          max = NA
-                                          )
-                                      ]
+  dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
+                                                   num = length(unique(name)),
+                                                   min = NA, 
+                                                   mean = NA, 
+                                                   max = NA
+                                                   )
+                                               ]
   
-  dt.drinks.summary.alcoholic <- dt.drinks[, .(covariates = "Alcoholic Nature", 
-                                               num = length(unique(is_alcoholic)), 
-                                               min = NA, 
-                                               mean = NA, 
-                                               max = NA
-                                               )
-                                           ]
+  dt.drinks.summary.alcoholic <- dt.drinks.filtered[, .(covariates = "Alcoholic Nature", 
+                                                        num = length(unique(is_alcoholic)), 
+                                                        min = NA, 
+                                                        mean = NA, 
+                                                        max = NA
+                                                        )
+                                                    ]
   
-  dt.drinks.summary.category <- dt.drinks[, .(covariates = "Drink Categories", 
-                                              num = length(unique(category)),
-                                              min = NA, 
-                                              mean = NA, 
-                                              max = NA
-                                              )
-                                          ]
+  dt.drinks.summary.category <- dt.drinks.filtered[, .(covariates = "Drink Categories", 
+                                                       num = length(unique(category)), 
+                                                       min = NA, 
+                                                       mean = NA, 
+                                                       max = NA
+                                                       )
+                                                   ]
   
-  dt.drinks.summary.glass <- dt.drinks[, .(covariates = "Glass Types", 
-                                           num = length(unique(glass_type)),
-                                           min = NA, 
-                                           mean = NA, 
-                                           max = NA
-                                           )
-                                       ]
+  dt.drinks.summary.glass <- dt.drinks.filtered[, .(covariates = "Glass Types", 
+                                                    num = length(unique(glass_type)),
+                                                    min = NA, 
+                                                    mean = NA, 
+                                                    max = NA
+                                                    )
+                                                ]
   
   dt.drinks.summary.ingredient <- dt.drinks[, .(covariates = "Drink Ingredients", 
-                                                num = length(unique(ingredient)),
+                                                num = length(unique(ingredient)), 
                                                 min = NA, 
-                                                mean = NA, 
+                                                mean = NA,  
                                                 max = NA
                                                 )
                                             ]
   
-  dt.drinks.summary.complexity <- dt.drinks[, .(covariates = "Complexity of Recipe", 
-                                                num = length(unique(complexity)),
-                                                min = min(complexity),
-                                                mean = mean(complexity),
-                                                max = max(complexity)
-                                                )
-                                            ]
+  dt.drinks.summary.complexity <- dt.drinks.filtered[, .(covariates = "Complexity of Recipe", 
+                                                         num = length(unique(complexity)), 
+                                                         min = min(complexity), 
+                                                         mean = mean(complexity), 
+                                                         max = max(complexity)
+                                                         )
+                                                     ]
   
-  #common aspect/ ranking and price not integrated yet
+  dt.drinks.summary.commonality <- dt.drinks.filtered[, .(covariates = "Commonality", 
+                                                          num = length(unique(commonality)), 
+                                                          min = NA, 
+                                                          mean = NA, 
+                                                          max = NA
+                                                          )
+                                                      ]
+  
+  ############price not integrated yet##############
   
   # combine the different columns into one summary table
   dt.drinks.summary <- rbind(dt.drinks.summary.name, 
@@ -587,7 +595,8 @@ server <- function(input, output) {
                              dt.drinks.summary.category, 
                              dt.drinks.summary.glass, 
                              dt.drinks.summary.ingredient, 
-                             dt.drinks.summary.complexity
+                             dt.drinks.summary.complexity, 
+                             dt.drinks.summary.commonality
                              )
   
   #create output of summary table
