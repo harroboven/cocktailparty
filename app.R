@@ -231,7 +231,7 @@ ui <- fluidPage(
                                         sliderInput('weight.edges.drink',
                                                     label = 'Min. weight of edges:', 
                                                     min = 1, max = 15, value = 15, step = 1),
-                                        plotOutput('plot.network.of.drinks')
+                                        plotOutput(outputId = 'plot.network.of.drinks')
                                         ),
                                         
                                         # right sub-column
