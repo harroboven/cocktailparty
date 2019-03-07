@@ -228,9 +228,10 @@ ui <- fluidPage(
                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                           p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
                                           # SliderInput - Network of drinks
-                                          sliderInput('weight.edges',
+                                          sliderInput('weight.edges.drink',
                                                       label = 'Min. weight of edges:', 
-                                                      min = 1, max = 20, value = c(1,20), step = 1)
+                                                      min = 1, max = 15, value = c(1,15), step = 1),
+                                          plotOutput('plot.network.of.drinks')
                                         ),
                                         # right sub-column
                                         column(6,
@@ -430,21 +431,42 @@ server <- function(input, output) {
   
   # Network of ingredients
   # Network of drinks 
-  all.drinks <- dt.drinks.filtered[, .(name = unique(name), type = TRUE)]
+  # create constant objects - always stay the same
+  all.drinks <- dt.drinks[, .(name = unique(name), type = TRUE)]
   all.ingredients <- dt.drinks[, .(name = unique(ingredient), type = FALSE)]
   all.vertices <- rbind(all.drinks, all.ingredients)
-  #all.vertices <- all.vertices[!duplicated(all.vertices$id)]
-  #all.vertices[which(all.vertices[,1]=="Applecar"),1] <- "applecarr"
-  #all.vertices[which(all.vertices[,1]=="Limeade"),1] <- "Llimeade"
-  #all.vertices[which(all.vertices[,1]=="Applecarr"),1] <- "A.J."
+  all.vertices <- all.vertices[!duplicated(all.vertices$id)]
   
   
-  g.drinks.ingredients <- graph.data.frame(dt.drinks[, .(name, ingredient)],
+  g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, .(name, ingredient)],
                                            directed = FALSE,
                                            vertices = all.vertices)
-  g.drinks <- bipartite.projection(g.drinks.ingredients)$proj1
-  g.ingredients <- bipartite.projection(g.drinks.ingredients)$proj2
-  g.drinks <- 
+  g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj1
+  g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj2
+  
+  
+  
+  # filter drinks by weight X
+  g.drinks.bp <- reactive({
+    delete.edges(g.drinks.bp, E(g.drinks.bp)[weight < input$weight.edges.drink])
+  })
+  # plot a graph for drinks with weight X
+  output$plot.network.of.drinks <- renderPlot({
+    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,3)
+  })
+  
+  # filter ingredients by weight X 
+  g.ingredients <- delete.edges(g.ingredients, E(g.ingredients)[weight > X ])
+  # plot a graph for ingredients with weight X
+  plot(g.ingredients, vertex.label = NA, vertex.size = 0,3)
+  
+  # create a subgraph with one selected drink X
+  g.one.drink <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients)$name == 'X')
+  
+  # create a subgraph with one selected ingredient X
+  g.one.ingredient <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients$name == 'X'))
+  
+  
   
   
   # Make the histogram based on the radio input
