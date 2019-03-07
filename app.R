@@ -75,7 +75,7 @@ ui <- fluidPage(
                                                              'Glass type' = 'gt',
                                                              'Complexity' = 'cp',
                                                              'Commonality' = 'cm', 
-                                                             'Price' = 'p'
+                                                             'Ingredient Price' = 'ip'
                                                              )
                                                       )
                                               )
@@ -171,7 +171,7 @@ ui <- fluidPage(
                                               radioButtons('drinks.ordered', 'Drinks ordered by:', 
                                                            c('Complexity' = 'cp', 
                                                              'Commonality' = 'cm',
-                                                             'Price' = 'p'
+                                                             'Ingredient Price' = 'ip'
                                                              )
                                                            )
                                               )
@@ -455,7 +455,7 @@ server <- function(input, output) {
                           gt = dt.drinks.filtered$glass_type, 
                           cp = dt.drinks.filtered$complexity,  
                           cm = dt.drinks.filtered$commonality, 
-                          p = dt.drinks.filtered$price
+                          ip = dt.drinks.filtered$ingredient_price
                           )
     drinks.dist.title <- switch(input$drinks.dist, 
                                an = "Observation Distribution by Alcoholic Nature",  
@@ -463,7 +463,7 @@ server <- function(input, output) {
                                gt = "Observation Distribution by Glass Type", 
                                cp = "Observation Distribution by Complexity", 
                                cm = "Observation Distribution by Commonality",  
-                               p = "Observation Distribution by Price"
+                               ip = "Observation Distribution by Ingredient Price"
                                )
     
     drinks.dist.xlab <- switch(input$drinks.dist, 
@@ -472,7 +472,7 @@ server <- function(input, output) {
                           gt = "Glass Type", 
                           cp = "Complexity", 
                           cm = "Commonality",  
-                          p = "Price"
+                          ip = "Ingredient Price"
                           )
     
     ggplot(dt.drinks.filtered, aes(drinks.dist)) +
@@ -541,11 +541,11 @@ server <- function(input, output) {
                                                             )
                                                         ]
     
-    dt.drinks.summary.price <- dt.drinks.filtered[, .(covariates = "Price of ingredients", 
-                                                      num = length(unique(price)), 
-                                                      min = min(na.omit(price)), 
-                                                      mean = mean(na.omit(price)), 
-                                                      max = max(na.omit(price))
+    dt.drinks.summary.ingredient.price <- dt.drinks.filtered[, .(covariates = "Ingredient Price", 
+                                                      num = length(unique(ingredient_price)), 
+                                                      min = min(na.omit(ingredient_price)), 
+                                                      mean = mean(na.omit(ingredient_price)), 
+                                                      max = max(na.omit(ingredient_price))
                                                       )
                                                   ]
     
@@ -557,7 +557,7 @@ server <- function(input, output) {
                                dt.drinks.summary.ingredient, 
                                dt.drinks.summary.complexity, 
                                dt.drinks.summary.commonality, 
-                               dt.drinks.summary.price
+                               dt.drinks.summary.ingredient.price
                                )
     dt.drinks.summary
     })
@@ -582,7 +582,7 @@ server <- function(input, output) {
       switch(input$drinks.ordered,  
              cc = dt.drinks.ordered.filter()$complexity, 
              cm = dt.drinks.ordered.filter()$commonality,
-             p = dt.drinks.ordered.filter()$price
+             ip = dt.drinks.ordered.filter()$ingredient_price
              )
       })
     
@@ -597,7 +597,7 @@ server <- function(input, output) {
            dt.drinks.ordered.filter()$glass_type, 
            dt.drinks.ordered.filter()$complexity, 
            dt.drinks.ordered.filter()$commonality,
-           dt.drinks.ordered.filter()$price
+           dt.drinks.ordered.filter()$ingredient_price
            )
       ]
     
@@ -624,7 +624,7 @@ server <- function(input, output) {
       switch(input$drinks.ordered, 
              cp = dt.drinks.ordered.filter()$complexity, 
              cm = dt.drinks.ordered.filter()$commonality,
-             p = dt.drinks.ordered.filter()$price
+             ip = dt.drinks.ordered.filter()$ingredient_price
              )
     })
     
@@ -635,7 +635,7 @@ server <- function(input, output) {
              gt = "Observation Distribution by Glass Type", 
              cp = "Observation Distribution by Complexity", 
              cm = "Observation Distribution by Commonality", 
-             p = "Observation Distribution by Price"
+             ip = "Observation Distribution by Ingredient Price"
              )
       })
     
@@ -646,7 +646,7 @@ server <- function(input, output) {
              gt = "Glass Type", 
              cp = "Complexity", 
              cm = "Commonality",  
-             p = "Price"
+             ip = "Ingredient Price"
              )
     })
     
