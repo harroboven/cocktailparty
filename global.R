@@ -12,6 +12,9 @@ dt.drinks <- dt.drinks[, complexity := str_count(dt.drinks$instructions)]
 # change name of column for better understanding
 setnames(dt.drinks, old = "price", new = "ingredient_price")
 
+# calc price per drink and add information to dataset
+dt.drinks <- dt.drinks[, drink_price := sum(ingredient_price), by = "name"]
+
 ########### Data cleaning ##############
 # Delete non-standardized columns from dt.drinks. They are still in dt.longdrinks, in case you need to access the original ones.
 dt.drinks[, c("amount", "category", "unit", "instructions", "glass_type") := NULL]
