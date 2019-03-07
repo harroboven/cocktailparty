@@ -30,6 +30,19 @@ l.glass_type_values <- unique(dt.drinks.filtered$glass_type)
 
 ############## Graph themes #################
 
+# create constant objects - always stay the same
+all.drinks <- dt.drinks[, .(name = unique(name), type = TRUE)]
+all.ingredients <- dt.drinks[, .(name = unique(ingredient), type = FALSE)]
+all.vertices <- rbind(all.drinks, all.ingredients)
+#all.vertices <- all.vertices[!duplicated(all.vertices$id)]
+
+
+g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, .(name, ingredient)],
+                                              directed = FALSE,
+                                              vertices = all.vertices)
+g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
+g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
+
 chart.theme.1 <- theme(plot.title = element_text(family = "Helvetica", face = "bold", size = (15)), 
                        legend.title = element_text(colour = "steelblue",  face = "bold.italic", family = "Helvetica"), 
                        legend.text = element_text(face = "italic", colour="steelblue4",family = "Helvetica"), 
