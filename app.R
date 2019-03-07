@@ -154,20 +154,26 @@ ui <- fluidPage(
                                               fluidRow(
                                                 # left column
                                                 column(4, 
-                                                       selectInput("alcoholic.filter", "Alcoholic Nature:", 
-                                                                   choices = l.is_alcoholic_values
+                                                       pickerInput("alcoholic.filter", "Alcoholic Nature:", 
+                                                                   choices = l.is_alcoholic_values, 
+                                                                   options = list(`actions-box` = TRUE), 
+                                                                   multiple = T
                                                                    )
                                                        ),
                                                 # middle column
                                                 column(4, 
-                                                       selectInput("category.filter", "Drink Type:", 
-                                                                   choices = l.category_values
+                                                       pickerInput("category.filter", "Drink Type:", 
+                                                                   choices = l.category_values, 
+                                                                   options = list(`actions-box` = TRUE), 
+                                                                   multiple = T
                                                                    )
                                                        ),
                                                 # right column
                                                 column(4, 
-                                                       selectInput("glass.filter", "Glass Type:", 
-                                                                   choices = l.glass_type_values
+                                                       pickerInput("glass.filter", "Glass Type:", 
+                                                                   choices = l.glass_type_values, 
+                                                                   options = list(`actions-box` = TRUE), 
+                                                                   multiple = T
                                                                    )
                                                        )
                                                 )
@@ -436,7 +442,7 @@ tabPanel("Bipartite visualization",
 
 server <- function(input, output) {
 
-  ################## Oberservation distribution histogram (based on the radio input) #################
+  ################## Oberservation distribution histogram proposal page 1 #################
   output$drinks.dist.barChart <- renderPlot({
     drinks.dist <- switch(input$drinks.dist, 
                           an = dt.drinks.filtered$is_alcoholic, 
@@ -479,26 +485,8 @@ server <- function(input, output) {
     })
   
   
-  ########################## radio buttons page 2 ######################
-  # Make the histogram based on the radio input
-  output$drinks.ordered.filtering.barChart <- renderPlot({
-    dt.drinks.ordered.filter <- dt.drinks.filtered[is_alcoholic == input$alcoholic.filter, ]
-    dt.drinks.ordered.filter <- dt.drinks.ordered.filter[category == input$category.filter, ]
-    dt.drinks.ordered.filter <- dt.drinks.ordered.filter[glass_type == input$glass.filter, ]
-    alcoholic.filter <- switch(input$drinks.ordered, 
-                               dt = dt.drinks.ordered.filter$category, 
-                               gt = dt.drinks.ordered.filter$glass_type, 
-                               cc = dt.drinks.ordered.filter$complexity, 
-                               cm = dt.drinks.ordered.filter$commonality
-                               #p = drinks.filtered$price
-                               )
-    
-    ggplot(dt.drinks.ordered.filter, aes(alcoholic.filter)) +
-      geom_bar() 
-  })
-  
-  
-  ################ Summary statistics table #####################
+
+  ################ Summary statistics table page 1 #####################
   # create data tables with information about each column in dt.drinks
   dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
                                                    num = length(unique(name)),
@@ -572,20 +560,41 @@ server <- function(input, output) {
     })
   
   
-  ################  top table proposal page 2 ###################
+  
+  ################  top table proposal page 2 ################### 
   #create output of drinks.ordered.top
   output$drinks.ordered.top <- renderTable({
-    dt.drinks.ordered.filter <- dt.drinks.filtered[is_alcoholic == input$alcoholic.filter, ]
-    dt.drinks.ordered.filter <- dt.drinks.ordered.filter[category == input$category.filter, ]
-    dt.drinks.ordered.filter <- dt.drinks.ordered.filter[glass_type == input$glass.filter, ]
+    dt.drinks.ordered.filter <- dt.drinks.filtered[is_alcoholic %in% input$alcoholic.filter, ]
+    dt.drinks.ordered.filter <- dt.drinks.filtered[category %in% input$category.filter, ]
+    dt.drinks.ordered.filter <- dt.drinks.filtered[glass_type %in% input$glass.filter, ]
     alcoholic.filter.top <- switch(input$drinks.ordered,  
-                               cc = complexity, 
-                               cm = commonality
+                               cc = dt.drinks.ordered.filter$complexity, 
+                               cm = dt.drinks.ordered.filter$commonality
                                #p = drinks.filtered$price
                                )
     dt.drinks.ordered <- dt.drinks.ordered.filter[order(-rank(alcoholic.filter.top)), c(name, alcoholic.filter.top)]
-    head(order(dt.drinks.ordered), 10)
+    dt.drinks.ordered <- head(order(dt.drinks.ordered), 10)
+    dt.drinks.ordered
     })
+  
+  
+  ########################## graph proposal page 2 ######################
+  # Make the histogram based on the radio input
+  output$drinks.ordered.filtering.barChart <- renderPlot({
+    dt.drinks.ordered.filter <- dt.drinks.filtered[is_alcoholic %in% input$alcoholic.filter, ]
+    dt.drinks.ordered.filter <- dt.drinks.filtered[category %in% input$category.filter, ]
+    dt.drinks.ordered.filter <- dt.drinks.filtered[glass_type %in% input$glass.filter, ]
+    # dt.drinks.ordered.filter <- dt.drinks.filtered[ifelse(input$glass.filter == "ALL", is.character(glass_type), glass_type == input$glass.filter), ]
+    alcoholic.filter <- switch(input$drinks.ordered, 
+                               cc = dt.drinks.ordered.filter$complexity, 
+                               cm = dt.drinks.ordered.filter$commonality
+                               #p = drinks.filtered$price
+    )
+    
+    ggplot(dt.drinks.ordered.filter, aes(alcoholic.filter)) +
+      geom_bar() 
+  })
+  
   
   }
 
