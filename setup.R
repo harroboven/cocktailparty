@@ -75,7 +75,6 @@ dt.longdrinks[, quantity := trimws(gsub("[A-Za-z]*", "", amount))]
 dt.longdrinks[, unit := trimws(gsub("[0-9//.,-]*", "", amount))]
 
 # Standardize the unit as much as possible
-unique(dt.longdrinks[, std.unit])
 standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp")
 
 standardize.unit <- function(unit) {
@@ -90,7 +89,7 @@ standardize.unit <- function(unit) {
 dt.longdrinks$std.unit <- mapply(standardize.unit, dt.longdrinks$unit)
 
 # Make a new column called "std.category" in which to reduce "category" to "cocktail", "shot" and "other"
-nonstandard.categories <- unique(dt.drinks[, category])
+nonstandard.categories <- unique(dt.longdrinks[, category])
 standard.categories <- c("cocktail", "shot", "other")
 
 standardize.category <- function(category) {
@@ -130,8 +129,6 @@ standardize.glass <- function(glass) {
 dt.longdrinks$std.glass <- mapply(standardize.glass, dt.longdrinks$glass_type)
 
 # Change is_alcoholic column to "alcoholic" and "non-alcoholic" and indicate that Cherry Electric Lemonade is indeed alcoholic
-unique(dt.longdrinks[, is_alcoholic])
-
 ditch.optional <- function(x) {
   if (x == "") {
     return("alcoholic")
