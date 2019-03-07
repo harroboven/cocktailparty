@@ -5,6 +5,7 @@
 # install.packages("ggplot2")
 # install.packages("reshape2")
 # install.packages("stringr")
+#install.packages("shinyWidgets")
 
 
 # Load the necessary libraries
@@ -12,6 +13,7 @@ library(data.table)
 library(ggplot2)
 library(stringr)
 library(reshape2)
+library(shinyWidgets)
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
