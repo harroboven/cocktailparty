@@ -156,6 +156,7 @@ ui <- fluidPage(
                                                 column(4, 
                                                        pickerInput("alcoholic.filter", "Alcoholic Nature:", 
                                                                    choices = l.is_alcoholic_values, 
+                                                                   selected = l.is_alcoholic_values, 
                                                                    options = list(`actions-box` = TRUE), 
                                                                    multiple = T
                                                                    )
@@ -164,6 +165,7 @@ ui <- fluidPage(
                                                 column(4, 
                                                        pickerInput("category.filter", "Drink Type:", 
                                                                    choices = l.category_values, 
+                                                                   selected = l.category_values, 
                                                                    options = list(`actions-box` = TRUE), 
                                                                    multiple = T
                                                                    )
@@ -172,6 +174,7 @@ ui <- fluidPage(
                                                 column(4, 
                                                        pickerInput("glass.filter", "Glass Type:", 
                                                                    choices = l.glass_type_values, 
+                                                                   selected = l.glass_type_values, 
                                                                    options = list(`actions-box` = TRUE), 
                                                                    multiple = T
                                                                    )
