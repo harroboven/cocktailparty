@@ -454,7 +454,7 @@ server <- function(input, output) {
   #all.vertices <- all.vertices[!duplicated(all.vertices$id)]
   
   
-  g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, .(name, ingredient)],
+  g.drinks.ingredients <- graph.data.frame(dt.drinks[, .(name, ingredient)],
                                                 directed = FALSE,
                                                 vertices = all.vertices)
   g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
