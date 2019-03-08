@@ -138,6 +138,49 @@ ditch.optional <- function(x) {
 }
 dt.longdrinks$is_alcoholic <- mapply(ditch.optional, dt.longdrinks$is_alcoholic)
 
+# Make the "quantity" column numeric, delete fractions
+kill.fraction <- function(quantity) {
+  if (length(grep("/", quantity)) == 1) {
+    slash.index <- as.numeric(gregexpr("/", quantity))
+    numerator <- as.numeric(substring(quantity, slash.index - 1, slash.index - 1))
+    print(numerator)
+    denominator <- as.numeric(substring(quantity, slash.index + 1, slash.index + 1)) 
+    decimal <- as.numeric(numerator) / as.numeric(denominator)
+    sub("\\s{0,1}./.", substring(toString(decimal), 2), quantity)
+  } else {
+    return(quantity)
+  }
+}
+
+dt.longdrinks$quantity <- mapply(kill.fraction, dt.longdrinks$quantity)
+
+# Make "quantity" column numeric, delete dashes
+kill.dashes <- function(quantity) {
+  if (length(grep("-", quantity)) == 1) {
+    slash.index <- as.numeric(gregexpr("-", quantity))
+    numerator <- as.numeric(substring(quantity, slash.index - 1, slash.index - 1))
+    print(numerator)
+    denominator <- as.numeric(substring(quantity, slash.index + 1, slash.index + 1)) 
+    decimal <- as.numeric(numerator) / as.numeric(denominator)
+    sub("\\s{0,1}[0-9]-[0-9]", substring(toString(decimal), 2), quantity)
+  } else {
+    return(quantity)
+  }
+}
+
+dt.longdrinks$quantity <- mapply(kill.dashes, dt.longdrinks$quantity)
+
+# Make "quantity" column numeric, delete the rest of the crap
+dt.longdrinks$quantity <- gsub("-", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[(]", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[)]", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[,]", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[0-9]\\s{1,5}.", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- trimws(dt.longdrinks$quantity)
+
+# Ditch remaining things that cannot be converted to numeric and convert column to numeric
+dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
+
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
 dt.pricing <- fread("data/Ingredients_overview.csv", header = TRUE)
@@ -177,4 +220,5 @@ saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 #}
 
 # sapply(dt.longdrinks, calculate.n.unique)/
+
 
