@@ -108,7 +108,7 @@ ui <- fluidPage(
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
 
                         # 2nd Drop-down item
-                        tabPanel("Data by Drinks", 
+                        tabPanel("Drinks Explorer", 
                                  titlePanel("Drinks explorer"),
                                  fluidRow(
                                    column(3,
@@ -536,14 +536,18 @@ server <- function(input, output, session) {
   # Filter the drinks, returning a data frame
   dt.drinks.ordered.filter <- reactive({
     # Due to dplyr issue #318, we need temp variables for input values
-    complexity.F <- input$complexity.filter
-    commonality.F <- input$commonality.filter
-      
+    min.complexity <- input$complexity.filter[1]
+    max.complexity <- input$complexity.filter[2]
+    min.commonality <- input$commonality.filter[1]
+    max.commonality <- input$commonality.filter[2]  
+    
     # Apply filters
     m <- dt.drinks.filtered %>%
       filter(
-        complexity >= complexity.F,
-        commonality >= commonality.F
+        complexity >= min.complexity, 
+        complexity <= max.complexity,
+        commonality >= min.commonality, 
+        commonality <= max.commonality
         )
       
     # Filter by alcoholic nature
@@ -564,20 +568,20 @@ server <- function(input, output, session) {
     m
     })
     
-  # Function for generating tooltip text
-#  drink_tooltip <- function(x) {
-#    if (is.null(x)) return(NULL)
-#    if (is.null(x$id)) return(NULL)
+  # Generating tooltip text
+  drink_tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
       
-    # Pick out the movie with this ID
-#    dt.drinks.filtered <- isolate(dt.drinks.ordered.filter())
-#    drink <- dt.drinks.filtereds[dt.drinks.filtered$id == x$id, ]
+    # Pick out the drink with this ID
+    dt.drinks.filtered <- isolate(dt.drinks.ordered.filter())
+    drink <- dt.drinks.filtered[dt.drinks.filtered$id == x$id, ]
       
-#    paste0("<b>", drink$name, "</b><br>",
-#             drink$category, "<br>",
-#             "$", format(drink$complexity, big.mark = ",", scientific = FALSE)
-#           )
-#    }
+    paste0("<b>", drink$name, "</b><br>",
+          "Alcoholic Nature: ", drink$is_alcoholic, "<br>",
+          "Drink Type: ", drink$category
+          )
+    }
     
   # A reactive expression with the ggvis plot
   vis <- reactive({
@@ -585,8 +589,6 @@ server <- function(input, output, session) {
     xvar_name <- names(axis_vars)[axis_vars == input$xvar]
     yvar_name <- names(axis_vars)[axis_vars == input$yvar]
       
-    # Normally we could do something like props(x = ~BoxOffice, y = ~Reviews),
-    # but since the inputs are strings, we need to do a little more work.
     xvar <- prop("x", as.symbol(input$xvar))
     yvar <- prop("y", as.symbol(input$yvar))
       
@@ -595,13 +597,10 @@ server <- function(input, output, session) {
       layer_points(size := 50, size.hover := 200,
                    fillOpacity := 0.2, fillOpacity.hover := 0.5, 
                    key := ~id) %>%
-#      add_tooltip(movie_tooltip, "hover") %>%
+      add_tooltip(drink_tooltip, "hover") %>%
       add_axis("x", title = xvar_name) %>%
       add_axis("y", title = yvar_name) %>%
-#      add_legend("stroke", title = "Won Oscar", values = c("Yes", "No")) %>%
-#      scale_nominal("stroke", domain = c("Yes", "No"),
-#                    range = c("orange", "#aaa")) %>%
-      set_options(width = 500, height = 500)
+      set_options(width = 636, height = 636)
     })
     
     vis %>% bind_shiny("plot1")
