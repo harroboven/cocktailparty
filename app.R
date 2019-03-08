@@ -186,11 +186,15 @@ ui <- fluidPage(
                                       p("INTROTEXT", style = "font-family: 'times'; font-si16pt")),
                                     # right column
                                     column(6,
-                                      #title of right object
-                                      titlePanel("Table with summary statistics"),
-                                      #content of right object
-                                      img(src = 'A.png', height = 300, width = 300)
-                                      )),
+                                           wellPanel(
+                                             #title of right object
+                                             titlePanel("Table with summary statistics"),
+                                             #content of right object
+                                             tableOutput("drinks.network.summary")
+                                             )
+                                           )
+                                    ),
+
                                   # 2nd block of page
                                   fluidRow(
                                     # left column
@@ -635,6 +639,30 @@ server <- function(input, output, session) {
   
   ################################### PAGE 3 PROPOSAL ##################################
   
+  # Summary Table
+  output$drinks.network.summary <- renderTable({  
+    
+    l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
+    l.num_edges <- list("Number of Edges", length(E(g.drinks.bp)))
+    l.mean_degree <- list("Average Degree", mean(degree(g.drinks.bp)))
+    l.clust_coeff <- list("Clustering Coefficient", transitivity(g.drinks.bp))
+    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.drinks.bp)))
+    l.mean_path_length <- list("Average Path Length", mean(distances(g.drinks.bp)))
+    l.diameter <- list("Diameter", diameter(g.drinks.bp))
+    
+    dt.drinks.network.summary <- rbind(l.num_nodes,
+                                       l.num_edges,
+                                       l.mean_degree, 
+                                       l.clust_coeff, 
+                                       l.mean_betweenness, 
+                                       l.mean_path_length, 
+                                       l.diameter
+                                       )
+    dt.drinks.network.summary <- as.data.table(dt.drinks.network.summary)
+    setnames(dt.drinks.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
+    dt.drinks.network.summary
+    })  
+    
   # Network of ingredients
   # Network of drinks 
   
