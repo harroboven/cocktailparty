@@ -62,7 +62,7 @@ ui <- fluidPage(
                                               titlePanel("Summary Statistics"),
                                               # content of right column
                                               # Content1: Summary Table of dt.drinks
-                                              tableOutput("summary.statistics")
+                                              tableOutput("data.summary")
                                               )
                                             )
                                    ),
@@ -464,7 +464,7 @@ server <- function(input, output, session) {
     })
   
   #Summary statistics table page 1
-  output$summary.statistics <- renderTable({
+  output$data.summary <- renderTable({
     dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
                                                      num = length(unique(name)),
                                                      min = NA, 
