@@ -275,10 +275,12 @@ ui <- fluidPage(
                                            p("Introtext", style = "font-family: 'times'; font-si16pt")),
                                     # right column
                                     column(6,
-                                           # title of right object
-                                           titlePanel("Table with summary statistics"),
-                                           # content of right object
-                                           img(src = 'A.png', height = 300, width = 300)
+                                           wellPanel(
+                                             # title of right object
+                                             titlePanel("Table with summary statistics"),
+                                             # content of right object
+                                             tableOutput("ingredients.network.summary")
+                                             )
                                            ),
                                     sliderInput('weight.edges.ingredient',
                                                 label = 'Min. weight of edges:', 
@@ -677,7 +679,33 @@ server <- function(input, output, session) {
     plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
                 layout = layout_as_star, edge.arrow.size = 2)
   })
+  
+  ################################### PAGE 4 PROPOSAL ##################################
+  
+  # Summary Table
+  output$ingredients.network.summary <- renderTable({  
     
+    l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
+    l.num_edges <- list("Number of Edges", length(E(g.ingredients.bp)))
+    l.mean_degree <- list("Average Degree", mean(degree(g.ingredients.bp)))
+    l.clust_coeff <- list("Clustering Coefficient", transitivity(g.ingredients.bp))
+    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.ingredients.bp)))
+    l.mean_path_length <- list("Average Path Length", mean(distances(g.ingredients.bp)))
+    l.diameter <- list("Diameter", diameter(g.ingredients.bp))
+    
+    dt.ingredients.network.summary <- rbind(l.num_nodes,
+                                       l.num_edges,
+                                       l.mean_degree, 
+                                       l.clust_coeff, 
+                                       l.mean_betweenness, 
+                                       l.mean_path_length, 
+                                       l.diameter
+    )
+    dt.ingredients.network.summary <- as.data.table(dt.ingredients.network.summary)
+    setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
+    dt.ingredients.network.summary
+  })  
+  
     }
 
 #shinyApp()
