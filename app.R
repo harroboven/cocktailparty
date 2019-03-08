@@ -112,9 +112,8 @@ ui <- fluidPage(
                                               plotOutput(outputId = "drinks.dist.barChart")
                                               )
                                             )
-
                                      )
-                                 )
+                                   )
                                  ),
 
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
@@ -151,11 +150,18 @@ ui <- fluidPage(
                                           )
                                           ),
                                    column(9,
-                                          ggvisOutput("plot1")
+                                          verticalLayout(
+                                            ggvisOutput("plot1"), 
+                                            wellPanel(
+                                              span("Number of drinks selected:", 
+                                                   textOutput("n_drinks")
+                                                   )
+                                              )
+                                            )
                                           )
                                    )
                                  )
-                                 ),
+),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
                        
@@ -606,7 +612,7 @@ server <- function(input, output, session) {
     
     vis %>% bind_shiny("plot1")
     
-#    output$n_drinks <- renderText({ nrow(drinks()) })
+    output$n_drinks <- renderText({ nrow(dt.drinks.ordered.filter()) })
   
   
   ################################### PAGE 3 PROPOSAL ##################################
