@@ -1,14 +1,3 @@
-# install.packages("ggvis")
-# installed.packages("dplyr")
-# install.packages("RSQLite")
-# install.packages("dbplyr")
-
-library(ggvis)
-library(dplyr)
-library(DBI)
-library(RSQLite)
-library(dbplyr)
-
 
 # For dropdown menu
 actionLink <- function(inputId, ...) {
@@ -129,19 +118,27 @@ ui <- fluidPage(
                                               sliderInput("complexity.filter", "Degree of Recipe Complexity",
                                                           min = min(dt.drinks.filtered$complexity), 
                                                           max = max(dt.drinks.filtered$complexity), 
-                                                          value = mean(dt.drinks.filtered$complexity), 
-                                                          step = 10),
+                                                          value = c(median(dt.drinks.filtered$complexity), mean(dt.drinks.filtered$complexity)), 
+                                                          sep = ""
+                                                          ),
                                               sliderInput("commonality.filter", "Degree of Commonality", 
                                                           min = 1, 
                                                           max = 3, 
-                                                          value = 3,
-                                                          step = 1),
+                                                          value = c(1, 3),
+                                                          sep = ""
+                                                          ),
                                               selectInput("alcoholic.filter", "Alcoholic Nature",
-                                                          l.is_alcoholic_values), 
+                                                          l.is_alcoholic_values,
+                                                          selected = "All"
+                                                          ), 
                                               selectInput("category.filter", "Type of Drink",
-                                                          l.category_values), 
+                                                          l.category_values, 
+                                                          selected = "All"
+                                                          ), 
                                               selectInput("glass.filter", "Glass Type",
-                                                          l.glass_type_values)
+                                                          l.glass_type_values, 
+                                                          selected = "All"
+                                                          )
                                               ), 
                                             wellPanel(
                                               selectInput("xvar", "X-axis variable", axis_vars, selected = "complexity"),
@@ -551,18 +548,15 @@ server <- function(input, output, session) {
       
     # Filter by alcoholic nature
     if (input$alcoholic.filter != "All") {
-      alcoholic.filter <- paste0("%", input$alcoholic.filter, "%")
-      m <- m %>% filter(is_alcoholic %like% alcoholic.filter)
+      m <- m %>% filter(is_alcoholic %in% input$alcoholic.filter)
       }
     # Filter by drink type
     if (input$category.filter != "All") {
-      category.filter <- paste0("%", input$category.filter, "%")
-      m <- m %>% filter(category %like% category.filter)
+      m <- m %>% filter(category %in% input$category.filter)
       }
     # Filter by glass type
     if (input$glass.filter != "All") {
-      glass.filter <- paste0("%", input$glass.filter, "%")
-      m <- m %>% filter(glass_type %like% glass.filter)
+      m <- m %>% filter(glass_type %in% input$glass.filter)
       }
       
     m <- as.data.frame(m)

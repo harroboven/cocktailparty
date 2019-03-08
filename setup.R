@@ -6,7 +6,12 @@
 # install.packages("reshape2")
 # install.packages("stringr")
 # install.packages("shinyWidgets")
-#install.packages("shinythemes")
+# install.packages("shinythemes")
+# install.packages("ggvis")
+# installed.packages("dplyr")
+# install.packages("RSQLite")
+# install.packages("dbplyr")
+
 
 
 # Load the necessary libraries
@@ -17,6 +22,10 @@ library(reshape2)
 library(shinyWidgets)
 library(igraph)
 library(shinythemes)
+library(ggvis)
+library(dplyr)
+library(RSQLite)
+library(dbplyr)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")

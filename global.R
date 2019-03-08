@@ -27,11 +27,11 @@ dt.drinks[, c("thumbnail", "era") := NULL]
 dt.drinks.filtered <- unique(dt.drinks, by = "id")
 
 # select input button proposal paage 2
-l.is_alcoholic_values <- c("All", unique(dt.drinks.filtered$is_alcoholic))
+l.is_alcoholic_values <- c("All", sort(unique(dt.drinks.filtered$is_alcoholic), decreasing = FALSE)) 
 
-l.category_values <- c("All", unique(dt.drinks.filtered$category))
+l.category_values <- c("All", sort(unique(dt.drinks.filtered$category), decreasing = FALSE))
 
-l.glass_type_values <- c("All", unique(dt.drinks.filtered$glass_type))
+l.glass_type_values <- c("All", sort(unique(dt.drinks.filtered$glass_type), decreasing = FALSE))
 
 
 ############## Plot themes #################
