@@ -27,9 +27,12 @@ dt.drinks[, c("thumbnail", "era") := NULL]
 dt.drinks.filtered <- unique(dt.drinks, by = "id")
 
 # select input button proposal paage 2
-l.is_alcoholic_values <- unique(dt.drinks.filtered$is_alcoholic)
-l.category_values <- unique(dt.drinks.filtered$category)
-l.glass_type_values <- unique(dt.drinks.filtered$glass_type)
+l.is_alcoholic_values <- c(unique(dt.drinks.filtered$is_alcoholic), "All")
+
+l.category_values <- c(unique(dt.drinks.filtered$category), "All")
+
+l.glass_type_values <- c(unique(dt.drinks.filtered$glass_type), "All")
+
 
 ############## Plot themes #################
 
@@ -53,7 +56,12 @@ g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, .(name, ingredient)],
 g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
 g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 
-
+# Variables that can be put on the x and y axes
+axis_vars <- c(
+  "Recipe Complexity" = "complexity",
+  "Commonality" = "commonality",
+  "Ingredient price" = "ingredient_price"
+)
 
 
 
