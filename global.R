@@ -14,13 +14,18 @@ setnames(dt.drinks, old = "price", new = "ingredient_price")
 
 ########### Data cleaning ##############
 # Delete non-standardized columns from dt.drinks. They are still in dt.longdrinks, in case you need to access the original ones.
-dt.drinks[, c("amount", "category", "unit", "instructions", "glass_type") := NULL]
+dt.drinks[, c("amount", "category", "unit", "instructions", "glass_type", "std.unit", "quantity") := NULL]
 
 # Rename some of the standardized columns the way the non-standardized were called for ease of use and backwards compatibility
-setnames(dt.drinks, old = c("std.unit", "std.glass", "std.category", "common_final"), new = c("unit", "glass_type", "category", "commonality"))
+setnames(dt.drinks, old = c("std.quantity", "std.glass", "std.category", "common_final"), new = c("quantity", "glass_type", "category", "commonality"))
 
 # Delete thumbnail (not using it) and era (very few observations).
 dt.drinks[, c("thumbnail", "era") := NULL]
+
+# Reorder the columns for convenience
+colnames(dt.drinks)
+dt.drinks <- dt.drinks[, c("id", "ingredient", "quantity", "measurement", "package_size", "ingredient_price", "name", "is_alcoholic", 
+                           "category", "glass_type", "commonality", "complexity", "double_observation")]
 
 ######## Buttons ##########
 # preparing dt.drinks for button work by ensuring that only unique drinks
