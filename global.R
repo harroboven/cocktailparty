@@ -87,7 +87,7 @@ g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 axis_vars <- c(
   "Recipe Complexity" = "complexity",
   "Commonality" = "commonality",
-  "Ingredient price" = "ingredient_price"
+  "Ingredient Costs per Drink (in Euro)" = "ingredient_costs"
 )
 
 
