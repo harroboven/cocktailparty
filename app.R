@@ -1,4 +1,13 @@
 
+# For dropdown menu
+actionLink <- function(inputId, ...) {
+  tags$a(href='javascript:void',
+         id=inputId,
+         class='action-button',
+         ...)
+  }
+
+
 # Define UI for cocktail app ----
 ui <- fluidPage(
   #Overall theme of our Shiny App
@@ -92,106 +101,64 @@ ui <- fluidPage(
                                               plotOutput(outputId = "drinks.dist.barChart")
                                               )
                                             )
-
                                      )
-                                 )
+                                   )
                                  ),
 
 ############################################################# PAGE 2 PROPOSAL ############################################################# 
 
                         # 2nd Drop-down item
-                        tabPanel("Data by Drinks", 
-                                 verticalLayout(
-                                   # header of whole page
-                                   titlePanel("Data by Drinks"),
-                                   # 1st block of page
-                                   fluidRow(
-                                     # left column
-                                     column(6,
-                                            verticalLayout(
-                                              #Header of left object
-                                              titlePanel("Data by Drinks"),
-                                              #content of left object
-                                              p("INTROTEXT", 
-                                                style = "font-family: 'times'; font-si16pt"
-                                                )
-                                              )
-                                            ),
-                                     # right column  
-                                     column(6,
-                                            verticalLayout(
-                                              # Header right object
-                                              titlePanel(""),
-                                              # content of right column
-                                              # Content1: Table with top values from drinks.ordered selection
-                                              tableOutput("drinks.ordered.top")
+                        tabPanel("Drinks Explorer", 
+                                 titlePanel("Drinks explorer"),
+                                 fluidRow(
+                                   column(3,
+                                          verticalLayout(
+                                            wellPanel(
+                                              h4("Filter"),
+                                              sliderInput("complexity.filter", "Degree of Recipe Complexity",
+                                                          min = min(dt.drinks.filtered$complexity), 
+                                                          max = max(dt.drinks.filtered$complexity), 
+                                                          value = c(median(dt.drinks.filtered$complexity), mean(dt.drinks.filtered$complexity)), 
+                                                          sep = ""
+                                                          ),
+                                              sliderInput("commonality.filter", "Degree of Commonality", 
+                                                          min = 1, 
+                                                          max = 3, 
+                                                          value = c(1, 3),
+                                                          sep = ""
+                                                          ),
+                                              selectInput("alcoholic.filter", "Alcoholic Nature",
+                                                          l.is_alcoholic_values,
+                                                          selected = "All"
+                                                          ), 
+                                              selectInput("category.filter", "Type of Drink",
+                                                          l.category_values, 
+                                                          selected = "All"
+                                                          ), 
+                                              selectInput("glass.filter", "Glass Type",
+                                                          l.glass_type_values, 
+                                                          selected = "All"
+                                                          )
+                                              ), 
+                                            wellPanel(
+                                              selectInput("xvar", "X-axis variable", axis_vars, selected = "complexity"),
+                                              selectInput("yvar", "Y-axis variable", axis_vars, selected = "ingredient_price")
+                                            )
+                                          )
+                                          ),
+                                   column(9,
+                                          verticalLayout(
+                                            ggvisOutput("plot1"), 
+                                            wellPanel(
+                                              span("Number of drinks selected:", 
+                                                   textOutput("n_drinks")
+                                                   )
                                               )
                                             )
-                                   ),
-                                   # 2nd block of page
-                                   fluidRow(
-                                     # left column
-                                     column(6,
-                                            verticalLayout(
-                                              #Header of left column
-                                              titlePanel("Header2?"),
-                                              #content of left column
-                                              p("Drinks filtered by:", 
-                                                style = "font-family: 'times'; font-si16pt"
-                                              ),
-                                              # split into three columns to have input select next to each other
-                                              fluidRow(
-                                                # left column
-                                                column(4, 
-                                                       pickerInput("alcoholic.filter", "Alcoholic Nature:", 
-                                                                   choices = l.is_alcoholic_values, 
-                                                                   selected = NULL, 
-                                                                   options = list(`actions-box` = TRUE), 
-                                                                   multiple = TRUE
-                                                                   )
-                                                       ),
-                                                # middle column
-                                                column(4, 
-                                                       pickerInput("category.filter", "Drink Type:", 
-                                                                   choices = l.category_values, 
-                                                                   selected = l.category_values, 
-                                                                   options = list(`actions-box` = TRUE), 
-                                                                   multiple = TRUE
-                                                                   )
-                                                       ),
-                                                # right column
-                                                column(4, 
-                                                       pickerInput("glass.filter", "Glass Type:", 
-                                                                   choices = l.glass_type_values, 
-                                                                   selected = l.glass_type_values, 
-                                                                   options = list(`actions-box` = TRUE), 
-                                                                   multiple = TRUE
-                                                                   )
-                                                       )
-                                                ),
-                                              # RadioButtons - drinks ordered
-                                              radioButtons('drinks.ordered', 'Drinks ordered by:', 
-                                                           c('Complexity' = 'cp', 
-                                                             'Commonality' = 'cm',
-                                                             'Ingredient Price' = 'ip'
-                                                             )
-                                                           )
-                                              )
-                                            ),
-                                     #right column
-                                     column(6,
-                                            verticalLayout(
-                                              # Header right column
-                                              titlePanel("Header3?"),
-                                              # content of right object
-                                              # Ordered and filtered drinks barchart
-                                              plotOutput(outputId = "drinks.ordered.filtering.barChart")
-                                              )
-                                            )
-                                     )
+                                          )
                                    )
-                        )
-                      ),
+                                 )
+),
             # 2nd tabpanel
             navbarMenu("Networking Exploration",
                        
@@ -445,7 +412,7 @@ tabPanel("Bipartite visualization",
 ############################################################# SERVER #############################################################
 
 
-server <- function(input, output) {
+server <- function(input, output, session) {
   
   ################################### PAGE 1 PROPOSAL ##################################
   
@@ -565,100 +532,80 @@ server <- function(input, output) {
     })
   
   ################################### PAGE 2 PROPOSAL ##################################
-  # Top table proposal page 2 
-  output$drinks.ordered.top <- renderTable({
     
-    dt.drinks.ordered.filter <- reactive({
-      dt.drinks.filtered[is_alcoholic %in% input$alcoholic.filter, ]
-      })
+  # Filter the drinks, returning a data frame
+  dt.drinks.ordered.filter <- reactive({
+    # Due to dplyr issue #318, we need temp variables for input values
+    min.complexity <- input$complexity.filter[1]
+    max.complexity <- input$complexity.filter[2]
+    min.commonality <- input$commonality.filter[1]
+    max.commonality <- input$commonality.filter[2]  
     
-    dt.drinks.ordered.filter <- reactive({
-      dt.drinks.filtered[category %in% input$category.filter, ]
-      })
-    
-    dt.drinks.ordered.filter <- reactive({
-      dt.drinks.filtered[glass_type %in% input$glass.filter, ]
-      })
-    
-    alcoholic.filter.top <- reactive({
-      switch(input$drinks.ordered,  
-             cc = dt.drinks.ordered.filter()$complexity, 
-             cm = dt.drinks.ordered.filter()$commonality,
-             ip = dt.drinks.ordered.filter()$ingredient_price
-             )
-      })
-    
-    dt.drinks.ordered <- dt.drinks.ordered.filter()[
-      ifelse(alcoholic.filter.top() == dt.drinks.ordered.filter()$commonality, 
-             dt.drinks.ordered.filter()$commonality == 3, 
-             order(-rank(alcoholic.filter.top()))
-             ), 
-      list(dt.drinks.ordered.filter()$name, 
-           dt.drinks.ordered.filter()$is_alcoholic, 
-           dt.drinks.ordered.filter()$category, 
-           dt.drinks.ordered.filter()$glass_type, 
-           dt.drinks.ordered.filter()$complexity, 
-           dt.drinks.ordered.filter()$commonality,
-           dt.drinks.ordered.filter()$ingredient_price
-           )
-      ]
-    
-    dt.drinks.ordered <- head(dt.drinks.ordered, 10)
-    dt.drinks.ordered
-    })
-  
-  # Graph proposal page 2
-  output$drinks.ordered.filtering.barChart <- renderPlot({
-    
-    dt.drinks.ordered.filter <- reactive({
-      dt.drinks.filtered[is_alcoholic %in% input$alcoholic.filter, ]
-      })
-    
-    dt.drinks.ordered.filter <- reactive({
-      dt.drinks.filtered[category %in% input$category.filter, ]
-      })
-    
-    dt.drinks.ordered.filter <- reactive({
-      dt.drinks.filtered[glass_type %in% input$glass.filter, ]
-      })
-
-    drinks.ordered.filter <- reactive({
-      switch(input$drinks.ordered, 
-             cp = dt.drinks.ordered.filter()$complexity, 
-             cm = dt.drinks.ordered.filter()$commonality,
-             ip = dt.drinks.ordered.filter()$ingredient_price
-             )
+    # Apply filters
+    m <- dt.drinks.filtered %>%
+      filter(
+        complexity >= min.complexity, 
+        complexity <= max.complexity,
+        commonality >= min.commonality, 
+        commonality <= max.commonality
+        )
+      
+    # Filter by alcoholic nature
+    if (input$alcoholic.filter != "All") {
+      m <- m %>% filter(is_alcoholic %in% input$alcoholic.filter)
+      }
+    # Filter by drink type
+    if (input$category.filter != "All") {
+      m <- m %>% filter(category %in% input$category.filter)
+      }
+    # Filter by glass type
+    if (input$glass.filter != "All") {
+      m <- m %>% filter(glass_type %in% input$glass.filter)
+      }
+      
+    m <- as.data.frame(m)
+      
+    m
     })
     
-    drinks.ordered.title <- reactive({
-      switch(input$drinks.dist, 
-             an = "Observation Distribution by Alcoholic Nature", 
-             dt = "Observation Distribution by Drink Type", 
-             gt = "Observation Distribution by Glass Type", 
-             cp = "Observation Distribution by Complexity", 
-             cm = "Observation Distribution by Commonality", 
-             ip = "Observation Distribution by Ingredient Price"
-             )
-      })
+  # Generating tooltip text
+  drink_tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
+      
+    # Pick out the drink with this ID
+    dt.drinks.filtered <- isolate(dt.drinks.ordered.filter())
+    drink <- dt.drinks.filtered[dt.drinks.filtered$id == x$id, ]
+      
+    paste0("<b>", drink$name, "</b><br>",
+          "Alcoholic Nature: ", drink$is_alcoholic, "<br>",
+          "Drink Type: ", drink$category
+          )
+    }
     
-    drinks.ordered.xlab <- reactive({
-      switch(input$drinks.dist, 
-             an = "Alcoholic Nature",  
-             dt = "Drink Type", 
-             gt = "Glass Type", 
-             cp = "Complexity", 
-             cm = "Commonality",  
-             ip = "Ingredient Price"
-             )
+  # A reactive expression with the ggvis plot
+  vis <- reactive({
+    # Lables for axes
+    xvar_name <- names(axis_vars)[axis_vars == input$xvar]
+    yvar_name <- names(axis_vars)[axis_vars == input$yvar]
+      
+    xvar <- prop("x", as.symbol(input$xvar))
+    yvar <- prop("y", as.symbol(input$yvar))
+      
+    dt.drinks.ordered.filter %>%
+      ggvis(x = xvar, y = yvar) %>%
+      layer_points(size := 50, size.hover := 200,
+                   fillOpacity := 0.2, fillOpacity.hover := 0.5, 
+                   key := ~id) %>%
+      add_tooltip(drink_tooltip, "hover") %>%
+      add_axis("x", title = xvar_name) %>%
+      add_axis("y", title = yvar_name) %>%
+      set_options(width = 636, height = 636)
     })
     
-    ggplot(dt.drinks.ordered.filter(), aes(drinks.ordered.filter())) +
-      geom_bar(color = "steelblue", fill = "steelblue") + 
-      chart.theme.1 +
-      ggtitle(drinks.ordered.title()) + 
-      xlab(drinks.ordered.xlab()) + 
-      ylab("Frequency")
-  })
+    vis %>% bind_shiny("plot1")
+    
+    output$n_drinks <- renderText({ nrow(dt.drinks.ordered.filter()) })
   
   
   ################################### PAGE 3 PROPOSAL ##################################
@@ -676,9 +623,9 @@ server <- function(input, output) {
                                 
     plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
                 layout = layout_as_star, edge.arrow.size = 2)
-    })
-  
-  }
+  })
+    
+    }
 
 #shinyApp()
 shinyApp(ui = ui, server = server)
