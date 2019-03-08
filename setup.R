@@ -8,7 +8,7 @@
 # install.packages("shinyWidgets")
 # install.packages("shinythemes")
 # install.packages("ggvis")
-# installed.packages("dplyr")
+# install.packages("dplyr")
 # install.packages("RSQLite")
 # install.packages("dbplyr")
 

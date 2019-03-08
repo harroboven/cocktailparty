@@ -86,7 +86,8 @@ ui <- fluidPage(
                                                              'Glass type' = 'gt',
                                                              'Complexity' = 'cp',
                                                              'Commonality' = 'cm', 
-                                                             'Ingredient Price' = 'ip'
+                                                             'Ingredient Price' = 'ip',
+                                                             'Ingredient Cost per Drink' = 'ic'
                                                              )
                                                       )
                                               )
@@ -424,15 +425,18 @@ server <- function(input, output, session) {
                           gt = dt.drinks.filtered$glass_type, 
                           cp = dt.drinks.filtered$complexity,  
                           cm = dt.drinks.filtered$commonality, 
-                          ip = dt.drinks.filtered$ingredient_price
+                          ip = dt.drinks.filtered$ingredient_price,
+                          ic = dt.drinks.filtered$ingredient_costs
                           )
+    
     drinks.dist.title <- switch(input$drinks.dist, 
                                an = "Observation Distribution by Alcoholic Nature",  
                                dt = "Observation Distribution by Drink Type", 
                                gt = "Observation Distribution by Glass Type", 
                                cp = "Observation Distribution by Complexity", 
                                cm = "Observation Distribution by Commonality",  
-                               ip = "Observation Distribution by Ingredient Price"
+                               ip = "Observation Distribution by Ingredient Prices (in Euro)",
+                               ip = "Observation Distribution by Ingredient Costs per Drink (in Euro)"
                                )
     
     drinks.dist.xlab <- switch(input$drinks.dist, 
@@ -441,7 +445,8 @@ server <- function(input, output, session) {
                           gt = "Glass Type", 
                           cp = "Complexity", 
                           cm = "Commonality",  
-                          ip = "Ingredient Price"
+                          ip = "Ingredient Price",
+                          ic = "Ingredient Costs per Drink"
                           )
     
     ggplot(dt.drinks.filtered, aes(drinks.dist)) +
@@ -510,13 +515,21 @@ server <- function(input, output, session) {
                                                             )
                                                         ]
     
-    dt.drinks.summary.ingredient.price <- dt.drinks.filtered[, .(covariates = "Ingredient Price", 
+    dt.drinks.summary.ingredient.price <- dt.drinks.filtered[, .(covariates = "Ingredient Prices (in Euro)", 
                                                       num = length(unique(ingredient_price)), 
                                                       min = min(na.omit(ingredient_price)), 
                                                       mean = mean(na.omit(ingredient_price)), 
                                                       max = max(na.omit(ingredient_price))
                                                       )
                                                   ]
+    
+    dt.drinks.summary.ingredient.costs <- dt.drinks.filtered[, .(covariates = "Ingredient Costs per Drink (in Euro)", 
+                                                                 num = length(unique(ingredient_costs)), 
+                                                                 min = min(na.omit(ingredient_costs)), 
+                                                                 mean = mean(na.omit(ingredient_costs)), 
+                                                                 max = max(na.omit(ingredient_costs))
+                                                                 )
+                                                             ]
     
     # combine the different columns into one summary table
     dt.drinks.summary <- rbind(dt.drinks.summary.name, 
@@ -526,7 +539,8 @@ server <- function(input, output, session) {
                                dt.drinks.summary.ingredient, 
                                dt.drinks.summary.complexity, 
                                dt.drinks.summary.commonality, 
-                               dt.drinks.summary.ingredient.price
+                               dt.drinks.summary.ingredient.price,
+                               dt.drinks.summary.ingredient.costs
                                )
     dt.drinks.summary
     })
