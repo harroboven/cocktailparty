@@ -92,9 +92,17 @@ dt.drinks <- dt.drinks[,
                                                       ), 
                        by = "id"]
 
+# Create adjusted ingredient price to handle NA values
+dt.drinks <- dt.drinks[, 
+                       adj_ingredient_price := ifelse(!is.na(ingredient_price), 
+                                                      ingredient_price, 
+                                                      99
+                       ), 
+                       by = "id"]
+
 # Reorder the columns for convenience
 dt.drinks <- dt.drinks[, 
-                       c("id", "ingredient", "quantity", "adj_quantity", "measurement", "package_size", "ingredient_price", "cost_used_ingredient", "name", "is_alcoholic", 
+                       c("id", "ingredient", "quantity", "adj_quantity", "measurement", "package_size", "ingredient_price", "adj_ingredient_price", "cost_used_ingredient", "name", "is_alcoholic", 
                            "category", "glass_type", "commonality", "complexity", "ingredients_cost", "adj_ingredients_cost", "double_observation")]
 
 ######## Buttons ##########
@@ -168,6 +176,7 @@ dt.drink.degrees <- dt.drink.degrees[,
                                      list(name, degree, complexity)]
 dt.drink.degrees$log_complexity <- log(dt.drink.degrees$complexity)
 
+################################### PAGE 7 PROPOSAL ##################################
 # Calculate the datatable for advanced analysis
 df.ingredients.degrees <- data.frame(degree(g.ingredients.bp))
 dt.ingredients.degrees <- data.table(cbind(row.names(df.ingredients.degrees), 
@@ -177,7 +186,10 @@ dt.ingredients.degrees.merged <- merge(dt.ingredients.degrees,
                                        dt.drinks, 
                                        by = "ingredient")
 dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, 
-                                                               list(ingredient, degree, ingredient_price)]
+                                                               list(ingredient, degree, adj_ingredient_price)]
 dt.ingredients.degrees.merged <- unique(dt.ingredients.degrees.merged)
-dt.ingredients.degrees.merged$log_ingredient_price <- log(dt.ingredients.degrees.merged$ingredient_price)
+dt.ingredients.degrees.merged$log_ingredient_price <- log(dt.ingredients.degrees.merged$adj_ingredient_price)
+
+# add id for ingredients to enable tooltip feature
+dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, id := 1:length(ingredient)]
 
