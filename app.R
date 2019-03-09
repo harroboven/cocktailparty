@@ -455,7 +455,7 @@ ui <- fluidPage(
                column(4,
                       wellPanel(
                         h4("Filter"),
-                        sliderInput("analysis.ingredient.price.filter", "Ingredient Price",
+                        sliderInput("analysis.ingredients.filter", "Ingredient Price",
                                     min = min(dt.ingredients.degrees.merged$adj_ingredient_price), 
                                     max = max(dt.ingredients.degrees.merged$adj_ingredient_price), 
                                     value = c(median(dt.ingredients.degrees.merged$adj_ingredient_price), mean(dt.ingredients.degrees.merged$adj_ingredient_price)), 
@@ -466,11 +466,11 @@ ui <- fluidPage(
                column(8,
                       verticalLayout(
                         wellPanel(
-                          ggvisOutput("ingredient_analysis")
+                          ggvisOutput("ingredients_analysis")
                         ),
                         wellPanel(
                           span("Number of ingredients selected:", 
-                               textOutput("ingredient.analysis.n_ingredients")
+                               textOutput("ingredients.analysis.n_ingredients")
                                )
                           )
                         )
@@ -835,6 +835,8 @@ server <- function(input, output, session) {
   
   ################################### PAGE 6 PROPOSAL ##################################
   
+  
+  
   output$drinks.network.analytics <- renderPlot({
     
     ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + 
@@ -845,10 +847,10 @@ server <- function(input, output, session) {
   ################################### PAGE 7 PROPOSAL ##################################
   
   # Filter the drinks, returning a data frame
-  dt.analysis.ingredient.price.filter <- reactive({
+  dt.analysis.ingredients.filter <- reactive({
     # Due to dplyr issue #318, we need temp variables for input values
-    min.ingredient.price <- input$analysis.ingredient.price.filter[1]
-    max.ingredient.price <- input$analysis.ingredient.price.filter[2] 
+    min.ingredient.price <- input$analysis.ingredients.filter[1]
+    max.ingredient.price <- input$analysis.ingredients.filter[2] 
     
     # Apply filters
     m <- dt.ingredients.degrees.merged %>%
@@ -868,12 +870,12 @@ server <- function(input, output, session) {
     if (is.null(x$id)) return(NULL)
     
     #Pick out the drink with this ID
-    dt.ingredients.degrees.merged <- isolate(dt.analysis.ingredient.price.filter())
+    dt.ingredients.degrees.merged <- isolate(dt.analysis.ingredients.filter())
     analysis.ingredient <- dt.ingredients.degrees.merged[dt.ingredients.degrees.merged$id == x$id, ]
     
     paste0("<b>", analysis.ingredient$ingredient, "</b><br>", 
            "Degree of Ingredient: ", analysis.ingredient$degree, "<br>", 
-           "Ingredient Price: ", analysis.ingredient$ingredient_price
+           "Ingredient Price: ", analysis.ingredient$adj_ingredient_price
            )
     }
   
@@ -883,7 +885,7 @@ server <- function(input, output, session) {
     xvar <- prop("x", as.symbol("adj_ingredient_price"))
     yvar <- prop("y", as.symbol("degree"))
     
-    dt.analysis.ingredient.price.filter %>%
+    dt.analysis.ingredients.filter %>%
       ggvis(x = xvar, y = yvar) %>%
       layer_points(size := 50, size.hover := 200,
                    fillOpacity := 0.2, fillOpacity.hover := 0.5, 
@@ -895,11 +897,11 @@ server <- function(input, output, session) {
       set_options(width = 636, height = 636)
   })
   
-  vis %>% bind_shiny("ingredient_analysis")
+  vis %>% bind_shiny("ingredients_analysis")
   
-  output$ingredient.analysis.n_ingredients <- renderText({ 
+  output$ingredients.analysis.n_ingredients <- renderText({ 
     
-    nrow(dt.analysis.ingredient.price.filter()) 
+    nrow(dt.analysis.ingredients.filter()) 
     
   })
     
