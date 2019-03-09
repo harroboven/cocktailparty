@@ -22,10 +22,50 @@ setnames(dt.drinks, old = c("std.quantity", "std.glass", "std.category", "common
 # Delete thumbnail (not using it) and era (very few observations).
 dt.drinks[, c("thumbnail", "era") := NULL]
 
+# add values for missing quantities
+# add values for missing ml quantities
+dt.drinks <- dt.drinks[measurement == "ml", quantity_help_ml := median(na.omit(quantity)), by = "glass_type"]
+
+# add values for missing g quantities
+dt.drinks <- dt.drinks[measurement == "g", quantity_help_g := median(na.omit(quantity)), by = "glass_type"]
+
+# add values for missing piece quantities
+dt.drinks <- dt.drinks[measurement == "piece", quantity_help_piece := median(na.omit(quantity)), by = "glass_type"]
+
+# add values for missing pieces quantities
+dt.drinks <- dt.drinks[measurement == "pieces", quantity_help_pieces := median(na.omit(quantity)), by = "glass_type"]
+
+# add values for missing "" quantities
+dt.drinks <- dt.drinks[measurement == "", quantity_help_SPACE := median(na.omit(quantity)), by = "glass_type"]
+
+# Convert all quantity columns into one column
+dt.drinks <- dt.drinks[, adj_quantity := ifelse(!is.na(quantity), quantity, 
+                                                ifelse(!is.na(quantity_help_ml), quantity_help_ml, 
+                                                       ifelse(!is.na(quantity_help_g), quantity_help_g,
+                                                              ifelse(!is.na(quantity_help_piece), quantity_help_piece, 
+                                                                     ifelse(!is.na(quantity_help_pieces), quantity_help_pieces, 
+                                                                            quantity_help_SPACE
+                                                                            )
+                                                                     )
+                                                              )
+                                                       )
+                                                )
+                       ]
+# delete help quantity columns
+dt.drinks <- dt.drinks[, c("quantity_help_ml", "quantity_help_g", "quantity_help_piece", "quantity_help_pieces", "quantity_help_SPACE") := NULL]
+
+# cost of a single ingredient per drink
+dt.drinks <- dt.drinks[, cost_used_ingredient := round((ingredient_price / package_size * adj_quantity), 2), by = "ingredient"]
+
+#add cost of all ingredients in a drink
+dt.drinks <- dt.drinks[, ingredients_cost := sum(cost_used_ingredient), by = "id"]
+
+# Create adjusted ingredients cost to handle NA values
+dt.drinks <- dt.drinks[, adj_ingredients_cost := ifelse(!is.na(ingredients_cost), ingredients_cost, 99), by = "id"]
+
 # Reorder the columns for convenience
-colnames(dt.drinks)
-dt.drinks <- dt.drinks[, c("id", "ingredient", "quantity", "measurement", "package_size", "ingredient_price", "name", "is_alcoholic", 
-                           "category", "glass_type", "commonality", "complexity", "double_observation")]
+dt.drinks <- dt.drinks[, c("id", "ingredient", "quantity", "adj_quantity", "measurement", "package_size", "ingredient_price", "cost_used_ingredient", "name", "is_alcoholic", 
+                           "category", "glass_type", "commonality", "complexity", "ingredients_cost", "adj_ingredients_cost", "double_observation")]
 
 ######## Buttons ##########
 # preparing dt.drinks for button work by ensuring that only unique drinks
@@ -65,7 +105,7 @@ g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 axis_vars <- c(
   "Recipe Complexity" = "complexity",
   "Commonality" = "commonality",
-  "Ingredient price" = "ingredient_price"
+  "Ingredients Cost per Drink" = "adj_ingredients_cost"
 )
 
 
