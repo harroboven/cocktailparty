@@ -224,7 +224,7 @@ standardize.quantity <- function(drink, quantity, std.unit) {
         return(unit.conversion.factor[i] * quantity)
       } 
     }
-    return("unknown")
+    return(NA)
   }
 }
 

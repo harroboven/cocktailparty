@@ -100,7 +100,7 @@ ui <- fluidPage(
                                                          'Complexity' = 'cp',
                                                          'Commonality' = 'cm', 
                                                          'Ingredient Price' = 'ip',
-                                                         'Ingredient Cost per Drink' = 'ic'
+                                                         'Ingredients Cost per Drink' = 'ic'
                                                          )
                                                   )
                                      )
@@ -142,6 +142,12 @@ ui <- fluidPage(
                                                           min = 1, 
                                                           max = 3, 
                                                           value = c(1, 3),
+                                                          sep = ""
+                                                          ),
+                                              sliderInput("ingredients.cost.filter", "Ingredients Cost per Drink",
+                                                          min = min(dt.drinks.filtered$complexity), 
+                                                          max = max(dt.drinks.filtered$complexity), 
+                                                          value = c(median(dt.drinks.filtered$complexity), mean(dt.drinks.filtered$complexity)), 
                                                           sep = ""
                                                           ),
                                               selectInput("alcoholic.filter", "Alcoholic Nature",
@@ -436,21 +442,28 @@ server <- function(input, output, session) {
   
   ############ Oberservation distribution chart ############
   output$drinks.dist.barChart <- renderPlot({
+    
+    # needed to adjust for NA values in ingredient costs
+    dt.drinks.filtered.costs <- dt.drinks.filtered[!is.na(ingredients_cost), ]
+    
     drinks.dist <- switch(input$drinks.dist, 
                           an = dt.drinks.filtered$is_alcoholic, 
                           dt = dt.drinks.filtered$category, 
                           gt = dt.drinks.filtered$glass_type, 
                           cp = dt.drinks.filtered$complexity,  
                           cm = dt.drinks.filtered$commonality, 
-                          ip = dt.drinks.filtered$ingredient_price
+                          ip = dt.drinks$ingredient_price,
+                          ic = dt.drinks.filtered$adj_ingredients_cost
                           )
+    
     drinks.dist.title <- switch(input$drinks.dist, 
                                an = "Observation Distribution by Alcoholic Nature",  
                                dt = "Observation Distribution by Drink Type", 
                                gt = "Observation Distribution by Glass Type", 
                                cp = "Observation Distribution by Complexity", 
                                cm = "Observation Distribution by Commonality",  
-                               ip = "Observation Distribution by Ingredient Price"
+                               ip = "Observation Distribution by Ingredient Price",
+                               ic = "Observation Distribution by Ingredients Cost per Drink"
                                )
     
     drinks.dist.xlab <- switch(input$drinks.dist, 
@@ -459,10 +472,20 @@ server <- function(input, output, session) {
                           gt = "Glass Type", 
                           cp = "Complexity", 
                           cm = "Commonality",  
-                          ip = "Ingredient Price"
+                          ip = "Ingredient Price",
+                          ic = "Ingredients Cost per Drink"
+                          )
+    data.drinks.dist <- switch(input$drinks.dist, 
+                          an = dt.drinks.filtered, 
+                          dt = dt.drinks.filtered, 
+                          gt = dt.drinks.filtered, 
+                          cp = dt.drinks.filtered,  
+                          cm = dt.drinks.filtered, 
+                          ip = dt.drinks,
+                          ic = dt.drinks.filtered
                           )
     
-    ggplot(dt.drinks.filtered, aes(drinks.dist)) +
+    ggplot(data.drinks.dist, aes(drinks.dist)) +
       geom_bar(color = "steelblue", fill = "steelblue") + 
       chart.theme.1 +
       ggtitle(drinks.dist.title) + 
@@ -529,13 +552,21 @@ server <- function(input, output, session) {
                                                             )
                                                         ]
     
-    dt.drinks.summary.ingredient.price <- dt.drinks.filtered[, .(covariates = "Ingredient Price", 
-                                                      num = length(unique(ingredient_price)), 
-                                                      min = min(na.omit(ingredient_price)), 
-                                                      mean = mean(na.omit(ingredient_price)), 
-                                                      max = max(na.omit(ingredient_price))
-                                                      )
-                                                  ]
+    dt.drinks.summary.ingredient.price <- dt.drinks[, .(covariates = "Ingredient Price", 
+                                                        num = length(unique(ingredient_price)), 
+                                                        min = min(na.omit(ingredient_price)), 
+                                                        mean = mean(na.omit(ingredient_price)), 
+                                                        max = max(na.omit(ingredient_price))
+                                                        )
+                                                    ]
+    
+    dt.drinks.summary.ingredients.cost <- dt.drinks.filtered[, .(covariates = "Ingredients Cost per Drink", 
+                                                                 num = length(unique(adj_ingredients_cost)), 
+                                                                 min = min(adj_ingredients_cost), 
+                                                                 mean = mean(adj_ingredients_cost), 
+                                                                 max = max(adj_ingredients_cost)
+                                                                 )
+                                                             ]
     
     # combine the different columns into one summary table
     dt.drinks.summary <- rbind(dt.drinks.summary.name, 
@@ -545,7 +576,8 @@ server <- function(input, output, session) {
                                dt.drinks.summary.ingredient, 
                                dt.drinks.summary.complexity, 
                                dt.drinks.summary.commonality, 
-                               dt.drinks.summary.ingredient.price
+                               dt.drinks.summary.ingredient.price,
+                               dt.drinks.summary.ingredients.cost
                                )
     dt.drinks.summary
     })
@@ -560,6 +592,8 @@ server <- function(input, output, session) {
     max.complexity <- input$complexity.filter[2]
     min.commonality <- input$commonality.filter[1]
     max.commonality <- input$commonality.filter[2]  
+    min.ingredients.cost <- input$ingredients.cost.filter[1]
+    max.ingredients.cost <- input$ingredients.cost.filter[2] 
     
     # Apply filters
     m <- dt.drinks.filtered %>%
@@ -567,7 +601,9 @@ server <- function(input, output, session) {
         complexity >= min.complexity, 
         complexity <= max.complexity,
         commonality >= min.commonality, 
-        commonality <= max.commonality
+        commonality <= max.commonality,
+        adj_ingredients_cost >= min.commonality, 
+        adj_ingredients_cost <= max.commonality
         )
       
     # Filter by alcoholic nature
