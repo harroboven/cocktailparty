@@ -460,7 +460,10 @@ ui <- fluidPage(
                  p("Please specify the amount of the ingredients in ml:")),
                  fluidRow(
                    column(6,
-                          uiOutput("ingredients.in.stock.table"))
+                          uiOutput("ingredients.in.stock.table")),
+                   column(6,
+                          plotOutput(outputId = 'drinks.network.ingredients')
+                          )
                    # column(6,
                    #        uiOutput("amount.ingredients.in.stock.table"))
                  
@@ -842,6 +845,11 @@ server <- function(input, output, session) {
   # })
   # )
   
+  
+  output$drinks.network.ingredients <- renderPlot({
+    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
+                layout = layout_as_star, edge.arrow.size = 2)
+  })
   
   
   ############ Centrality Measures Table of ingredient network ############

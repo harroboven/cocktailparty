@@ -26,6 +26,7 @@ library(ggvis)
 library(dplyr)
 library(RSQLite)
 library(dbplyr)
+library(shiny)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
