@@ -439,11 +439,54 @@ ui <- fluidPage(
                       plotOutput(outputId = "ingredients.price.degree")
                       )
                )
+               )
+             ),
+  
+  ######################################### Page 7 Proposal ########################################
+  
+  tabPanel("Cocktail Party Planner",
+           verticalLayout(
+             titlePanel("TITLE PLACEHOLDER"),
+             fluidRow(
+               wellPanel(
+                 h4("Available Stock"),
+                 selectInput("ingredients.available",
+                             "Available Stock",
+                             l.all.ingredients,
+                             selected = "All",
+                             multiple = TRUE
+                             ),
+                 fluidRow(
+                 p("Please specify the amount of the ingredients in ml:")),
+                 fluidRow(
+                   column(6,
+                          uiOutput("ingredients.in.stock.table"))
+                   # column(6,
+                   #        uiOutput("amount.ingredients.in.stock.table"))
+                 
+                   #          )),
+                   # column(4,
+                   #        fluidRow(
+                   #          column(6,
+                   #                 p(input$ingredients.available[2])),
+                   #          column(6,
+                   #                 textInput("ingredient.2", input$ingredients.available[2], placeholder = "amount in ml"))
+                   #          )),
+                   # column(4,
+                   #        fluidRow(
+                   #          column(6,
+                   #                 p(input$ingredients.available[3])),
+                   #          column(6,
+                   #                 textInput("ingredient.3", input$ingredients.available[3], placeholder = "amount in ml"))
+                   #        ))
+                 )
+               )
+             )
+             )
              )
            )
   )
-  )
-  )
+)
 
 
 
@@ -763,6 +806,41 @@ server <- function(input, output, session) {
     setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
     dt.ingredients.network.summary
   })
+  
+  
+  ################################### PAGE 7 PROPOSAL ##################################
+  
+  output$ingredients.in.stock.table <- renderTable({
+    dt.ingredients.in.stock <- as.data.table(c(input$ingredients.available))
+    colnames(dt.ingredients.in.stock)[1] <- "Ingredients"
+    dt.ingredients.in.stock
+    })
+    
+  
+  # WIP!!!
+  # output$amount.ingredients.in.stock.table <- renderTable({
+  #   ingredient.table.length <- length(input$ingredients.available)
+  #   ingredient.vector <- c(textInput(("ingredient "+ i),
+  #                                    input$ingredients.available[i],
+  #                                    placeholder = "amount in ml"))
+  #   # for(i in ingredient.table.length){
+  #   #   ingredient.vector <- c(ingredient.vector, textInput(("ingredient "+ i),
+  #   #                                    input$ingredients.available[i],
+  #   #                                    placeholder = "amount in ml"))
+  #   # }
+  #   ingredient.amount.input.table <- data.table(ingredient.vector)
+  #   ingredient.amount.input.table
+  #   })
+
+  # 
+  # output$amount.ingredients.in.stock.table <- reactive(renderTable({
+  #   ingredient.table.length <- length(input$ingredients.available)
+  #   ingredient.amount.input.table <- data.table()
+  #   for(i in ingredient.table.length){
+  #     ingredient.amount.input.table$V[i] <- textInput(("ingredient "+ i), input$ingredients.available[i], placeholder = "amount in ml")
+  #   }
+  # })
+  # )
   
   
   
