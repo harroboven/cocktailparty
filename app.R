@@ -172,35 +172,50 @@ ui <- fluidPage(
 ############################################################# PAGE 3 PROPOSAL #############################################################
 
                        # 1st Drop-down item
-                       tabPanel("Exploration by drinks",
+                       tabPanel("Exploration by Drinks",
                                 verticalLayout(
                                   # header of whole page
-                                  titlePanel("Exploration by drinks"),
+                                  titlePanel("Network Exploration by Drinks"),
                                   # 1st block of page
                                   fluidRow(
                                     # left column 
                                     column(6,
-                                      #title of left object
-                                      titlePanel("Summary Statistics of the Network by DRINKS"),
-                                      #content of left object
-                                      p("INTROTEXT", style = "font-family: 'times'; font-si16pt")),
+                                           wellPanel(
+                                             #title of left object
+                                             titlePanel("Summary Statistics of the Network by Drinks"),
+                                             #content of left object
+                                             tableOutput("drinks.network.summary")
+                                             )
+                                           ),
                                     # right column
                                     column(6,
                                            wellPanel(
                                              #title of right object
-                                             titlePanel("Table with summary statistics"),
-                                             #content of right object
-                                             tableOutput("drinks.network.summary")
+                                             titlePanel("Centrality Measures by Drinks"),
+                                             fluidRow(
+                                               column(4, 
+                                                      # RadioButtons - distribution of obs.
+                                                      radioButtons('drinks.centrality.table', 'Choose Centrality Measure:', 
+                                                                   c('Degree' = 'dg',
+                                                                     'Closeness' = 'cl',
+                                                                     'Betweenness' = 'bt',
+                                                                     'Eigenvector' = 'ev'
+                                                                     )
+                                                                   )
+                                                      ),
+                                               column(8, 
+                                                      tableOutput("drinks.centrality.table")
+                                                      )
+                                               )
                                              )
                                            )
                                     ),
-
                                   # 2nd block of page
                                   fluidRow(
                                     # left column
                                     column(6,
                                       #title of left object
-                                      titlePanel("Centrality easures by DRINKS"),
+                                      titlePanel("Centrality Measures by Drinks"),
                                       p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                       # RadioButtons - distribution of obs.
                                       radioButtons('dist.obs', 'Drinks distributed by:', 
@@ -665,12 +680,32 @@ server <- function(input, output, session) {
     dt.drinks.network.summary
     })  
     
-  # Network of ingredients
-  # Network of drinks 
-  
-  
-  # filter drinks by weight X
-
+  # Centrality Measures Table
+  output$drinks.centrality.table <- renderTable({ 
+    
+    drinks.centrality <- switch(input$drinks.centrality.table, 
+                                dg = degree(g.drinks.bp), 
+                                cl = closeness(g.drinks.bp), 
+                                bt = betweenness(g.drinks.bp), 
+                                ev = eigen_centrality(g.drinks.bp)
+                                )
+      
+    l.centrality.min <- list("Min ", min(drinks.centrality))
+    l.centrality.median <- list("Median ", median(drinks.centrality))
+    l.centrality.sd <- list("SD ", sd(drinks.centrality))
+    l.centrality.max <- list("Max ", max(drinks.centrality))
+    
+    dt.drinks.centrality  <- rbind(l.centrality.min, 
+                                   l.centrality.median, 
+                                   l.centrality.sd, 
+                                   l.centrality.max
+                                   )
+                                   
+    dt.drinks.centrality <- as.data.table(dt.drinks.centrality)
+    setnames(dt.drinks.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
+    dt.drinks.centrality
+    })  
+    
   # plot a graph for drinks with weight X
   output$plot.network.of.drinks <- renderPlot({
     g.drinks.bp <- delete.edges(g.drinks.bp, 
