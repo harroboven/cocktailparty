@@ -214,23 +214,6 @@ ui <- fluidPage(
                                   fluidRow(
                                     # left column
                                     column(6,
-                                      #title of left object
-                                      titlePanel("Centrality Measures by Drinks"),
-                                      p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                      # RadioButtons - distribution of obs.
-                                      radioButtons('dist.obs', 'Drinks distributed by:', 
-                                                   c('Degree' = 'dg',
-                                                     'Closeness' = 'cl',
-                                                     'Betweenness' = 'bt',
-                                                     'Eigenvector' = 'ev'))),
-                                    # right column
-                                    column(6,
-                                      titlePanel("Table with centrality measures")
-                                      )),
-                                  # 3rd block of page
-                                  fluidRow(
-                                    # left column
-                                    column(6,
                                       # title of left column
                                       titlePanel("Network of Drinks"),
                                       fluidRow(
