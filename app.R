@@ -266,7 +266,16 @@ ui <- fluidPage(
                                                p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                                # Drink Choice
                                                p("Choose drink", style = "font-family: 'times'; font-si16pt"),
-                                               p("PLACEHOLDER DROP DOWN")
+                                               p("PLACEHOLDER DROP DOWN"),
+                                        selectInput('network.of.one.drink',
+                                                    label = 'Network of one drink',
+                                                    selected = NA,
+                                                    choices = dt.drinks$name
+                                                    ),
+                                        sliderInput('network.of.one.drink.degree',
+                                                    label = 'Choose a degree',
+                                                   min = 1, max = 3, value = 3, step = 1),
+                                        plotOutput(outputId = 'plot.network.of.one.drink')
                                                ),
                                         # right sub-column
                                         column(6,
@@ -353,8 +362,15 @@ ui <- fluidPage(
                                                     p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                                     # Drink Choice
                                                     p("Choose ingredients", style = "font-family: 'times'; font-si16pt"),
-                                                    p("PLACEHOLDER DROP DOWN")
-                                             ),
+                                                    p("PLACEHOLDER DROP DOWN"),
+                                                    selectInput('network.of.one.ingredient',
+                                                                label = 'Network of one ingredient',
+                                                                selected = NA,
+                                                                choices = dt.drinks$ingredient),
+                                                    plotOutput(outputId = 'plot.network.of.one.ingredient')
+                                            
+                                                     ),
+                                             
                                              # right sub-column
                                              column(6,
                                                     p("Placeholder Crazy Network Graph")
@@ -386,25 +402,30 @@ tabPanel("Bipartite visualization",
                            p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
                            p("Max cost per drink", style = "font-family: 'times'; font-si16pt"),
                            # SliderInput - Network of drinks
-                           sliderInput('Max.costs',
-                                       label = 'Max cost per drink',
-                                       min = 1, max = 20, value = c(1,20), step = 1)),
+                           sliderInput('max.cost.ingredient',
+                                       label = 'Max cost per ingredient',
+                                       min = 1, max = 50, value = 50, step = 1),
+                           sliderInput('max.cost.drink',
+                                       label = 'Max cost for at least one drink',
+                                       min = 1, max = 50, value = 100, step = 1)
+                           ),
+                           
                     column(4,
                            p("Drink type", style = "font-family: 'times'; font-si16pt"),
                            p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
                            p("Preparation complexity", style = "font-family: 'times'; font-si16pt"),
                            # SliderInput - Network of drinks
-                           sliderInput('Preparation.complexit',
+                           sliderInput('preparation.complexity',
                                        label = 'Preparation complexity',
-                                       min = 1, max = 20, value = c(1,20), step = 1)),
+                                       min = 1, max = 50, value = 50, step = 1)),
                     column(4,
                            p("Glass type", style = "font-family: 'times'; font-si16pt"),
                            p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
                            p("Popularity", style = "font-family: 'times'; font-si16pt"),
                            # SliderInput - Network of drinks
-                           sliderInput('Popularity',
+                           sliderInput('popularity',
                                        label = 'Popularity',
-                                       min = 1, max = 20, value = c(1,20), step = 1)),
+                                       min = 1, max = 20, value = 80, step = 2)),
                     p("Please choose your ingredient filters", style = "font-family: 'times'; font-si16pt"),
                     column(4,
                            p("Glass type", style = "font-family: 'times'; font-si16pt"),
@@ -413,8 +434,18 @@ tabPanel("Bipartite visualization",
                            # SliderInput - Network of drinks
                            sliderInput('Popularity',
                                        label = 'Popularity',
-                                       min = 1, max = 20, value = c(1,20), step = 1)
+                                       min = 1, max = 80, value = 80, step = 2),
+                           selectInput('alcoholic.nature',
+                                       label = 'Alcoholic nature',
+                                       choices = dt.drinks$is_alcoholic),
+                           selectInput('drink.type',
+                                       label = 'Drink type',
+                                       choices = dt.drinks$category),
+                           selectInput('glass.type',
+                                       label = 'Glass type',
+                                       choices = dt.drinks$glass_type)
                            )
+                           
              ),
              # right column
              column(6,
@@ -446,31 +477,62 @@ tabPanel("Bipartite visualization",
 server <- function(input, output) {
   # Network of ingredients
   # Network of drinks 
-  
-  
-  # filter drinks by weight X
 
   # plot a graph for drinks with weight X
   output$plot.network.of.drinks <- renderPlot({
     g.drinks.bp <- delete.edges(g.drinks.bp, 
                                 E(g.drinks.bp)[weight < input$weight.edges.drink])
                                 
-    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
-                layout = layout_as_star, edge.arrow.size = 2)
+    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 2, edge.color = 'tomato',
+                layout = layout_on_sphere, edge.arrow.size = 1)
     })
-  
-  # filter ingredients by weight X 
-  #g.ingredients <- delete.edges(g.ingredients, E(g.ingredients)[weight > X ])
+ 
   # plot a graph for ingredients with weight X
-  # plot(g.ingredients, vertex.label = NA, vertex.size = 0,3)
+   output$plot.network.of.ingredients <- renderPlot({
+    g.ingredients.bp <- delete.edges(g.ingredients.bp,
+                               E(g.ingredients.bp)[weight < input$weight.edges.ingredient])
+    
+    deg.ingredients <- degree(g.ingredients.bp, mode = 'all')
+    plot.igraph(g.ingredients.bp, vertex.label = NA, vertex.size = deg.ingredients/2, 
+                edge.color = 'tomato', layout = layout_on_sphere,
+                edge.arrow.size = 1)
+  })
+   
+
   
   # create a subgraph with one selected drink X
-  #g.one.drink <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients)$name == 'X')
+  output$plot.network.of.one.drink <- renderPlot({
+    
+    #g.one.drink <- delete.vertices(g.drinks.bp,
+    #                            V(g.drinks.bp)[degree < input$network.of.one.drink.degree])
+    
+  g.one.drink <- make_ego_graph(g.drinks.bp, order = 1, nodes = V(g.drinks.bp)) #$name == 'Brainteaser')
+  plot(g.one.drink[[input$network.of.one.drink]])
+       #plot.igraph(, vertex.size = 1, edge.color = 'tomato', layout = layout_with_graphopt, edge.arrow.size = 4)
+    # plot.igraph(induced.subgraph(g.drinks.ingredients, 
+    #                     ego(graph = g.drinks.ingredients, 1, 'Zoksel', mindist = 0)))
+  })
+   
+   
+  
   
   # create a subgraph with one selected ingredient X
-  #g.one.ingredient <- induced.subgraph(g.drinks.ingredients, V(g.drinks.ingredients$name == 'X'))
+  output$plot.network.of.one.ingredient <- renderPlot({
+    V(g.one.ingredient)
+    g.one.ingredient <- induced.subgraph(g.ingredients.bp, neighbors(g.ingredients.bp, V(g.ingredients.bp)$name == input$network.of.one.ingredient))
+    #V(g.one.ingredient)$name == input$network.of.one.ingredient
+    #V(g.one.ingredient)$degree < input$weight.edges.ingredients
+    plot.igraph(g.one.ingredient, vertex.size = 7,
+                edge.color = 'tomato', layout = layout_with_graphopt,
+                edge.arrow.size = 4)
+  })
   
-
+  # bipartite visualisation
+  output$bipartite.drinks.ingredients <- renderPlot({
+    V(g.drinks.ingredients)$color <- c("steel blue", "orange")[V(g.drinks.ingredients)$type+1]
+    V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
+  plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite) 
+  })
   ################## Oberservation distribution histogram proposal page 1 #################
   output$drinks.dist.barChart <- renderPlot({
     drinks.dist <- switch(input$drinks.dist, 
