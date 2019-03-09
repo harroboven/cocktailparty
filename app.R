@@ -298,11 +298,6 @@ ui <- fluidPage(
                                            )
                                     ),
                                   # 2nd block of page
-                                  sliderInput('weight.edges.ingredient',
-                                              label = 'Min. weight of edges:', 
-                                              min = 1, max = 15, value = 15, step = 1),
-                                  plotOutput(outputId = 'plot.network.of.ingredients'),
-                                  # 3rd block of page
                                   fluidRow(
                                     # left column
                                     column(6,
