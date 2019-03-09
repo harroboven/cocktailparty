@@ -62,7 +62,7 @@ ui <- fluidPage(
                                               titlePanel("Summary Statistics"),
                                               # content of right column
                                               # Content1: Summary Table of dt.drinks
-                                              tableOutput("data.summary")
+                                              tableOutput("summary.statistics")
                                               )
                                             )
                                    ),
@@ -86,8 +86,7 @@ ui <- fluidPage(
                                                              'Glass type' = 'gt',
                                                              'Complexity' = 'cp',
                                                              'Commonality' = 'cm', 
-                                                             'Ingredient Price' = 'ip',
-                                                             'Ingredient Cost per Drink' = 'ic'
+                                                             'Ingredient Price' = 'ip'
                                                              )
                                                       )
                                               )
@@ -112,7 +111,7 @@ ui <- fluidPage(
                         tabPanel("Drinks Explorer", 
                                  titlePanel("Drinks explorer"),
                                  fluidRow(
-                                   column(4,
+                                   column(3,
                                           verticalLayout(
                                             wellPanel(
                                               h4("Filter"),
@@ -126,12 +125,6 @@ ui <- fluidPage(
                                                           min = 1, 
                                                           max = 3, 
                                                           value = c(1, 3),
-                                                          sep = ""
-                                                          ),
-                                              sliderInput("costs.filter", "Ingredient Costs per Drink (in Euro)",
-                                                          min = min(na.omit(dt.drinks.filtered$ingredient_costs)), 
-                                                          max = max(na.omit(dt.drinks.filtered$ingredient_costs)), 
-                                                          value = c(median(na.omit(dt.drinks.filtered$ingredient_costs)), mean(na.omit(dt.drinks.filtered$ingredient_costs))), 
                                                           sep = ""
                                                           ),
                                               selectInput("alcoholic.filter", "Alcoholic Nature",
@@ -153,7 +146,7 @@ ui <- fluidPage(
                                             )
                                           )
                                           ),
-                                   column(8,
+                                   column(9,
                                           verticalLayout(
                                             ggvisOutput("plot1"), 
                                             wellPanel(
@@ -172,45 +165,43 @@ ui <- fluidPage(
 ############################################################# PAGE 3 PROPOSAL #############################################################
 
                        # 1st Drop-down item
-                       tabPanel("Exploration by Drinks",
+                       tabPanel("Exploration by drinks",
                                 verticalLayout(
                                   # header of whole page
-                                  titlePanel("Network Exploration by Drinks"),
+                                  titlePanel("Exploration by drinks"),
                                   # 1st block of page
                                   fluidRow(
                                     # left column 
                                     column(6,
-                                           wellPanel(
-                                             #title of left object
-                                             titlePanel("Summary Statistics of the Network by Drinks"),
-                                             #content of left object
-                                             tableOutput("drinks.network.summary")
-                                             )
-                                           ),
+                                      #title of left object
+                                      titlePanel("Summary Statistics of the Network by DRINKS"),
+                                      #content of left object
+                                      p("INTROTEXT", style = "font-family: 'times'; font-si16pt")),
                                     # right column
                                     column(6,
-                                           wellPanel(
-                                             #title of right object
-                                             titlePanel("Centrality Measures by Drinks"),
-                                             fluidRow(
-                                               column(4, 
-                                                      # RadioButtons - distribution of obs.
-                                                      radioButtons('drinks.centrality.table', 'Choose Centrality Measure:', 
-                                                                   c('Degree' = 'dg',
-                                                                     'Closeness' = 'cl',
-                                                                     'Betweenness' = 'bt',
-                                                                     'Eigenvector' = 'ev'
-                                                                     )
-                                                                   )
-                                                      ),
-                                               column(8, 
-                                                      tableOutput("drinks.centrality.table")
-                                                      )
-                                               )
-                                             )
-                                           )
-                                    ),
+                                      #title of right object
+                                      titlePanel("Table with summary statistics"),
+                                      #content of right object
+                                      img(src = 'A.png', height = 300, width = 300)
+                                      )),
                                   # 2nd block of page
+                                  fluidRow(
+                                    # left column
+                                    column(6,
+                                      #title of left object
+                                      titlePanel("Centrality easures by DRINKS"),
+                                      p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                      # RadioButtons - distribution of obs.
+                                      radioButtons('dist.obs', 'Drinks distributed by:', 
+                                                   c('Degree' = 'dg',
+                                                     'Closeness' = 'cl',
+                                                     'Betweenness' = 'bt',
+                                                     'Eigenvector' = 'ev'))),
+                                    # right column
+                                    column(6,
+                                      titlePanel("Table with centrality measures")
+                                      )),
+                                  # 3rd block of page
                                   fluidRow(
                                     # left column
                                     column(6,
@@ -267,37 +258,40 @@ ui <- fluidPage(
                                   fluidRow(
                                     # left column
                                     column(6,
-                                           wellPanel(
-                                             # title of left object
-                                             titlePanel("Table with summary statistics"),
-                                             # content of left object
-                                             tableOutput("ingredients.network.summary")
-                                             )
-                                           ),
+                                           # title of left object
+                                           titlePanel("Summary Statistics of the Network by INGREDIENTS"),
+                                           # introtext
+                                           p("Introtext", style = "font-family: 'times'; font-si16pt")),
                                     # right column
                                     column(6,
-                                           wellPanel(
-                                             #title of right object
-                                             titlePanel("Centrality Measures by Ingredients"),
-                                             fluidRow(
-                                               column(4, 
-                                                      # RadioButtons - distribution of obs.
-                                                      radioButtons('ingredients.centrality.table', 'Choose Centrality Measure:', 
-                                                                   c('Degree' = 'dg',
-                                                                     'Closeness' = 'cl',
-                                                                     'Betweenness' = 'bt',
-                                                                     'Eigenvector' = 'ev'
-                                                                     )
-                                                                   )
-                                                      ),
-                                               column(8, 
-                                                      tableOutput("ingredients.centrality.table")
-                                                      )
-                                               )
-                                             )
-                                           )
+                                           # title of right object
+                                           titlePanel("Table with summary statistics"),
+                                           # content of right object
+                                           img(src = 'A.png', height = 300, width = 300)
+                                           ),
+                                    sliderInput('weight.edges.ingredient',
+                                                label = 'Min. weight of edges:', 
+                                                min = 1, max = 15, value = 15, step = 1),
+                                    plotOutput(outputId = 'plot.network.of.ingredients')
                                     ),
                                   # 2nd block of page
+                                  fluidRow(
+                                    # left column
+                                    column(6,
+                                           #title of left object
+                                           titlePanel("Summary Statistics of the Network by INGREDIENTS"),
+                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                           # RadioButtons - distribution of obs.
+                                           radioButtons('dist.obs', 'Drinks distributed by:', 
+                                                        c('Degree' = 'dg',
+                                                          'Closeness' = 'cl',
+                                                          'Betweenness' = 'bt',
+                                                          'Eigenvector' = 'ev'))),
+                                    # right column
+                                    column(6,
+                                             titlePanel("Table with centrality measures")
+                                           )),
+                                  # 3rd block of page
                                   fluidRow(
                                     # left column
                                     column(6,
@@ -430,18 +424,15 @@ server <- function(input, output, session) {
                           gt = dt.drinks.filtered$glass_type, 
                           cp = dt.drinks.filtered$complexity,  
                           cm = dt.drinks.filtered$commonality, 
-                          ip = dt.drinks.filtered$ingredient_price,
-                          ic = dt.drinks.filtered$ingredient_costs
+                          ip = dt.drinks.filtered$ingredient_price
                           )
-    
     drinks.dist.title <- switch(input$drinks.dist, 
                                an = "Observation Distribution by Alcoholic Nature",  
                                dt = "Observation Distribution by Drink Type", 
                                gt = "Observation Distribution by Glass Type", 
                                cp = "Observation Distribution by Complexity", 
                                cm = "Observation Distribution by Commonality",  
-                               ip = "Observation Distribution by Ingredient Prices (in Euro)",
-                               ip = "Observation Distribution by Ingredient Costs per Drink (in Euro)"
+                               ip = "Observation Distribution by Ingredient Price"
                                )
     
     drinks.dist.xlab <- switch(input$drinks.dist, 
@@ -450,8 +441,7 @@ server <- function(input, output, session) {
                           gt = "Glass Type", 
                           cp = "Complexity", 
                           cm = "Commonality",  
-                          ip = "Ingredient Price",
-                          ic = "Ingredient Costs per Drink"
+                          ip = "Ingredient Price"
                           )
     
     ggplot(dt.drinks.filtered, aes(drinks.dist)) +
@@ -463,7 +453,7 @@ server <- function(input, output, session) {
     })
   
   #Summary statistics table page 1
-  output$data.summary <- renderTable({
+  output$summary.statistics <- renderTable({
     dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
                                                      num = length(unique(name)),
                                                      min = NA, 
@@ -520,21 +510,13 @@ server <- function(input, output, session) {
                                                             )
                                                         ]
     
-    dt.drinks.summary.ingredient.price <- dt.drinks.filtered[, .(covariates = "Ingredient Prices (in Euro)", 
-                                                      num = length(unique(na.omit(ingredient_price))), 
+    dt.drinks.summary.ingredient.price <- dt.drinks.filtered[, .(covariates = "Ingredient Price", 
+                                                      num = length(unique(ingredient_price)), 
                                                       min = min(na.omit(ingredient_price)), 
                                                       mean = mean(na.omit(ingredient_price)), 
                                                       max = max(na.omit(ingredient_price))
                                                       )
                                                   ]
-    
-    dt.drinks.summary.ingredient.costs <- dt.drinks.filtered[, .(covariates = "Ingredient Costs per Drink (in Euro)", 
-                                                                 num = length(unique(na.omit(ingredient_costs))), 
-                                                                 min = min(na.omit(ingredient_costs)), 
-                                                                 mean = mean(na.omit(ingredient_costs)), 
-                                                                 max = max(na.omit(ingredient_costs))
-                                                                 )
-                                                             ]
     
     # combine the different columns into one summary table
     dt.drinks.summary <- rbind(dt.drinks.summary.name, 
@@ -544,8 +526,7 @@ server <- function(input, output, session) {
                                dt.drinks.summary.ingredient, 
                                dt.drinks.summary.complexity, 
                                dt.drinks.summary.commonality, 
-                               dt.drinks.summary.ingredient.price,
-                               dt.drinks.summary.ingredient.costs
+                               dt.drinks.summary.ingredient.price
                                )
     dt.drinks.summary
     })
@@ -558,9 +539,7 @@ server <- function(input, output, session) {
     min.complexity <- input$complexity.filter[1]
     max.complexity <- input$complexity.filter[2]
     min.commonality <- input$commonality.filter[1]
-    max.commonality <- input$commonality.filter[2]
-    min.costs <- input$costs.filter[1]
-    max.costs <- input$costs.filter[2]  
+    max.commonality <- input$commonality.filter[2]  
     
     # Apply filters
     m <- dt.drinks.filtered %>%
@@ -568,9 +547,7 @@ server <- function(input, output, session) {
         complexity >= min.complexity, 
         complexity <= max.complexity,
         commonality >= min.commonality, 
-        commonality <= max.commonality,
-        ingredient_costs >= min.costs, 
-        ingredient_costs <= max.costs
+        commonality <= max.commonality
         )
       
     # Filter by alcoholic nature
@@ -602,8 +579,7 @@ server <- function(input, output, session) {
       
     paste0("<b>", drink$name, "</b><br>",
           "Alcoholic Nature: ", drink$is_alcoholic, "<br>",
-          "Drink Type: ", drink$category, "<br>",
-          "Ingredient costs: ", drink$ingredient_costs
+          "Drink Type: ", drink$category
           )
     }
     
@@ -634,56 +610,12 @@ server <- function(input, output, session) {
   
   ################################### PAGE 3 PROPOSAL ##################################
   
-  # Summary Table of drinks network
-  output$drinks.network.summary <- renderTable({  
-    
-    l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
-    l.num_edges <- list("Number of Edges", length(E(g.drinks.bp)))
-    l.mean_degree <- list("Average Degree", mean(degree(g.drinks.bp)))
-    l.clust_coeff <- list("Clustering Coefficient", transitivity(g.drinks.bp))
-    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.drinks.bp)))
-    l.mean_path_length <- list("Average Path Length", mean(distances(g.drinks.bp)))
-    l.diameter <- list("Diameter", diameter(g.drinks.bp))
-    
-    dt.drinks.network.summary <- rbind(l.num_nodes,
-                                       l.num_edges,
-                                       l.mean_degree, 
-                                       l.clust_coeff, 
-                                       l.mean_betweenness, 
-                                       l.mean_path_length, 
-                                       l.diameter
-                                       )
-    dt.drinks.network.summary <- as.data.table(dt.drinks.network.summary)
-    setnames(dt.drinks.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
-    dt.drinks.network.summary
-    })  
-    
-  # Centrality Measures Table of drink network
-  output$drinks.centrality.table <- renderTable({ 
-    
-    drinks.centrality <- switch(input$drinks.centrality.table, 
-                                dg = degree(g.drinks.bp), 
-                                cl = closeness(g.drinks.bp), 
-                                bt = betweenness(g.drinks.bp), 
-                                ev = eigen_centrality(g.drinks.bp)
-                                )
-      
-    l.centrality.min <- list("Min ", min(drinks.centrality))
-    l.centrality.median <- list("Median ", median(drinks.centrality))
-    l.centrality.sd <- list("SD ", sd(drinks.centrality))
-    l.centrality.max <- list("Max ", max(drinks.centrality))
-    
-    dt.drinks.centrality  <- rbind(l.centrality.min, 
-                                   l.centrality.median, 
-                                   l.centrality.sd, 
-                                   l.centrality.max
-                                   )
-                                   
-    dt.drinks.centrality <- as.data.table(dt.drinks.centrality)
-    setnames(dt.drinks.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
-    dt.drinks.centrality
-    })  
-    
+  # Network of ingredients
+  # Network of drinks 
+  
+  
+  # filter drinks by weight X
+
   # plot a graph for drinks with weight X
   output$plot.network.of.drinks <- renderPlot({
     g.drinks.bp <- delete.edges(g.drinks.bp, 
@@ -692,59 +624,7 @@ server <- function(input, output, session) {
     plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
                 layout = layout_as_star, edge.arrow.size = 2)
   })
-  
-  ################################### PAGE 4 PROPOSAL ##################################
-  
-  # Summary Table of ingredient network
-  output$ingredients.network.summary <- renderTable({  
     
-    l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
-    l.num_edges <- list("Number of Edges", length(E(g.ingredients.bp)))
-    l.mean_degree <- list("Average Degree", mean(degree(g.ingredients.bp)))
-    l.clust_coeff <- list("Clustering Coefficient", transitivity(g.ingredients.bp))
-    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.ingredients.bp)))
-    l.mean_path_length <- list("Average Path Length", mean(distances(g.ingredients.bp)))
-    l.diameter <- list("Diameter", diameter(g.ingredients.bp))
-    
-    dt.ingredients.network.summary <- rbind(l.num_nodes,
-                                       l.num_edges,
-                                       l.mean_degree, 
-                                       l.clust_coeff, 
-                                       l.mean_betweenness, 
-                                       l.mean_path_length, 
-                                       l.diameter
-    )
-    dt.ingredients.network.summary <- as.data.table(dt.ingredients.network.summary)
-    setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
-    dt.ingredients.network.summary
-  })
-  
-  # Centrality Measures Table of ingredient network
-  output$ingredients.centrality.table <- renderTable({ 
-    
-    ingredients.centrality <- switch(input$ingredients.centrality.table, 
-                                     dg = degree(g.ingredients.bp), 
-                                     cl = closeness(g.ingredients.bp), 
-                                     bt = betweenness(g.ingredients.bp), 
-                                     ev = eigen_centrality(g.ingredients.bp)
-                                     )
-    
-    l.centrality.min <- list("Min", min(ingredients.centrality))
-    l.centrality.median <- list("Median", median(ingredients.centrality))
-    l.centrality.sd <- list("SD", sd(ingredients.centrality))
-    l.centrality.max <- list("Max", max(ingredients.centrality))
-    
-    dt.ingredients.centrality  <- rbind(l.centrality.min, 
-                                   l.centrality.median, 
-                                   l.centrality.sd, 
-                                   l.centrality.max
-                                   )
-    
-    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
-    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
-    dt.ingredients.centrality
-  }) 
-  
     }
 
 #shinyApp()
