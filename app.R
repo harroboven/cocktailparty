@@ -214,23 +214,6 @@ ui <- fluidPage(
                                   fluidRow(
                                     # left column
                                     column(6,
-                                      #title of left object
-                                      titlePanel("Centrality Measures by Drinks"),
-                                      p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                      # RadioButtons - distribution of obs.
-                                      radioButtons('dist.obs', 'Drinks distributed by:', 
-                                                   c('Degree' = 'dg',
-                                                     'Closeness' = 'cl',
-                                                     'Betweenness' = 'bt',
-                                                     'Eigenvector' = 'ev'))),
-                                    # right column
-                                    column(6,
-                                      titlePanel("Table with centrality measures")
-                                      )),
-                                  # 3rd block of page
-                                  fluidRow(
-                                    # left column
-                                    column(6,
                                       # title of left column
                                       titlePanel("Network of Drinks"),
                                       fluidRow(
@@ -284,42 +267,37 @@ ui <- fluidPage(
                                   fluidRow(
                                     # left column
                                     column(6,
-                                           # title of left object
-                                           titlePanel("Summary Statistics of the Network by INGREDIENTS"),
-                                           # introtext
-                                           p("Introtext", style = "font-family: 'times'; font-si16pt")),
-                                    # right column
-                                    column(6,
                                            wellPanel(
-                                             # title of right object
+                                             # title of left object
                                              titlePanel("Table with summary statistics"),
-                                             # content of right object
+                                             # content of left object
                                              tableOutput("ingredients.network.summary")
                                              )
                                            ),
-                                    sliderInput('weight.edges.ingredient',
-                                                label = 'Min. weight of edges:', 
-                                                min = 1, max = 15, value = 15, step = 1),
-                                    plotOutput(outputId = 'plot.network.of.ingredients')
-                                    ),
-                                  # 2nd block of page
-                                  fluidRow(
-                                    # left column
-                                    column(6,
-                                           #title of left object
-                                           titlePanel("Summary Statistics of the Network by INGREDIENTS"),
-                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                           # RadioButtons - distribution of obs.
-                                           radioButtons('dist.obs', 'Drinks distributed by:', 
-                                                        c('Degree' = 'dg',
-                                                          'Closeness' = 'cl',
-                                                          'Betweenness' = 'bt',
-                                                          'Eigenvector' = 'ev'))),
                                     # right column
                                     column(6,
-                                             titlePanel("Table with centrality measures")
-                                           )),
-                                  # 3rd block of page
+                                           wellPanel(
+                                             #title of right object
+                                             titlePanel("Centrality Measures by Ingredients"),
+                                             fluidRow(
+                                               column(4, 
+                                                      # RadioButtons - distribution of obs.
+                                                      radioButtons('ingredients.centrality.table', 'Choose Centrality Measure:', 
+                                                                   c('Degree' = 'dg',
+                                                                     'Closeness' = 'cl',
+                                                                     'Betweenness' = 'bt',
+                                                                     'Eigenvector' = 'ev'
+                                                                     )
+                                                                   )
+                                                      ),
+                                               column(8, 
+                                                      tableOutput("ingredients.centrality.table")
+                                                      )
+                                               )
+                                             )
+                                           )
+                                    ),
+                                  # 2nd block of page
                                   fluidRow(
                                     # left column
                                     column(6,
@@ -656,7 +634,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 3 PROPOSAL ##################################
   
-  # Summary Table
+  # Summary Table of drinks network
   output$drinks.network.summary <- renderTable({  
     
     l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
@@ -680,7 +658,7 @@ server <- function(input, output, session) {
     dt.drinks.network.summary
     })  
     
-  # Centrality Measures Table
+  # Centrality Measures Table of drink network
   output$drinks.centrality.table <- renderTable({ 
     
     drinks.centrality <- switch(input$drinks.centrality.table, 
@@ -717,7 +695,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 4 PROPOSAL ##################################
   
-  # Summary Table
+  # Summary Table of ingredient network
   output$ingredients.network.summary <- renderTable({  
     
     l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
@@ -739,7 +717,33 @@ server <- function(input, output, session) {
     dt.ingredients.network.summary <- as.data.table(dt.ingredients.network.summary)
     setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
     dt.ingredients.network.summary
-  })  
+  })
+  
+  # Centrality Measures Table of ingredient network
+  output$ingredients.centrality.table <- renderTable({ 
+    
+    ingredients.centrality <- switch(input$ingredients.centrality.table, 
+                                     dg = degree(g.ingredients.bp), 
+                                     cl = closeness(g.ingredients.bp), 
+                                     bt = betweenness(g.ingredients.bp), 
+                                     ev = eigen_centrality(g.ingredients.bp)
+                                     )
+    
+    l.centrality.min <- list("Min", min(ingredients.centrality))
+    l.centrality.median <- list("Median", median(ingredients.centrality))
+    l.centrality.sd <- list("SD", sd(ingredients.centrality))
+    l.centrality.max <- list("Max", max(ingredients.centrality))
+    
+    dt.ingredients.centrality  <- rbind(l.centrality.min, 
+                                   l.centrality.median, 
+                                   l.centrality.sd, 
+                                   l.centrality.max
+                                   )
+    
+    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
+    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
+    dt.ingredients.centrality
+  }) 
   
     }
 
