@@ -423,20 +423,44 @@ ui <- fluidPage(
   
   ######################################### Part 3 ########################################
   
-  navbarMenu("tab 3", 
+  navbarMenu("Network Analysis", 
              
   ######################################### Page 6 Proposal ########################################
           
   # 1st Drop-down item
-  tabPanel("Impact characteristics on centrality",
+  tabPanel("Exploring Centrality Characteristics by Drinks",
            verticalLayout(
-             titlePanel("TITLE PLACEHOLDER"),
+             titlePanel("Centrality Explorer by Drinks"),
              fluidRow(
-               column(6,
-                      plotOutput(outputId = "drinks.complexity.degree")
-               ),
-               column(6,
-                      plotOutput(outputId = "ingredients.price.degree")
+               column(4,
+                      wellPanel(
+                        titlePanel("Filter")
+                        )
+                      ),
+               column(8,
+                      wellPanel(
+                        plotOutput(outputId = "drinks.network.analytics")  
+                        )
+                      )
+               )
+             )
+           ),
+  
+  ######################################### Page 7 Proposal ########################################
+  
+  tabPanel("Exploring Centrality Characteristics by Ingredients",
+           verticalLayout(
+             titlePanel("Centrality Explorer by Ingredients"),
+             fluidRow(
+               column(4,
+                      wellPanel(
+                        titlePanel("Filter")
+                        )
+                      ),
+               column(8,
+                      wellPanel(
+                        plotOutput(outputId = "ingredients.network.analytics")
+                        )
                       )
                )
              )
@@ -792,13 +816,26 @@ server <- function(input, output, session) {
     dt.ingredients.centrality
   })
   
-  output$ingredients.price.degree <- renderPlot({
-    ggplot(dt.ingredients.degrees.merged, aes(x = log_ingredient_price, y = degree)) + geom_point() + geom_smooth(method='lm')
+  ################################### PAGE 6 PROPOSAL ##################################
+  
+  output$drinks.network.analytics <- renderPlot({
+    
+    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + 
+      geom_point() + 
+      geom_smooth(method='lm')
   })
   
-  output$drinks.complexity.degree <- renderPlot({
-    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + geom_point() + geom_smooth(method='lm')
+  ################################### PAGE 7 PROPOSAL ################################## 
+  
+  output$ingredients.network.analytics <- renderPlot({
+    
+    ggplot(dt.ingredients.degrees.merged, aes(x = log_ingredient_price, y = degree)) + 
+      geom_point() + 
+      geom_smooth(method='lm')
   })
+  
+
+  
   }
 
 ############################################################# ShinyApp #############################################################
