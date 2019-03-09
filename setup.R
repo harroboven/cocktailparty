@@ -85,7 +85,7 @@ dt.longdrinks[, quantity := trimws(gsub("[A-Za-z]*", "", amount))]
 dt.longdrinks[, unit := trimws(gsub("[0-9//.,-]*", "", amount))]
 
 # Standardize the unit as much as possible
-standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp")
+standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp", "dash", "part")
 
 standardize.unit <- function(unit) {
   for (i in 1:length(standard.units)) {
@@ -215,16 +215,20 @@ dt.longdrinks <- dt.commonality.longdrinks.pricing
 # Convert std.units to "g" and "ml"
 unit.conversion.factor <- c(29.6, 10, 5, 1, 44, 100, 473, 1000, 454, 237, 14)
 
-standardize.quantity <- function(quantity, std.unit) {
-  for (i in 1:length(standard.units)) {
-    if (std.unit %in% standard.units[[i]]) {
-      return(unit.conversion.factor[i] * quantity)
-    } 
+standardize.quantity <- function(drink, quantity, std.unit) {
+  if ("part" %in% dt.longdrinks[drink == name, std.unit]) {
+    return(1/length(dt.longdrinks[drink == name, std.unit]))
+  } else {
+    for (i in 1:length(standard.units)) {
+      if (std.unit %in% standard.units[[i]]) {
+        return(unit.conversion.factor[i] * quantity)
+      } 
+    }
+    return("unknown")
   }
-  return(quantity)
 }
 
-dt.longdrinks$std.quantity <- mapply(standardize.quantity, dt.longdrinks$quantity, dt.longdrinks$std.unit)
+dt.longdrinks$std.quantity <- mapply(standardize.quantity, dt.longdrinks$name, dt.longdrinks$quantity, dt.longdrinks$std.unit)
 
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
