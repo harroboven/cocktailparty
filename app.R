@@ -434,12 +434,25 @@ ui <- fluidPage(
              fluidRow(
                column(4,
                       wellPanel(
-                        titlePanel("Filter")
+                        h4("Filter"),
+                        sliderInput("analysis.drinks.filter", "Ingredients Cost per Drink",
+                                    min = min(dt.drink.degrees$adj_ingredients_cost), 
+                                    max = max(dt.drink.degrees$adj_ingredients_cost), 
+                                    value = c(median(dt.drink.degrees$adj_ingredients_cost), mean(dt.drink.degrees$adj_ingredients_cost)), 
+                                    sep = ""
+                                    )
                         )
                       ),
                column(8,
-                      wellPanel(
-                        plotOutput(outputId = "drinks.network.analytics")  
+                      verticalLayout(
+                        wellPanel(
+                          ggvisOutput("drinks_analysis")
+                          ),
+                        wellPanel(
+                          span("Number of Drinks selected:", 
+                               textOutput("drinks.analysis.n_drinks")
+                               )
+                          )
                         )
                       )
                )
@@ -633,6 +646,7 @@ server <- function(input, output, session) {
     })
   
   
+  
   ################################### PAGE 2 PROPOSAL ##################################
 
   # Filter the drinks, returning a data frame
@@ -718,6 +732,7 @@ server <- function(input, output, session) {
       })
   
   
+    
   ################################### PAGE 3 PROPOSAL ##################################
   
   ############ Summary Table of drinks network ############
@@ -779,6 +794,7 @@ server <- function(input, output, session) {
                 layout = layout_as_star, edge.arrow.size = 2)
   })
   
+  
   ################################### PAGE 4 PROPOSAL ##################################
   
   ############ Summary Table of ingredient network ############
@@ -833,15 +849,66 @@ server <- function(input, output, session) {
     dt.ingredients.centrality
   })
   
+  
   ################################### PAGE 6 PROPOSAL ##################################
   
-  
-  
-  output$drinks.network.analytics <- renderPlot({
+  # Filter the drinks, returning a data frame
+  dt.analysis.drinks.filter <- reactive({
+    # Due to dplyr issue #318, we need temp variables for input values
+    min.ingredients.cost <- input$analysis.drinks.filter[1]
+    max.ingredients.cost <- input$analysis.drinks.filter[2] 
     
-    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + 
-      geom_point() + 
-      geom_smooth(method='lm')
+    # Apply filters
+    m <- dt.drink.degrees %>%
+      filter(
+        adj_ingredients_cost >= min.ingredients.cost, 
+        adj_ingredients_cost <= max.ingredients.cost
+      )
+    
+    m <- as.data.frame(m)
+    
+    m
+  })
+  
+  # Generating tooltip text
+  drinks_tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
+    
+    #Pick out the drink with this ID
+    dt.drink.degrees <- isolate(dt.analysis.drinks.filter())
+    analysis.drink <- dt.drink.degrees[dt.drink.degrees$id == x$id, ]
+    
+    paste0("<b>", analysis.drink$name, "</b><br>", 
+           "Degree of Drink: ", analysis.drink$degree, "<br>", 
+           "Ingredient Price: ", analysis.drink$adj_ingredients_cost
+    )
+  }
+  
+  # A reactive expression with the ggvis plot
+  vis <- reactive({
+    
+    xvar <- prop("x", as.symbol("adj_ingredients_cost"))
+    yvar <- prop("y", as.symbol("degree"))
+    
+    dt.analysis.drinks.filter %>%
+      ggvis(x = xvar, y = yvar) %>%
+      layer_points(size := 50, size.hover := 200,
+                   fillOpacity := 0.2, fillOpacity.hover := 0.5, 
+                   key := ~id) %>%
+      layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
+      add_tooltip(drinks_tooltip, "hover") %>%
+      add_axis("x", title = "adj_ingredients_cost") %>%
+      add_axis("y", title = "degree") %>%
+      set_options(width = 636, height = 636)
+  })
+  
+  vis %>% bind_shiny("drinks_analysis")
+  
+  output$drinks.analysis.n_drinks <- renderText({ 
+    
+    nrow(dt.analysis.drinks.filter()) 
+    
   })
   
   ################################### PAGE 7 PROPOSAL ##################################

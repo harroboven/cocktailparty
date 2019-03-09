@@ -173,8 +173,14 @@ dt.drink.degrees <- merge(dt.drink.degrees,
                           dt.drinks, 
                           by = "name" )
 dt.drink.degrees <- dt.drink.degrees[, 
-                                     list(name, degree, complexity)]
+                                     list(name, degree, complexity, adj_ingredients_cost)]
 dt.drink.degrees$log_complexity <- log(dt.drink.degrees$complexity)
+
+dt.drink.degrees <- unique(dt.drink.degrees)
+
+# add id for ingredients to enable tooltip feature
+dt.drink.degrees <- dt.drink.degrees[, id := 1:length(name)]
+
 
 ################################### PAGE 7 PROPOSAL ##################################
 # Calculate the datatable for advanced analysis
