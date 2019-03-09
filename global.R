@@ -17,37 +17,15 @@ setnames(dt.drinks, old = "price", new = "ingredient_price")
 dt.drinks[, c("amount", "category", "unit", "instructions", "glass_type", "std.unit", "quantity") := NULL]
 
 # Rename some of the standardized columns the way the non-standardized were called for ease of use and backwards compatibility
-setnames(dt.drinks, 
-         old = c("std.quantity", "std.glass", "std.category", "common_final"), 
-         new = c("quantity", "glass_type", "category", "commonality")
-         )
+setnames(dt.drinks, old = c("std.quantity", "std.glass", "std.category", "common_final"), new = c("quantity", "glass_type", "category", "commonality"))
 
 # Delete thumbnail (not using it) and era (very few observations).
 dt.drinks[, c("thumbnail", "era") := NULL]
 
-########### Additional covariates ###############
-# add cost of ingredients per drink
-dt.drinks <- dt.drinks[, ingredient_price_per_drink := (ingredient_price / package_size * quantity), by = ingredient]
-dt.drinks <- dt.drinks[, ingredient_costs := sum(ingredient_price_per_drink), by = name]
-
-########### Ordering of columns #############
 # Reorder the columns for convenience
-dt.drinks <- dt.drinks[, c("id", 
-                           "ingredient", 
-                           "quantity", 
-                           "measurement", 
-                           "package_size", 
-                           "ingredient_price", 
-                           "ingredient_price_per_drink", 
-                           "name", 
-                           "is_alcoholic", 
-                           "category", 
-                           "glass_type", 
-                           "commonality", 
-                           "complexity", 
-                           "ingredient_costs",
-                           "double_observation"
-                           )]
+colnames(dt.drinks)
+dt.drinks <- dt.drinks[, c("id", "ingredient", "quantity", "measurement", "package_size", "ingredient_price", "name", "is_alcoholic", 
+                           "category", "glass_type", "commonality", "complexity", "double_observation")]
 
 ######## Buttons ##########
 # preparing dt.drinks for button work by ensuring that only unique drinks
@@ -83,11 +61,11 @@ g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, .(name, ingredient)],
 g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
 g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 
-# Drinks Explorer: Variables that can be put on the x and y axes
+# Variables that can be put on the x and y axes
 axis_vars <- c(
   "Recipe Complexity" = "complexity",
   "Commonality" = "commonality",
-  "Ingredient Costs per Drink (in Euro)" = "ingredient_costs"
+  "Ingredient price" = "ingredient_price"
 )
 
 
