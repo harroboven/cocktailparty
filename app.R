@@ -1,3 +1,4 @@
+############################################################# JAVASCRIPT #############################################################
 
 # For dropdown menu
 actionLink <- function(inputId, ...) {
@@ -7,109 +8,124 @@ actionLink <- function(inputId, ...) {
          ...)
   }
 
+############################################################# UI #############################################################
 
-# Define UI for cocktail app ----
 ui <- fluidPage(
   #Overall theme of our Shiny App
-  theme = shinytheme("flatly"),
+  theme = shinytheme("flatly"), 
+  
+  ######################################### Welcome Page ########################################
+  
   # Title and tabpanels with drop-downs
-  navbarPage(title = "Shiny Drinks",
+  navbarPage(title = "Shiny Drinks", 
              #Start Page
              fluidRow(
                #left column
                column(4,
-                      img(src = 'cocktail-glass.png', height = 300, width = 300)
+                      wellPanel(
+                        img(src = 'cocktail-glass.png', height = 300, width = 300)
+                        )
                       ),
                #right column
-               column(8,
-                      verticalLayout(
-                        # header of right column
-                        titlePanel("Let's have some drinks!"),
-                        # content of right column
-                        p("***Relevance Text***", 
-                          style = "font-family: 'times'; font-si16pt"
+               column(8, 
+                      wellPanel(
+                        verticalLayout(
+                          # header of right column
+                          titlePanel("Let's have some drinks!"),
+                          # content of right column
+                          p("***Relevance Text***", 
+                            style = "font-family: 'times'; font-si16pt"
+                            )
+                          )
                         )
                       )
-                      )
                ),
-            # 1st Drop-down tabpanels
-             navbarMenu("Data Desription",
-                        
-############################################################# PAGE 1 PROPOSAL ############################################################# 
-
-                        # 1st Drop-down item
-                        tabPanel("Summary of Data", 
+  
+  ######################################### Part 1 ########################################
+  
+  # 1st Drop-down tabpanels
+  navbarMenu("Data Desription", 
+             
+             ######################################### Page 1 Proposal ########################################
+             # 1st Drop-down item
+             tabPanel("Summary of Data", 
+                      verticalLayout(
+                        # header of whole page
+                        titlePanel("Summary of Data"),
+                        # 1st block of page
+                        fluidRow(
+                          # left column
+                          column(6,
                                  verticalLayout(
-                                   # header of whole page
-                                   titlePanel("Summary of Data"),
-                                   # 1st block of page
-                                   fluidRow(
-                                     # left column
-                                     column(6,
-                                            verticalLayout(
-                                              #Header of left column
-                                              titlePanel("Explanation of Summary"),
-                                              #content of left column
-                                              p("INTROTEXT", 
-                                                style = "font-family: 'times'; font-si16pt"
-                                                )
-                                              )
-                                            ),
-                                     # right column
-                                     column(6,
-                                            verticalLayout( 
-                                              # Header right column
-                                              titlePanel("Summary Statistics"),
-                                              # content of right column
-                                              # Content1: Summary Table of dt.drinks
-                                              tableOutput("data.summary")
-                                              )
-                                            )
-                                   ),
-                                   # 2nd block of page
-                                   fluidRow(
-                                     # left column
-                                     column(6,
-                                            verticalLayout(
-                                              #Header of left column
-                                              titlePanel("Distribution of Observations"),
-                                              #content of left column
-                                              p("INTROTEXT", 
-                                                style = "font-family: 'times'; font-si16pt"
-                                                ),
-                                              # RadioButtons - distribution of obs.
-                                         radioButtons(inputId = 'drinks.dist', 
-                                                      label = 'Drinks distributed by:', 
-                                                      choices = 
-                                                        list('Alcoholic nature' = 'an',
-                                                             'Drink type' = 'dt',
-                                                             'Glass type' = 'gt',
-                                                             'Complexity' = 'cp',
-                                                             'Commonality' = 'cm', 
-                                                             'Ingredient Price' = 'ip',
-                                                             'Ingredient Cost per Drink' = 'ic'
-                                                             )
-                                                      )
-                                              )
-                                     ),
-                                     # right column
-                                     column(6, 
-                                            verticalLayout( 
-                                              # Header right object
-                                              titlePanel(" "),
-                                              # content of right object
-                                              # Distribution Barchart
-                                              plotOutput(outputId = "drinks.dist.barChart")
-                                              )
-                                            )
+                                   #Header of left column
+                                   titlePanel("Explanation of Summary"),
+                                   #content of left column
+                                   p("INTROTEXT", 
+                                     style = "font-family: 'times'; font-si16pt"
+                                   )
+                                 )
+                          ),
+                          # right column
+                          column(6,
+                                 wellPanel(
+                                   verticalLayout( 
+                                     # Header right column
+                                     titlePanel("Summary Statistics"),
+                                     # content of right column
+                                     # Content1: Summary Table of dt.drinks
+                                     tableOutput("data.summary")
+                                     )
+                                   )
+                                 )
+                          ),
+                        # 2nd block of page
+                        fluidRow(
+                          # left column
+                          column(6,
+                                 wellPanel(
+                                   verticalLayout(
+                                     #Header of left column
+                                     titlePanel("Distribution of Observations"),
+                                     #content of left column
+                                     p("INTROTEXT", 
+                                       style = "font-family: 'times'; font-si16pt"
+                                       ),
+                                     # RadioButtons - distribution of obs.
+                                     radioButtons(inputId = 'drinks.dist', 
+                                                  label = 'Drinks distributed by:', 
+                                                  choices = 
+                                                    list('Alcoholic nature' = 'an',
+                                                         'Drink type' = 'dt',
+                                                         'Glass type' = 'gt',
+                                                         'Complexity' = 'cp',
+                                                         'Commonality' = 'cm', 
+                                                         'Ingredient Price' = 'ip',
+                                                         'Ingredient Cost per Drink' = 'ic'
+                                                         )
+                                                  )
                                      )
                                    )
                                  ),
-
-############################################################# PAGE 2 PROPOSAL ############################################################# 
-
-                        # 2nd Drop-down item
-                        tabPanel("Drinks Explorer", 
+                          # right column
+                          column(6, 
+                                 wellPanel(
+                                   verticalLayout( 
+                                     # Header right object
+                                     titlePanel(" "),
+                                     # content of right object
+                                     # Distribution Barchart
+                                     plotOutput(outputId = "drinks.dist.barChart")
+                                     )
+                                   )
+                                 )
+                          )
+                        )
+                      ), 
+             
+             ######################################### Page 2 Proposal ########################################
+             
+             # 2nd Drop-down item
+             tabPanel("Drinks Explorer", 
                                  titlePanel("Drinks explorer"),
                                  fluidRow(
                                    column(4,
@@ -150,8 +166,8 @@ ui <- fluidPage(
                                             wellPanel(
                                               selectInput("xvar", "X-axis variable", axis_vars, selected = "complexity"),
                                               selectInput("yvar", "Y-axis variable", axis_vars, selected = "ingredient_price")
+                                              )
                                             )
-                                          )
                                           ),
                                    column(8,
                                           verticalLayout(
@@ -164,265 +180,267 @@ ui <- fluidPage(
                                             )
                                           )
                                    )
+                      )
+             ),
+  
+  ######################################### Part 2 ########################################
+  
+  # 2nd tabpanel
+  navbarMenu("Networking Exploration", 
+             
+             ######################################### Page 3 Proposal ########################################
+             
+             # 1st Drop-down item
+             tabPanel("Exploration by Drinks", 
+                      verticalLayout(
+                        # header of whole page
+                        titlePanel("Network Exploration by Drinks"),
+                        # 1st block of page
+                        fluidRow(
+                          # left column 
+                          column(6,
+                                 wellPanel(
+                                   #title of left object
+                                   titlePanel("Summary Statistics of the Network by Drinks"),
+                                   #content of left object
+                                   tableOutput("drinks.network.summary")
                                  )
-),
-            # 2nd tabpanel
-            navbarMenu("Networking Exploration",
-                       
-############################################################# PAGE 3 PROPOSAL #############################################################
-
-                       # 1st Drop-down item
-                       tabPanel("Exploration by Drinks",
-                                verticalLayout(
-                                  # header of whole page
-                                  titlePanel("Network Exploration by Drinks"),
-                                  # 1st block of page
-                                  fluidRow(
-                                    # left column 
-                                    column(6,
-                                           wellPanel(
-                                             #title of left object
-                                             titlePanel("Summary Statistics of the Network by Drinks"),
-                                             #content of left object
-                                             tableOutput("drinks.network.summary")
-                                             )
-                                           ),
-                                    # right column
-                                    column(6,
-                                           wellPanel(
-                                             #title of right object
-                                             titlePanel("Centrality Measures by Drinks"),
-                                             fluidRow(
-                                               column(4, 
-                                                      # RadioButtons - distribution of obs.
-                                                      radioButtons('drinks.centrality.table', 'Choose Centrality Measure:', 
-                                                                   c('Degree' = 'dg',
-                                                                     'Closeness' = 'cl',
-                                                                     'Betweenness' = 'bt',
-                                                                     'Eigenvector' = 'ev'
-                                                                     )
-                                                                   )
-                                                      ),
-                                               column(8, 
-                                                      tableOutput("drinks.centrality.table")
-                                                      )
-                                               )
-                                             )
-                                           )
-                                    ),
-                                  # 2nd block of page
-                                  fluidRow(
-                                    # left column
-                                    column(6,
-                                      # title of left column
-                                      titlePanel("Network of Drinks"),
-                                      fluidRow(
-                                        # left sub-column
-                                        column(6,
-                                        # left sub-column
+                          ),
+                          # right column
+                          column(6,
+                                 wellPanel(
+                                   #title of right object
+                                   titlePanel("Centrality Measures by Drinks"),
+                                   fluidRow(
+                                     column(4, 
+                                            # RadioButtons - distribution of obs.
+                                            radioButtons('drinks.centrality.table', 'Choose Centrality Measure:', 
+                                                         c('Degree' = 'dg',
+                                                           'Closeness' = 'cl',
+                                                           'Betweenness' = 'bt',
+                                                           'Eigenvector' = 'ev'
+                                                         )
+                                            )
+                                     ),
+                                     column(8, 
+                                            tableOutput("drinks.centrality.table")
+                                     )
+                                   )
+                                 )
+                          )
+                        ),
+                        # 2nd block of page
+                        fluidRow(
+                          # left column
+                          column(6,
+                                 # title of left column
+                                 titlePanel("Network of Drinks"),
+                                 fluidRow(
+                                   # left sub-column
+                                   column(6,
+                                          # left sub-column
                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                           p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
                                           # SliderInput - Network of drinks
-                                        sliderInput('weight.edges.drink',
-                                                    label = 'Min. weight of edges:', 
-                                                    min = 1, max = 15, value = 15, step = 1),
-                                        plotOutput(outputId = 'plot.network.of.drinks')
-                                        ),
-                                        
-                                        # right sub-column
-                                        column(6,
-                                               # right sub-column
-                                               p("Placeholder Crazy Network Graph")))),
-                                    # right object
-                                    column(6,
-                                      # title of right column
-                                      titlePanel("Network of one Drinks"),
-                                      fluidRow(
-                                        # left sub-column
-                                        column(6,
-                                               # Introtext
-                                               p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                               # Drink Choice
-                                               p("Choose drink", style = "font-family: 'times'; font-si16pt"),
-                                               p("PLACEHOLDER DROP DOWN")
-                                               ),
-                                        # right sub-column
-                                        column(6,
-                                               p("Placeholder Crazy Network Graph")
-                                               )
+                                          sliderInput('weight.edges.drink',
+                                                      label = 'Min. weight of edges:', 
+                                                      min = 1, max = 15, value = 15, step = 1),
+                                          plotOutput(outputId = 'plot.network.of.drinks')
+                                          ),
+                                   # right sub-column
+                                   column(6,
+                                          # right sub-column
+                                          p("Placeholder Crazy Network Graph")))),
+                          # right object
+                          column(6,
+                                 # title of right column
+                                 titlePanel("Network of one Drinks"),
+                                 fluidRow(
+                                   # left sub-column
+                                   column(6,
+                                          # Introtext
+                                          p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                          # Drink Choice
+                                          p("Choose drink", style = "font-family: 'times'; font-si16pt"),
+                                          p("PLACEHOLDER DROP DOWN")
+                                          ),
+                                   # right sub-column
+                                   column(6,
+                                          p("Placeholder Crazy Network Graph")
+                                          )
+                                   )
+                                 )
+                          )
+                        )
+                      ), 
+             
+             ######################################### Page 4 Proposal ########################################
+             
+             # 2nd Drop-down item
+             tabPanel("Exploration by ingredients", 
+                      verticalLayout(
+                        # header of whole page
+                        titlePanel("Exploration by ingredients"),
+                        # 1st block of page
+                        fluidRow(
+                          # left column
+                          column(6,
+                                 wellPanel(
+                                   # title of left object
+                                   titlePanel("Table with summary statistics"),
+                                   # content of left object
+                                   tableOutput("ingredients.network.summary")
+                                   )
+                                 ),
+                          # right column
+                          column(6,
+                                 wellPanel(
+                                   #title of right object
+                                   titlePanel("Centrality Measures by Ingredients"),
+                                   fluidRow(
+                                     column(4, 
+                                            # RadioButtons - distribution of obs.
+                                            radioButtons('ingredients.centrality.table', 'Choose Centrality Measure:', 
+                                                         c('Degree' = 'dg',
+                                                           'Closeness' = 'cl',
+                                                           'Betweenness' = 'bt',
+                                                           'Eigenvector' = 'ev'
+                                                           )
+                                                         )
+                                            ),
+                                     column(8, 
+                                            tableOutput("ingredients.centrality.table")
+                                            )
+                                     )
+                                   )
+                                 )
+                          ),
+                        # 2nd block of page
+                        fluidRow(
+                          # left column
+                          column(6,
+                                 # title of left column
+                                 titlePanel("Network of Ingredients"),
+                                 # 1st sub-block
+                                 fluidRow(
+                                   column(6,
+                                          # left sub-column
+                                          p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                          p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
+                                          # SliderInput - Network of drinks
+                                          sliderInput('weight.edges',
+                                                      label = 'Min. weight of edges:', 
+                                                      min = 1, max = 20, value = c(1,20), step = 1)
+                                          ),
+                                   column(6,
+                                          # right sub-column
+                                          p("Placeholder Crazy Network Graph")))),
+                          # right object
+                          column(6,
+                                 # title of right column
+                                 titlePanel("Network of one ingredients"),
+                                 fluidRow(
+                                   # left sub-column
+                                   column(6,
+                                          # Introtext
+                                          p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                          # Drink Choice
+                                          p("Choose ingredients", style = "font-family: 'times'; font-si16pt"),
+                                          p("PLACEHOLDER DROP DOWN")
+                                          ),
+                                   # right sub-column
+                                   column(6,
+                                          p("Placeholder Crazy Network Graph")
+                                          )
+                                   )
+                                 )
+                          )
+                        )
+                      ),
+             
+             ######################################### Page 5 Proposal ########################################
+             
+             # 3rd Drop-down item
+             tabPanel("Bipartite visualization", 
+                      verticalLayout(
+                        # header of whole page
+                        titlePanel("Bipartite visualization"),
+                        # 1st block of page
+                        fluidRow(
+                          # left column
+                          column(6,
+                                 # title of left object
+                                 titlePanel("Bipartite overview"),
+                                 # introtext
+                                 p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                 p("Please choose your drink filters", style = "font-family: 'times'; font-si16pt"),
+                                 column(4,
+                                        p("Alcoholic nature", style = "font-family: 'times'; font-si16pt"),
+                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
+                                        p("Max cost per drink", style = "font-family: 'times'; font-si16pt"),
+                                        # SliderInput - Network of drinks
+                                        sliderInput('Max.costs',
+                                                    label = 'Max cost per drink',
+                                                    min = 1, max = 20, value = c(1,20), step = 1)),
+                                 column(4,
+                                        p("Drink type", style = "font-family: 'times'; font-si16pt"),
+                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
+                                        p("Preparation complexity", style = "font-family: 'times'; font-si16pt"),
+                                        # SliderInput - Network of drinks
+                                        sliderInput('Preparation.complexit',
+                                                    label = 'Preparation complexity',
+                                                    min = 1, max = 20, value = c(1,20), step = 1)),
+                                 column(4,
+                                        p("Glass type", style = "font-family: 'times'; font-si16pt"),
+                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
+                                        p("Popularity", style = "font-family: 'times'; font-si16pt"),
+                                        # SliderInput - Network of drinks
+                                        sliderInput('Popularity',
+                                                    label = 'Popularity',
+                                                    min = 1, max = 20, value = c(1,20), step = 1)),
+                                 p("Please choose your ingredient filters", style = "font-family: 'times'; font-si16pt"),
+                                 column(4,
+                                        p("Glass type", style = "font-family: 'times'; font-si16pt"),
+                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
+                                        p("Popularity", style = "font-family: 'times'; font-si16pt"),
+                                        # SliderInput - Network of drinks
+                                        sliderInput('Popularity',
+                                                    label = 'Popularity',
+                                                    min = 1, max = 20, value = c(1,20), step = 1)
                                         )
-                                      )
-                                    )
-                                  )
-                                ),
-
-############################################################# PAGE 4 PROPOSAL #############################################################
-
-                       # 2nd Drop-down item
-                       tabPanel("Exploration by ingredients",
-                                verticalLayout(
-                                  # header of whole page
-                                  titlePanel("Exploration by ingredients"),
-                                  # 1st block of page
-                                  fluidRow(
-                                    # left column
-                                    column(6,
-                                           wellPanel(
-                                             # title of left object
-                                             titlePanel("Table with summary statistics"),
-                                             # content of left object
-                                             tableOutput("ingredients.network.summary")
-                                             )
-                                           ),
-                                    # right column
-                                    column(6,
-                                           wellPanel(
-                                             #title of right object
-                                             titlePanel("Centrality Measures by Ingredients"),
-                                             fluidRow(
-                                               column(4, 
-                                                      # RadioButtons - distribution of obs.
-                                                      radioButtons('ingredients.centrality.table', 'Choose Centrality Measure:', 
-                                                                   c('Degree' = 'dg',
-                                                                     'Closeness' = 'cl',
-                                                                     'Betweenness' = 'bt',
-                                                                     'Eigenvector' = 'ev'
-                                                                     )
-                                                                   )
-                                                      ),
-                                               column(8, 
-                                                      tableOutput("ingredients.centrality.table")
-                                                      )
-                                               )
-                                             )
-                                           )
-                                    ),
-                                  # 2nd block of page
-                                  fluidRow(
-                                    # left column
-                                    column(6,
-                                           # title of left column
-                                           titlePanel("Network of Ingredients"),
-                                           # 1st sub-block
-                                           fluidRow(
-                                             column(6,
-                                                    # left sub-column
-                                                    p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                                    p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
-                                                    # SliderInput - Network of drinks
-                                                    sliderInput('weight.edges',
-                                                                label = 'Min. weight of edges:', 
-                                                                min = 1, max = 20, value = c(1,20), step = 1)
-                                             ),
-                                             column(6,
-                                                    # right sub-column
-                                                    p("Placeholder Crazy Network Graph")))),
-                                    # right object
-                                    column(6,
-                                           # title of right column
-                                           titlePanel("Network of one ingredients"),
-                                           fluidRow(
-                                             # left sub-column
-                                             column(6,
-                                                    # Introtext
-                                                    p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                                    # Drink Choice
-                                                    p("Choose ingredients", style = "font-family: 'times'; font-si16pt"),
-                                                    p("PLACEHOLDER DROP DOWN")
-                                             ),
-                                             # right sub-column
-                                             column(6,
-                                                    p("Placeholder Crazy Network Graph")
-                                                    )
-                                             )
-                                           )
-                                    )
-                                  )
-                                ),
-
-############################################################# PAGE 5 PROPOSAL #############################################################
-
-# 3rd Drop-down item
-tabPanel("Bipartite visualization",
-         verticalLayout(
-           # header of whole page
-           titlePanel("Bipartite visualization"),
-           # 1st block of page
-           fluidRow(
-             # left column
-             column(6,
-                    # title of left object
-                    titlePanel("Bipartite overview"),
-                    # introtext
-                    p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                    p("Please choose your drink filters", style = "font-family: 'times'; font-si16pt"),
-                    column(4,
-                           p("Alcoholic nature", style = "font-family: 'times'; font-si16pt"),
-                           p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                           p("Max cost per drink", style = "font-family: 'times'; font-si16pt"),
-                           # SliderInput - Network of drinks
-                           sliderInput('Max.costs',
-                                       label = 'Max cost per drink',
-                                       min = 1, max = 20, value = c(1,20), step = 1)),
-                    column(4,
-                           p("Drink type", style = "font-family: 'times'; font-si16pt"),
-                           p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                           p("Preparation complexity", style = "font-family: 'times'; font-si16pt"),
-                           # SliderInput - Network of drinks
-                           sliderInput('Preparation.complexit',
-                                       label = 'Preparation complexity',
-                                       min = 1, max = 20, value = c(1,20), step = 1)),
-                    column(4,
-                           p("Glass type", style = "font-family: 'times'; font-si16pt"),
-                           p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                           p("Popularity", style = "font-family: 'times'; font-si16pt"),
-                           # SliderInput - Network of drinks
-                           sliderInput('Popularity',
-                                       label = 'Popularity',
-                                       min = 1, max = 20, value = c(1,20), step = 1)),
-                    p("Please choose your ingredient filters", style = "font-family: 'times'; font-si16pt"),
-                    column(4,
-                           p("Glass type", style = "font-family: 'times'; font-si16pt"),
-                           p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                           p("Popularity", style = "font-family: 'times'; font-si16pt"),
-                           # SliderInput - Network of drinks
-                           sliderInput('Popularity',
-                                       label = 'Popularity',
-                                       min = 1, max = 20, value = c(1,20), step = 1)
-                           )
-             ),
-             # right column
-             column(6,
-                    # title of right object
-                    titlePanel("Bipartite overview"),
-                    # content of right object
-                    img(src = 'A.png', height = 300, width = 300)
+                                 ),
+                          # right column
+                          column(6,
+                                 # title of right object
+                                 titlePanel("Bipartite overview"),
+                                 # content of right object
+                                 img(src = 'A.png', height = 300, width = 300)
+                                 )
+                          )
+                        )
+                      )
+             ), 
+  
+  ######################################### Part 3 ########################################
+  
+  navbarMenu("tab 3", 
+             
+             ######################################### Page 6 Proposal ########################################
+             
+             "contents"
              )
-           )
-         )
-)
-),
-         
-############################################################# PAGE 5 PROPOSAL #############################################################
-
-            # 3nd tab
-            navbarMenu("tab 3", 
-                     "contents"
-                     )
-          )
   )
-
+  )
 
 
 
 ############################################################# SERVER #############################################################
 
-
 server <- function(input, output, session) {
   
   ################################### PAGE 1 PROPOSAL ##################################
   
-  #Oberservation distribution histogram proposal page 1
+  ############ Oberservation distribution chart ############
   output$drinks.dist.barChart <- renderPlot({
     drinks.dist <- switch(input$drinks.dist, 
                           an = dt.drinks.filtered$is_alcoholic, 
@@ -462,7 +480,7 @@ server <- function(input, output, session) {
       ylab("Frequency")
     })
   
-  #Summary statistics table page 1
+  ############ Summary statistics table ############
   output$data.summary <- renderTable({
     dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
                                                      num = length(unique(name)),
@@ -550,6 +568,7 @@ server <- function(input, output, session) {
     dt.drinks.summary
     })
   
+  
   ################################### PAGE 2 PROPOSAL ##################################
     
   # Filter the drinks, returning a data frame
@@ -634,7 +653,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 3 PROPOSAL ##################################
   
-  # Summary Table of drinks network
+  ############ Summary Table of drinks network ############
   output$drinks.network.summary <- renderTable({  
     
     l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
@@ -658,7 +677,7 @@ server <- function(input, output, session) {
     dt.drinks.network.summary
     })  
     
-  # Centrality Measures Table of drink network
+  ############ Centrality Measures Table of drink network ############
   output$drinks.centrality.table <- renderTable({ 
     
     drinks.centrality <- switch(input$drinks.centrality.table, 
@@ -695,7 +714,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 4 PROPOSAL ##################################
   
-  # Summary Table of ingredient network
+  ############ Summary Table of ingredient network ############
   output$ingredients.network.summary <- renderTable({  
     
     l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
@@ -719,7 +738,7 @@ server <- function(input, output, session) {
     dt.ingredients.network.summary
   })
   
-  # Centrality Measures Table of ingredient network
+  ############ Centrality Measures Table of ingredient network ############
   output$ingredients.centrality.table <- renderTable({ 
     
     ingredients.centrality <- switch(input$ingredients.centrality.table, 
@@ -743,9 +762,9 @@ server <- function(input, output, session) {
     dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
     setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
     dt.ingredients.centrality
-  }) 
-  
-    }
+  })
+  }
 
-#shinyApp()
+############################################################# ShinyApp #############################################################
+
 shinyApp(ui = ui, server = server)
