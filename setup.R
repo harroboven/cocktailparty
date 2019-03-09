@@ -6,6 +6,12 @@
 # install.packages("reshape2")
 # install.packages("stringr")
 # install.packages("shinyWidgets")
+# install.packages("shinythemes")
+# install.packages("ggvis")
+# installed.packages("dplyr")
+# install.packages("RSQLite")
+# install.packages("dbplyr")
+
 
 
 # Load the necessary libraries
@@ -15,6 +21,11 @@ library(stringr)
 library(reshape2)
 library(shinyWidgets)
 library(igraph)
+library(shinythemes)
+library(ggvis)
+library(dplyr)
+library(RSQLite)
+library(dbplyr)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
@@ -74,7 +85,7 @@ dt.longdrinks[, quantity := trimws(gsub("[A-Za-z]*", "", amount))]
 dt.longdrinks[, unit := trimws(gsub("[0-9//.,-]*", "", amount))]
 
 # Standardize the unit as much as possible
-standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp")
+standard.units <- c("oz", "cl", "tsp", "ml", "shot", "dl", "pint", "kg", "lb", "cup", "tblsp", "dash", "part")
 
 standardize.unit <- function(unit) {
   for (i in 1:length(standard.units)) {
@@ -136,6 +147,49 @@ ditch.optional <- function(x) {
 }
 dt.longdrinks$is_alcoholic <- mapply(ditch.optional, dt.longdrinks$is_alcoholic)
 
+# Make the "quantity" column numeric, delete fractions
+kill.fraction <- function(quantity) {
+  if (length(grep("/", quantity)) == 1) {
+    slash.index <- as.numeric(gregexpr("/", quantity))
+    numerator <- as.numeric(substring(quantity, slash.index - 1, slash.index - 1))
+    print(numerator)
+    denominator <- as.numeric(substring(quantity, slash.index + 1, slash.index + 1)) 
+    decimal <- as.numeric(numerator) / as.numeric(denominator)
+    sub("\\s{0,1}./.", substring(toString(decimal), 2), quantity)
+  } else {
+    return(quantity)
+  }
+}
+
+dt.longdrinks$quantity <- mapply(kill.fraction, dt.longdrinks$quantity)
+
+# Make "quantity" column numeric, delete dashes
+kill.dashes <- function(quantity) {
+  if (length(grep("-", quantity)) == 1) {
+    slash.index <- as.numeric(gregexpr("-", quantity))
+    numerator <- as.numeric(substring(quantity, slash.index - 1, slash.index - 1))
+    print(numerator)
+    denominator <- as.numeric(substring(quantity, slash.index + 1, slash.index + 1)) 
+    decimal <- as.numeric(numerator) / as.numeric(denominator)
+    sub("\\s{0,1}[0-9]-[0-9]", substring(toString(decimal), 2), quantity)
+  } else {
+    return(quantity)
+  }
+}
+
+dt.longdrinks$quantity <- mapply(kill.dashes, dt.longdrinks$quantity)
+
+# Make "quantity" column numeric, delete the rest of the crap
+dt.longdrinks$quantity <- gsub("-", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[(]", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[)]", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[,]", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- gsub("[0-9]\\s{1,5}.", "", dt.longdrinks$quantity)
+dt.longdrinks$quantity <- trimws(dt.longdrinks$quantity)
+
+# Ditch remaining things that cannot be converted to numeric and convert column to numeric
+dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
+
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
 dt.pricing <- fread("data/Ingredients_overview.csv", header = TRUE)
@@ -158,6 +212,24 @@ dt.commonality.longdrinks.pricing <- merge(dt.commonality.longdrinks, dt.pricing
 # Turn this rather long and ugly name back into dt.longdrinks for convenience and backwards compatibility
 dt.longdrinks <- dt.commonality.longdrinks.pricing
 
+# Convert std.units to "g" and "ml"
+unit.conversion.factor <- c(29.6, 10, 5, 1, 44, 100, 473, 1000, 454, 237, 14)
+
+standardize.quantity <- function(drink, quantity, std.unit) {
+  if ("part" %in% dt.longdrinks[drink == name, std.unit]) {
+    return(1/length(dt.longdrinks[drink == name, std.unit]))
+  } else {
+    for (i in 1:length(standard.units)) {
+      if (std.unit %in% standard.units[[i]]) {
+        return(unit.conversion.factor[i] * quantity)
+      } 
+    }
+    return(NA)
+  }
+}
+
+dt.longdrinks$std.quantity <- mapply(standardize.quantity, dt.longdrinks$name, dt.longdrinks$quantity, dt.longdrinks$std.unit)
+
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 
@@ -175,4 +247,5 @@ saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
 #}
 
 # sapply(dt.longdrinks, calculate.n.unique)/
+
 
