@@ -432,12 +432,18 @@ ui <- fluidPage(
            verticalLayout(
              titlePanel("TITLE PLACEHOLDER"),
              fluidRow(
+               column(6,
+                      plotOutput(outputId = "drinks.complexity.degree")
+               ),
+               column(6,
+                      plotOutput(outputId = "ingredients.price.degree")
+                      )
+               )
              )
            )
   )
   )
   )
-)
 
 
 
@@ -758,28 +764,6 @@ server <- function(input, output, session) {
     dt.ingredients.network.summary
   })
   
-  ################################### PAGE 6 PROPOSAL ##################################
-  
-  # Calculate the datatable for advanced analysis
-  
-  df.drink.degrees <- data.frame(degree(g.drinks.bp))
-  dt.drink.degrees <- data.table(cbind(row.names(df.drink.degrees), df.drink.degrees))
-  colnames(dt.drink.degrees)[1:2] <- c("name", "degree")
-  dt.drink.degrees <- merge(dt.drink.degrees, dt.drinks, by = "name" )
-  dt.drink.degrees <- dt.drink.degrees[, list(name, degree, complexity)]
-  dt.drink.degrees$complexity <- log(dt.drink.degrees$complexity)
-  ggplot(dt.drink.degrees, aes(x = complexity, y = degree)) + geom_point() + geom_smooth(method='lm')
-  
-  # Calculate the datatable for advanced analysis
-  df.ingredients.degrees <- data.frame(degree(g.ingredients.bp))
-  dt.ingredients.degrees <- data.table(cbind(row.names(df.ingredients.degrees), df.ingredients.degrees))
-  colnames(dt.ingredients.degrees)[1:2] <- c("ingredient", "degree")
-  dt.ingredients.degrees.merged <- merge(dt.ingredients.degrees, dt.drinks, by = "ingredient")
-  # CHANGE THE NAME
-  dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[,list(ingredient, degree, ingredient_price)]
-  dt.ingredients.degrees.merged <- unique(dt.ingredients.degrees.merged)
-  dt.ingredients.degrees.merged$price <- log(dt.ingredients.degrees.merged$ingredient_price)
-  ggplot(dt.ingredients.degrees.merged, aes(x = ingredient_price, y = degree)) + geom_point() + geom_smooth(method='lm')
   
   
   ############ Centrality Measures Table of ingredient network ############
@@ -806,6 +790,14 @@ server <- function(input, output, session) {
     dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
     setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
     dt.ingredients.centrality
+  })
+  
+  output$ingredients.price.degree <- renderPlot({
+    ggplot(dt.ingredients.degrees.merged, aes(x = log_ingredient_price, y = degree)) + geom_point() + geom_smooth(method='lm')
+  })
+  
+  output$drinks.complexity.degree <- renderPlot({
+    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + geom_point() + geom_smooth(method='lm')
   })
   }
 
