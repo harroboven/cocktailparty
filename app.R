@@ -976,7 +976,7 @@ server <- function(input, output, session) {
   
   output$drinks.network.analytics <- renderPlot({
     
-    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + 
+    ggplot(dt.drinks.analysis, aes(x = log_complexity, y = drink_degree)) + 
       geom_point() + 
       geom_smooth(method='lm')
   })

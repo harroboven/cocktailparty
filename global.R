@@ -223,17 +223,45 @@ dt.ingredients.centrality <- merge(dt.ingredients.centrality, dt.ingredients.eig
 
 ################################### PAGE 6 PROPOSAL ##################################
 
-# # Calculate the datatable for advanced analysis
-# df.drink.degrees <- data.frame(degree(g.drinks.bp))
-# dt.drink.degrees <- data.table(cbind(row.names(df.drink.degrees),
-#                                      df.drink.degrees))
-# colnames(dt.drink.degrees)[1:2] <- c("name", "degree")
-# dt.drink.degrees <- merge(dt.drink.degrees,
-#                           dt.drinks,
-#                           by = "name" )
-# dt.drink.degrees <- dt.drink.degrees[,
-#                                      list(name, degree, complexity)]
-# dt.drink.degrees$log_complexity <- log(dt.drink.degrees$complexity)
+dt.drinks.centrality.complete <- merge(dt.drinks.centrality,
+                                       dt.drinks, 
+                                       by = "name" )
+
+dt.drinks.centrality.complete$log_adj_ingredients_cost <- log(dt.drinks.centrality.complete$adj_ingredients_cost)
+dt.drinks.centrality.complete$log_complexity <- log(dt.drinks.centrality.complete$complexity)
+
+dt.drinks.analysis <- dt.drinks.centrality.complete[, 
+                                                    list(name, 
+                                                         is_alcoholic, 
+                                                         category, 
+                                                         glass_type, 
+                                                         commonality,
+                                                         complexity, 
+                                                         log_complexity,
+                                                         adj_ingredients_cost, 
+                                                         log_adj_ingredients_cost, 
+                                                         drink_degree, 
+                                                         drink_closeness, 
+                                                         drink_betweenness, 
+                                                         drink_eigenvector
+                                                         )
+                                                    ]
+
+dt.drinks.analysis <- unique(dt.drinks.analysis)
+
+# add id for ingredients to enable tooltip feature
+dt.drinks.analysis <- dt.drinks.analysis[, id := 1:length(name)]
+
+# axis options for graph of drinks network
+v.analysis.drinks.axis.vars <- c(
+  "Commonality" = "commonality",
+  "Complexity" = "complexity", 
+  "Ingredients Cost per Drink" = "adj_ingredients_cost",  
+  "Degree" = "drink_degree", 
+  "Closeness" = "drink_closeness", 
+  "Betweenness" = "drink_betweenness", 
+  "Eigenvector" = "drink_eigenvector"
+)
 
 ################################### PAGE 7 PROPOSAL ##################################
 
@@ -258,6 +286,7 @@ dt.ingredients.analysis <- unique(dt.ingredients.analysis)
 # add id for ingredients to enable tooltip feature
 dt.ingredients.analysis <- dt.ingredients.analysis[, id := 1:length(ingredient)]
 
+# axis options for graph of ingredient network
 v.analysis.ingredients.axis.vars <- c(
   "Ingredient Price" = "adj_ingredient_price", 
   "Degree" = "ingredient_degree", 
