@@ -812,9 +812,9 @@ server <- function(input, output, session) {
     
     l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
     l.num_edges <- list("Number of Edges", length(E(g.drinks.bp)))
-    l.mean_degree <- list("Average Degree", mean(degree(g.drinks.bp)))
+    l.mean_degree <- list("Average Degree", mean(dt.drinks.degree$drink_degree))
     l.clust_coeff <- list("Clustering Coefficient", transitivity(g.drinks.bp))
-    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.drinks.bp)))
+    l.mean_betweenness <- list("Average Betweenness", mean(dt.drinks.betweenness$drink_betweenness))
     l.mean_path_length <- list("Average Path Length", mean(distances(g.drinks.bp)))
     l.diameter <- list("Diameter", diameter(g.drinks.bp))
     
@@ -835,10 +835,10 @@ server <- function(input, output, session) {
   output$drinks.centrality.table <- renderTable({ 
     
     drinks.centrality <- switch(input$drinks.centrality.table, 
-                                dg = degree(g.drinks.bp), 
-                                cl = closeness(g.drinks.bp), 
-                                bt = betweenness(g.drinks.bp), 
-                                ev = eigen_centrality(g.drinks.bp)
+                                dg = dt.drinks.degree$drink_degree, 
+                                cl = dt.drinks.closeness$drink_closeness, 
+                                bt = dt.drinks.betweenness$drink_betweenness, 
+                                ev = dt.drinks.eigenvector$drink_eigenvector
                                 )
       
     l.centrality.min <- list("Min ", min(drinks.centrality))
@@ -857,7 +857,7 @@ server <- function(input, output, session) {
     dt.drinks.centrality
     })  
     
-  # Zanis new part
+  ####################### Zanis new part #######################
     
     # plot a graph for drinks with weight X
     output$plot.network.of.drinks <- renderPlot({
@@ -895,8 +895,6 @@ server <- function(input, output, session) {
     })
     
     
-    
-    
     # create a subgraph with one selected ingredient X
     output$plot.network.of.one.ingredient <- renderPlot({
       V(g.one.ingredient)
@@ -922,13 +920,13 @@ server <- function(input, output, session) {
   ################################### PAGE 4 PROPOSAL ##################################
   
   ############ Summary Table of ingredient network ############
-  output$ingredients.network.summary <- renderTable({  
+  output$ingredients.network.summary <- renderTable({
     
     l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
     l.num_edges <- list("Number of Edges", length(E(g.ingredients.bp)))
-    l.mean_degree <- list("Average Degree", mean(degree(g.ingredients.bp)))
+    l.mean_degree <- list("Average Degree", mean(dt.ingredients.degree$ingredient_degree))
     l.clust_coeff <- list("Clustering Coefficient", transitivity(g.ingredients.bp))
-    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.ingredients.bp)))
+    l.mean_betweenness <- list("Average Betweenness", mean(dt.ingredients.betweenness$ingredient_betweenness))
     l.mean_path_length <- list("Average Path Length", mean(distances(g.ingredients.bp)))
     l.diameter <- list("Diameter", diameter(g.ingredients.bp))
     
@@ -939,12 +937,38 @@ server <- function(input, output, session) {
                                        l.mean_betweenness, 
                                        l.mean_path_length, 
                                        l.diameter
-    )
+                                       )
+    
     dt.ingredients.network.summary <- as.data.table(dt.ingredients.network.summary)
     setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
     dt.ingredients.network.summary
-  })
+    })
   
+  ############ Centrality Measures Table of ingredient network ############
+  output$ingredients.centrality.table <- renderTable({
+    
+    ingredients.centrality <- switch(input$ingredients.centrality.table, 
+                                     dg = dt.ingredients.degree$ingredient_degree, 
+                                     cl = dt.ingredients.closeness$ingredient_closeness, 
+                                     bt = dt.ingredients.betweenness$ingredient_betweenness, 
+                                     ev = dt.ingredients.eigenvector$ingredient_eigenvector
+                                     )
+    
+    l.centrality.min <- list("Min ", min(ingredients.centrality))
+    l.centrality.median <- list("Median ", median(ingredients.centrality))
+    l.centrality.sd <- list("SD ", sd(ingredients.centrality))
+    l.centrality.max <- list("Max ", max(ingredients.centrality))
+      
+    dt.ingredients.centrality  <- rbind(l.centrality.min, 
+                                        l.centrality.median, 
+                                        l.centrality.sd, 
+                                        l.centrality.max
+                                        )
+      
+    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
+    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
+    dt.ingredients.centrality
+    })  
   
   ################################### PAGE 7 PROPOSAL ##################################
   

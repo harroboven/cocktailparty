@@ -188,6 +188,7 @@ dt.drinks.eigenvector <- data.table(cbind(row.names(df.drinks.eigenvector),
                                           df.drinks.eigenvector))
 colnames(dt.drinks.eigenvector)[1:2] <- c("name", "drink_eigenvector")
 dt.drinks.eigenvector <- dt.drinks.eigenvector[, 1:2]
+dt.drinks.eigenvector$drink_eigenvector <- as.numeric(dt.drinks.eigenvector$drink_eigenvector)
 
 dt.drinks.centrality <- merge(dt.drinks.degree, dt.drinks.closeness, by = "name")
 dt.drinks.centrality <- merge(dt.drinks.centrality, dt.drinks.betweenness, by = "name")
@@ -214,6 +215,7 @@ dt.ingredients.eigenvector <- data.table(cbind(row.names(df.ingredients.eigenvec
                                                df.ingredients.eigenvector))
 colnames(dt.ingredients.eigenvector)[1:2] <- c("ingredient", "ingredient_eigenvector")
 dt.ingredients.eigenvector <- dt.ingredients.eigenvector[, 1:2]
+dt.ingredients.eigenvector$ingredient_eigenvector <- as.numeric(dt.ingredients.eigenvector$ingredient_eigenvector)
 
 dt.ingredients.centrality <- merge(dt.ingredients.degree, dt.ingredients.closeness, by = "ingredient")
 dt.ingredients.centrality <- merge(dt.ingredients.centrality, dt.ingredients.betweenness, by = "ingredient")
