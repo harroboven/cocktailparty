@@ -11,6 +11,7 @@
 # installed.packages("dplyr")
 # install.packages("RSQLite")
 # install.packages("dbplyr")
+# install.packages("visNetwork")
 
 
 
@@ -27,6 +28,7 @@ library(dplyr)
 library(RSQLite)
 library(dbplyr)
 library(shiny)
+library(visNetwork)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")

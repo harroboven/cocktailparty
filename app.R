@@ -460,10 +460,14 @@ ui <- fluidPage(
                  p("Please specify the amount of the ingredients in ml:")),
                  fluidRow(
                    column(6,
-                          uiOutput("ingredients.in.stock.table")),
+                          uiOutput("test.ingredients")),
                    column(6,
-                          plotOutput(outputId = 'drinks.network.ingredients')
-                          )
+                          uiOutput("test.test"))
+                   # column(6,
+                   #        plotOutput(outputId = 'drinks.network.ingredients')
+                   #        ),
+                   # column(6,
+                   #        uiOutput("test.table"))
                    # column(6,
                    #        uiOutput("amount.ingredients.in.stock.table"))
                  
@@ -482,6 +486,7 @@ ui <- fluidPage(
                    #          column(6,
                    #                 textInput("ingredient.3", input$ingredients.available[3], placeholder = "amount in ml"))
                    #        ))
+                   
                  )
                )
              )
@@ -492,6 +497,9 @@ ui <- fluidPage(
 )
 
 
+
+# test.x <- get.data.frame(g.drinks.bp)
+# View(test.x)
 
 ############################################################# SERVER #############################################################
 
@@ -813,12 +821,34 @@ server <- function(input, output, session) {
   
   ################################### PAGE 7 PROPOSAL ##################################
   
+  
+    
+  ingredients.in.stock <- reactive({
+    dt.ingredients.in.stock <- data.table(ingredient = input$ingredients.available)
+  })
+  
+  output$test.ingredients <- renderTable({
+    ingredients.in.stock()
+  })
+  
+  
   output$ingredients.in.stock.table <- renderTable({
     dt.ingredients.in.stock <- as.data.table(c(input$ingredients.available))
     colnames(dt.ingredients.in.stock)[1] <- "Ingredients"
     dt.ingredients.in.stock
-    })
-    
+  })
+
+  dt.drinks.ingredient.deletion <- dt.drinks[, list(ingredient, name)]
+  dt.only.drinks <- dt.drinks[, unique(name)]
+  drink.list <- test.ingredients
+  dt.drinks.ingredient.deletion <- dt.drinks.ingredient.deletion[!(dt.drinks.ingredient.deletion$ingredient %in% dt.ingredients.in.stocks$ingredient)]
+  dt.drinks.feasible <- dt.only.drinks[!(dt.only.drinks %in% dt.drinks.ingredient.deletion)]
+
+  output$test.test <- renderTable({
+    dt.drinks.feasible
+  })
+
+  
   
   # WIP!!!
   # output$amount.ingredients.in.stock.table <- renderTable({
@@ -846,11 +876,23 @@ server <- function(input, output, session) {
   # )
   
   
-  output$drinks.network.ingredients <- renderPlot({
-    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 0,6, edge.color = 'yellow',
-                layout = layout_as_star, edge.arrow.size = 2)
-  })
+  # output$drinks.network.ingredients <- renderPlot({
+  #   visNetwork(g.drinks.bp, vertex.label = NA, vertex.size = 3, edge.color = 'blue',
+  #               edge.arrow.size = 2)
+  # })
+  # 
+  # 
+  # 
+  # 
   
+  
+  
+  # dt.drinks.ingredient.deletion <- dt.drinks.ingredient.deletion[name != c(input$ingredients.available)]
+
+
+  output$test.table <- renderTable({
+    dt.drinks.ingredient.deletion
+  })
   
   ############ Centrality Measures Table of ingredient network ############
   output$ingredients.centrality.table <- renderTable({ 

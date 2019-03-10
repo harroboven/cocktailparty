@@ -130,3 +130,8 @@ dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, list(ingredient
 dt.ingredients.degrees.merged <- unique(dt.ingredients.degrees.merged)
 dt.ingredients.degrees.merged$log_ingredient_price <- log(dt.ingredients.degrees.merged$ingredient_price)
 
+################################### PAGE 7 PROPOSAL ##################################
+
+# Find ingredients per drink 
+
+
