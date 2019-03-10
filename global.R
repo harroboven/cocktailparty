@@ -159,40 +159,40 @@ g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
 g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 
 # Variables that can be put on the x and y axes
-axis_vars <- c(
+v.drink.explorer.axis.vars <- c(
   "Recipe Complexity" = "complexity",
   "Commonality" = "commonality",
   "Ingredients Cost per Drink" = "adj_ingredients_cost"
-)
+  )
 
-################################### PAGE 6 PROPOSAL ##################################
-
-# Calculate the datatable for advanced analysis
-df.drink.degrees <- data.frame(degree(g.drinks.bp))
-dt.drink.degrees <- data.table(cbind(row.names(df.drink.degrees), 
-                                     df.drink.degrees))
-colnames(dt.drink.degrees)[1:2] <- c("name", "degree")
-dt.drink.degrees <- merge(dt.drink.degrees, 
-                          dt.drinks, 
-                          by = "name" )
-dt.drink.degrees <- dt.drink.degrees[, 
-                                     list(name, degree, complexity)]
-dt.drink.degrees$log_complexity <- log(dt.drink.degrees$complexity)
-
-################################### PAGE 7 PROPOSAL ##################################
-# Calculate the datatable for advanced analysis
-df.ingredients.degrees <- data.frame(degree(g.ingredients.bp))
-dt.ingredients.degrees <- data.table(cbind(row.names(df.ingredients.degrees), 
-                                           df.ingredients.degrees))
-colnames(dt.ingredients.degrees)[1:2] <- c("ingredient", "degree")
-dt.ingredients.degrees.merged <- merge(dt.ingredients.degrees, 
-                                       dt.drinks, 
-                                       by = "ingredient")
-dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, 
-                                                               list(ingredient, degree, adj_ingredient_price)]
-dt.ingredients.degrees.merged <- unique(dt.ingredients.degrees.merged)
-dt.ingredients.degrees.merged$log_ingredient_price <- log(dt.ingredients.degrees.merged$adj_ingredient_price)
-
-# add id for ingredients to enable tooltip feature
-dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, id := 1:length(ingredient)]
-
+# ################################### PAGE 6 PROPOSAL ##################################
+# 
+# # Calculate the datatable for advanced analysis
+# df.drink.degrees <- data.frame(degree(g.drinks.bp))
+# dt.drink.degrees <- data.table(cbind(row.names(df.drink.degrees), 
+#                                      df.drink.degrees))
+# colnames(dt.drink.degrees)[1:2] <- c("name", "degree")
+# dt.drink.degrees <- merge(dt.drink.degrees, 
+#                           dt.drinks, 
+#                           by = "name" )
+# dt.drink.degrees <- dt.drink.degrees[, 
+#                                      list(name, degree, complexity)]
+# dt.drink.degrees$log_complexity <- log(dt.drink.degrees$complexity)
+# 
+# ################################### PAGE 7 PROPOSAL ##################################
+# # Calculate the datatable for advanced analysis
+# df.ingredients.degrees <- data.frame(degree(g.ingredients.bp))
+# dt.ingredients.degrees <- data.table(cbind(row.names(df.ingredients.degrees), 
+#                                            df.ingredients.degrees))
+# colnames(dt.ingredients.degrees)[1:2] <- c("ingredient", "degree")
+# dt.ingredients.degrees.merged <- merge(dt.ingredients.degrees, 
+#                                        dt.drinks, 
+#                                        by = "ingredient")
+# dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, 
+#                                                                list(ingredient, degree, adj_ingredient_price)]
+# dt.ingredients.degrees.merged <- unique(dt.ingredients.degrees.merged)
+# dt.ingredients.degrees.merged$log_ingredient_price <- log(dt.ingredients.degrees.merged$adj_ingredient_price)
+# 
+# # add id for ingredients to enable tooltip feature
+# dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, id := 1:length(ingredient)]
+# 
