@@ -500,7 +500,7 @@ ui <- fluidPage(
                         selectInput("analysis.ingredients.xvar", 
                                     "X-axis variable", 
                                     v.analysis.ingredients.axis.vars, 
-                                    selected = "ingredient_degree"
+                                    selected = "adj_ingredient_price"
                         ),
                         selectInput("analysis.ingredients.yvar", 
                                     "Y-axis variable", 
@@ -1047,8 +1047,11 @@ server <- function(input, output, session) {
     analysis.ingredient <- dt.ingredients.analysis[dt.ingredients.analysis$id == x$id, ]
 
     paste0("<b>", analysis.ingredient$ingredient, "</b><br>",
-           "Degree of Ingredient: ", analysis.ingredient$ingredient_degree, "<br>",
-           "Ingredient Price: ", analysis.ingredient$adj_ingredient_price
+           "Ingredient Price: ", round(analysis.ingredient$adj_ingredient_price, 2), "<br>",
+           "Degree of Ingredient: ", round(analysis.ingredient$ingredient_degree, 2), "<br>",
+           "Closeness of Ingredient: ", round(analysis.ingredient$ingredient_closeness, 2), "<br>",
+           "Betweenness of Ingredient: ", round(analysis.ingredient$ingredient_betweenness, 2), "<br>",
+           "Eigenvector of Ingredient: ", round(analysis.ingredient$ingredient_eigenvector, 2), "<br>"
            )
     }
   

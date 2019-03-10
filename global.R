@@ -257,6 +257,9 @@ dt.ingredients.analysis <- unique(dt.ingredients.analysis)
 dt.ingredients.analysis <- dt.ingredients.analysis[, id := 1:length(ingredient)]
 
 v.analysis.ingredients.axis.vars <- c(
-  "Ingredient Price" = "adj_ingredient_price",
-  "Degree" = "ingredient_degree"
+  "Ingredient Price" = "adj_ingredient_price", 
+  "Degree" = "ingredient_degree", 
+  "Closeness" = "ingredient_closeness", 
+  "Betweenness" = "ingredient_betweenness", 
+  "Eigenvector" = "ingredient_eigenvector"
   )
