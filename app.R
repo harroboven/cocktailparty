@@ -838,7 +838,7 @@ server <- function(input, output, session) {
                                 dg = degree(g.drinks.bp), 
                                 cl = closeness(g.drinks.bp), 
                                 bt = betweenness(g.drinks.bp), 
-                                ev = eigen_centrality(g.drinks.bp)
+                                ev = evcent(g.drinks.bp)
                                 )
       
     l.centrality.min <- list("Min ", min(drinks.centrality))
@@ -922,7 +922,7 @@ server <- function(input, output, session) {
   ################################### PAGE 4 PROPOSAL ##################################
   
   ############ Summary Table of ingredient network ############
-  output$ingredients.network.summary <- renderTable({  
+  output$ingredients.network.summary <- renderTable({
     
     l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
     l.num_edges <- list("Number of Edges", length(E(g.ingredients.bp)))
@@ -939,11 +939,38 @@ server <- function(input, output, session) {
                                        l.mean_betweenness, 
                                        l.mean_path_length, 
                                        l.diameter
-    )
+                                       )
+    
     dt.ingredients.network.summary <- as.data.table(dt.ingredients.network.summary)
     setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
     dt.ingredients.network.summary
-  })
+    })
+  
+  ############ Centrality Measures Table of ingredient network ############
+  output$ingredients.centrality.table <- renderTable({
+    
+    ingredients.centrality <- switch(input$ingredients.centrality.table, 
+                                     dg = degree(g.ingredients.bp), 
+                                     cl = closeness(g.ingredients.bp), 
+                                     bt = betweenness(g.ingredients.bp), 
+                                     ev = dt.ingredients.eigenvector[, 2]
+                                     )
+    
+    l.centrality.min <- list("Min ", min(ingredients.centrality))
+    l.centrality.median <- list("Median ", median(ingredients.centrality))
+    l.centrality.sd <- list("SD ", sd(ingredients.centrality))
+    l.centrality.max <- list("Max ", max(ingredients.centrality))
+      
+    dt.ingredients.centrality  <- rbind(l.centrality.min, 
+                                   l.centrality.median, 
+                                   l.centrality.sd, 
+                                   l.centrality.max
+                                   )
+      
+    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
+    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
+    dt.ingredients.centrality
+    })  
   
   
   ################################### PAGE 7 PROPOSAL ##################################
