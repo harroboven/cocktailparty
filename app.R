@@ -490,12 +490,24 @@ ui <- fluidPage(
                       wellPanel(
                         h4("Filter"),
                         sliderInput("analysis.ingredient.price.filter", "Ingredient Price",
-                                    min = min(dt.ingredients.degrees.merged$adj_ingredient_price), 
-                                    max = max(dt.ingredients.degrees.merged$adj_ingredient_price), 
-                                    value = c(median(dt.ingredients.degrees.merged$adj_ingredient_price), mean(dt.ingredients.degrees.merged$adj_ingredient_price)), 
+                                    min = min(dt.ingredients.analysis$adj_ingredient_price), 
+                                    max = max(dt.ingredients.analysis$adj_ingredient_price), 
+                                    value = c(median(dt.ingredients.analysis$adj_ingredient_price), mean(dt.ingredients.analysis$adj_ingredient_price)), 
                                     sep = ""
                                     )
+                        ),
+                      wellPanel(
+                        selectInput("analysis.ingredients.xvar", 
+                                    "X-axis variable", 
+                                    v.analysis.ingredients.axis.vars, 
+                                    selected = "ingredient_degree"
+                        ),
+                        selectInput("analysis.ingredients.yvar", 
+                                    "Y-axis variable", 
+                                    v.analysis.ingredients.axis.vars, 
+                                    selected = "ingredient_degree"
                         )
+                      )
                       ),
                column(8,
                       verticalLayout(
@@ -1008,13 +1020,13 @@ server <- function(input, output, session) {
   ################################### PAGE 7 PROPOSAL ##################################
   
   # Filter the drinks, returning a data frame
-  dt.analysis.ingredient.price.filter <- reactive({
+  dt.analysis.ingredient.filter <- reactive({
     # Due to dplyr issue #318, we need temp variables for input values
     min.ingredient.price <- input$analysis.ingredient.price.filter[1]
     max.ingredient.price <- input$analysis.ingredient.price.filter[2] 
     
     # Apply filters
-    m <- dt.ingredients.degrees.merged %>%
+    m <- dt.ingredients.analysis %>%
       filter(
         adj_ingredient_price >= min.ingredient.price, 
         adj_ingredient_price <= max.ingredient.price
@@ -1025,50 +1037,52 @@ server <- function(input, output, session) {
     m
   })
   
-  # Generating tooltip text
-  ingredient_tooltip <- function(x) {
-    if (is.null(x)) return(NULL)
-    if (is.null(x$id)) return(NULL)
-    
-    #Pick out the drink with this ID
-    dt.ingredients.degrees.merged <- isolate(dt.analysis.ingredient.price.filter())
-    analysis.ingredient <- dt.ingredients.degrees.merged[dt.ingredients.degrees.merged$id == x$id, ]
-    
-    paste0("<b>", analysis.ingredient$ingredient, "</b><br>", 
-           "Degree of Ingredient: ", analysis.ingredient$degree, "<br>", 
-           "Ingredient Price: ", analysis.ingredient$ingredient_price
-           )
-    }
+  # # Generating tooltip text
+  # ingredient_tooltip <- function(x) {
+  #   if (is.null(x)) return(NULL)
+  #   if (is.null(x$id)) return(NULL)
+  #   
+  #   #Pick out the drink with this ID
+  #   dt.ingredients.analysis <- isolate(dt.analysis.ingredient.filter())
+  #   analysis.ingredient <- dt.ingredients.analysis[dt.ingredients.analysis$id == x$id, ]
+  #   
+  #   paste0("<b>", analysis.ingredient$ingredient, "</b><br>", 
+  #          "Degree of Ingredient: ", analysis.ingredient$degree, "<br>", 
+  #          "Ingredient Price: ", analysis.ingredient$ingredient_price
+  #          )
+  #   }
   
   # A reactive expression with the ggvis plot
-  vis <- reactive({
-
-    xvar <- prop("x", as.symbol("adj_ingredient_price"))
-    yvar <- prop("y", as.symbol("degree"))
+  vis.ingredient.analysis <- reactive({
     
-    dt.analysis.ingredient.price.filter %>%
+    #Lables for axes
+    xvar_name <- names(v.analysis.ingredients.axis.vars)[v.analysis.ingredients.axis.vars == input$analysis.ingredients.xvar]
+    yvar_name <- names(v.analysis.ingredients.axis.vars)[v.analysis.ingredients.axis.vars == input$analysis.ingredients.yvar]
+    
+    xvar <- prop("x", as.symbol(input$analysis.ingredients.xvar))
+    yvar <- prop("y", as.symbol(input$analysis.ingredients.yvar))
+    
+    dt.analysis.ingredient.filter %>%
       ggvis(x = xvar, y = yvar) %>%
       layer_points(size := 50, size.hover := 200,
                    fillOpacity := 0.2, fillOpacity.hover := 0.5, 
                    key := ~id) %>%
-      layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
-      add_tooltip(ingredient_tooltip, "hover") %>%
-      add_axis("x", title = "adj_ingredient_price") %>%
-      add_axis("y", title = "degree") %>%
+      # layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
+      # add_tooltip(ingredient_tooltip, "hover") %>%
+      add_axis("x", title = xvar_name) %>%
+      add_axis("y", title = yvar_name) %>%
       set_options(width = 636, height = 636)
   })
   
-  vis %>% bind_shiny("ingredient_analysis")
+  vis.ingredient.analysis %>% bind_shiny("ingredient_analysis")
   
   output$ingredient.analysis.n_ingredients <- renderText({ 
     
-    nrow(dt.analysis.ingredient.price.filter()) 
+    nrow(dt.analysis.ingredient.filter()) 
     
   })
     
     
-
-  
   }
 
 ############################################################# ShinyApp #############################################################
