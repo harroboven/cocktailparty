@@ -120,9 +120,10 @@ l.category_values <- c("All", sort(unique(dt.drinks.filtered$category),
 l.glass_type_values <- c("All", sort(unique(dt.drinks.filtered$glass_type), 
                                      decreasing = FALSE))
 
-# # select input button proposal paage 7
- 
+# # select input button proposal page 7
+
 l.all.ingredients <- c("All", dt.drinks[, .(name = unique(ingredient))])
+
 
 ############## Plot themes #################
 
@@ -159,40 +160,138 @@ g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
 g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 
 # Variables that can be put on the x and y axes
-axis_vars <- c(
+v.drink.explorer.axis.vars <- c(
   "Recipe Complexity" = "complexity",
   "Commonality" = "commonality",
   "Ingredients Cost per Drink" = "adj_ingredients_cost"
-)
+  )
+
+################################### centrality measures ##################################
+
+# drink network
+df.drinks.degree <- data.frame(degree(g.drinks.bp))
+dt.drinks.degree <- data.table(cbind(row.names(df.drinks.degree), 
+                                     df.drinks.degree))
+colnames(dt.drinks.degree)[1:2] <- c("name", "drink_degree")
+
+df.drinks.closeness <- data.frame(closeness(g.drinks.bp))
+dt.drinks.closeness <- data.table(cbind(row.names(df.drinks.closeness), 
+                                        df.drinks.closeness))
+colnames(dt.drinks.closeness)[1:2] <- c("name", "drink_closeness")
+
+df.drinks.betweenness <- data.frame(betweenness(g.drinks.bp))
+dt.drinks.betweenness <- data.table(cbind(row.names(df.drinks.betweenness), 
+                                          df.drinks.betweenness))
+colnames(dt.drinks.betweenness)[1:2] <- c("name", "drink_betweenness")
+
+df.drinks.eigenvector <- data.frame(evcent(g.drinks.bp))
+dt.drinks.eigenvector <- data.table(cbind(row.names(df.drinks.eigenvector), 
+                                          df.drinks.eigenvector))
+colnames(dt.drinks.eigenvector)[1:2] <- c("name", "drink_eigenvector")
+dt.drinks.eigenvector <- dt.drinks.eigenvector[, 1:2]
+dt.drinks.eigenvector$drink_eigenvector <- as.numeric(dt.drinks.eigenvector$drink_eigenvector)
+
+dt.drinks.centrality <- merge(dt.drinks.degree, dt.drinks.closeness, by = "name")
+dt.drinks.centrality <- merge(dt.drinks.centrality, dt.drinks.betweenness, by = "name")
+dt.drinks.centrality <- merge(dt.drinks.centrality, dt.drinks.eigenvector, by = "name")
+
+#ingredient network
+df.ingredients.degree <- data.frame(degree(g.ingredients.bp))
+dt.ingredients.degree <- data.table(cbind(row.names(df.ingredients.degree), 
+                                          df.ingredients.degree))
+colnames(dt.ingredients.degree)[1:2] <- c("ingredient", "ingredient_degree")
+
+df.ingredients.closeness <- data.frame(closeness(g.ingredients.bp))
+dt.ingredients.closeness <- data.table(cbind(row.names(df.ingredients.closeness), 
+                                             df.ingredients.closeness))
+colnames(dt.ingredients.closeness)[1:2] <- c("ingredient", "ingredient_closeness")
+
+df.ingredients.betweenness <- data.frame(betweenness(g.ingredients.bp))
+dt.ingredients.betweenness <- data.table(cbind(row.names(df.ingredients.betweenness), 
+                                               df.ingredients.betweenness))
+colnames(dt.ingredients.betweenness)[1:2] <- c("ingredient", "ingredient_betweenness")
+
+df.ingredients.eigenvector <- data.frame(evcent(g.ingredients.bp))
+dt.ingredients.eigenvector <- data.table(cbind(row.names(df.ingredients.eigenvector), 
+                                               df.ingredients.eigenvector))
+colnames(dt.ingredients.eigenvector)[1:2] <- c("ingredient", "ingredient_eigenvector")
+dt.ingredients.eigenvector <- dt.ingredients.eigenvector[, 1:2]
+dt.ingredients.eigenvector$ingredient_eigenvector <- as.numeric(dt.ingredients.eigenvector$ingredient_eigenvector)
+
+dt.ingredients.centrality <- merge(dt.ingredients.degree, dt.ingredients.closeness, by = "ingredient")
+dt.ingredients.centrality <- merge(dt.ingredients.centrality, dt.ingredients.betweenness, by = "ingredient")
+dt.ingredients.centrality <- merge(dt.ingredients.centrality, dt.ingredients.eigenvector, by = "ingredient")
 
 ################################### PAGE 6 PROPOSAL ##################################
 
-# Calculate the datatable for advanced analysis
-df.drink.degrees <- data.frame(degree(g.drinks.bp))
-dt.drink.degrees <- data.table(cbind(row.names(df.drink.degrees), 
-                                     df.drink.degrees))
-colnames(dt.drink.degrees)[1:2] <- c("name", "degree")
-dt.drink.degrees <- merge(dt.drink.degrees, 
-                          dt.drinks, 
-                          by = "name" )
-dt.drink.degrees <- dt.drink.degrees[, 
-                                     list(name, degree, complexity)]
-dt.drink.degrees$log_complexity <- log(dt.drink.degrees$complexity)
-
-################################### PAGE 7 PROPOSAL ##################################
-# Calculate the datatable for advanced analysis
-df.ingredients.degrees <- data.frame(degree(g.ingredients.bp))
-dt.ingredients.degrees <- data.table(cbind(row.names(df.ingredients.degrees), 
-                                           df.ingredients.degrees))
-colnames(dt.ingredients.degrees)[1:2] <- c("ingredient", "degree")
-dt.ingredients.degrees.merged <- merge(dt.ingredients.degrees, 
+dt.drinks.centrality.complete <- merge(dt.drinks.centrality,
                                        dt.drinks, 
-                                       by = "ingredient")
-dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, 
-                                                               list(ingredient, degree, adj_ingredient_price)]
-dt.ingredients.degrees.merged <- unique(dt.ingredients.degrees.merged)
-dt.ingredients.degrees.merged$log_ingredient_price <- log(dt.ingredients.degrees.merged$adj_ingredient_price)
+                                       by = "name" )
+
+dt.drinks.centrality.complete$log_adj_ingredients_cost <- log(dt.drinks.centrality.complete$adj_ingredients_cost)
+dt.drinks.centrality.complete$log_complexity <- log(dt.drinks.centrality.complete$complexity)
+
+dt.drinks.analysis <- dt.drinks.centrality.complete[, 
+                                                    list(name, 
+                                                         is_alcoholic, 
+                                                         category, 
+                                                         glass_type, 
+                                                         commonality,
+                                                         complexity, 
+                                                         log_complexity,
+                                                         adj_ingredients_cost, 
+                                                         log_adj_ingredients_cost, 
+                                                         drink_degree, 
+                                                         drink_closeness, 
+                                                         drink_betweenness, 
+                                                         drink_eigenvector
+                                                         )
+                                                    ]
+
+dt.drinks.analysis <- unique(dt.drinks.analysis)
 
 # add id for ingredients to enable tooltip feature
-dt.ingredients.degrees.merged <- dt.ingredients.degrees.merged[, id := 1:length(ingredient)]
+dt.drinks.analysis <- dt.drinks.analysis[, id := 1:length(name)]
 
+# axis options for graph of drinks network
+v.analysis.drinks.axis.vars <- c(
+  "Commonality" = "commonality",
+  "Complexity" = "complexity", 
+  "Ingredients Cost per Drink" = "adj_ingredients_cost",  
+  "Degree" = "drink_degree", 
+  "Closeness" = "drink_closeness", 
+  "Betweenness" = "drink_betweenness", 
+  "Eigenvector" = "drink_eigenvector"
+)
+
+################################### PAGE 7 PROPOSAL ##################################
+
+dt.ingredients.centrality.complete <- merge(dt.ingredients.centrality, 
+                                            dt.drinks, 
+                                            by = "ingredient")
+
+dt.ingredients.centrality.complete$log_adj_ingredient_price <- log(dt.ingredients.centrality.complete$adj_ingredient_price)
+
+dt.ingredients.analysis <- dt.ingredients.centrality.complete[, 
+                                                              list(ingredient, 
+                                                                   adj_ingredient_price, 
+                                                                   log_adj_ingredient_price,
+                                                                   ingredient_degree, 
+                                                                   ingredient_closeness, 
+                                                                   ingredient_betweenness, 
+                                                                   ingredient_eigenvector
+                                                              )
+                                                              ]
+dt.ingredients.analysis <- unique(dt.ingredients.analysis)
+
+# add id for ingredients to enable tooltip feature
+dt.ingredients.analysis <- dt.ingredients.analysis[, id := 1:length(ingredient)]
+
+# axis options for graph of ingredient network
+v.analysis.ingredients.axis.vars <- c(
+  "Ingredient Price" = "adj_ingredient_price", 
+  "Degree" = "ingredient_degree", 
+  "Closeness" = "ingredient_closeness", 
+  "Betweenness" = "ingredient_betweenness", 
+  "Eigenvector" = "ingredient_eigenvector"
+  )
