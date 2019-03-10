@@ -578,41 +578,29 @@ ui <- fluidPage(
   
   ######################################### Page 8 Proposal ########################################
   
+# Create the tab for the advanced analysis
   tabPanel("Cocktail Party Planner",
            verticalLayout(
-             titlePanel("TITLE PLACEHOLDER"),
+             titlePanel("Cocktail Planner"),
              fluidRow(
                wellPanel(
-                 h4("Available Stock"),
+                 h4("Please specify the cocktail ingredients currently in stock"),
                  selectInput("ingredients.available",
                              "Available Stock",
                              l.all.ingredients,
-                             selected = "All",
-                             multiple = TRUE
-                             ),
+                             selected = "water",
+                             multiple = TRUE),
                  fluidRow(
-                 p("Please specify the amount of the ingredients in ml:")),
-                 fluidRow(
+                   # Table with all ingredients at hand
                    column(6,
-                          uiOutput("ingredients.in.stock.table"))
-                   # column(6,
-                   #        uiOutput("amount.ingredients.in.stock.table"))
-                 
-                   #          )),
-                   # column(4,
-                   #        fluidRow(
-                   #          column(6,
-                   #                 p(input$ingredients.available[2])),
-                   #          column(6,
-                   #                 textInput("ingredient.2", input$ingredients.available[2], placeholder = "amount in ml"))
-                   #          )),
-                   # column(4,
-                   #        fluidRow(
-                   #          column(6,
-                   #                 p(input$ingredients.available[3])),
-                   #          column(6,
-                   #                 textInput("ingredient.3", input$ingredients.available[3], placeholder = "amount in ml"))
-                   #        ))
+                          uiOutput("ingredients.in.stock")),
+                   # Oveview graph
+                   column(6,
+                          plotOutput(outputId = "tester")),
+                   # Table output of all possible drinks
+                   column(6,
+                            p("These are the drinks you can mix with the ingredients in stock"),
+                          tableOutput("table.test"))
                  )
                )
              )
@@ -1199,38 +1187,67 @@ server <- function(input, output, session) {
   })
   
   ################################### PAGE 8 PROPOSAL ##################################
-  
-  output$ingredients.in.stock.table <- renderTable({
-    dt.ingredients.in.stock <- as.data.table(c(input$ingredients.available))
-    colnames(dt.ingredients.in.stock)[1] <- "Ingredients"
-    dt.ingredients.in.stock
-  })
-  
-  
-  # WIP!!!
-  # output$amount.ingredients.in.stock.table <- renderTable({
-  #   ingredient.table.length <- length(input$ingredients.available)
-  #   ingredient.vector <- c(textInput(("ingredient "+ i),
-  #                                    input$ingredients.available[i],
-  #                                    placeholder = "amount in ml"))
-  #   # for(i in ingredient.table.length){
-  #   #   ingredient.vector <- c(ingredient.vector, textInput(("ingredient "+ i),
-  #   #                                    input$ingredients.available[i],
-  #   #                                    placeholder = "amount in ml"))
-  #   # }
-  #   ingredient.amount.input.table <- data.table(ingredient.vector)
-  #   ingredient.amount.input.table
-  #   })
-  
-  # 
-  # output$amount.ingredients.in.stock.table <- reactive(renderTable({
-  #   ingredient.table.length <- length(input$ingredients.available)
-  #   ingredient.amount.input.table <- data.table()
-  #   for(i in ingredient.table.length){
-  #     ingredient.amount.input.table$V[i] <- textInput(("ingredient "+ i), input$ingredients.available[i], placeholder = "amount in ml")
-  #   }
-  # })
-  # )  
+ 
+    # Create a reactive data table that allows to specify all ingredients that are already in stock
+    dt.ingredients.in.stock <- reactive({
+      dt.ingredients.in.stock <- data.table(ingredient = input$ingredients.available)
+    })
+    
+    # The out put for the stock of ingredients
+    output$ingredients.in.stock <- renderTable({
+      dt.ingredients.in.stock()
+    })
+    
+    # Find drinks that can be build with the selected ingredients
+    # Create a data table where all drinks are deleted whose ingredients are already in stock
+    dt.drinks.deletion <- reactive({
+      dt.drinks.ingredient.deletion <- dt.drinks[, list(ingredient, name)]
+      dt.drinks.ingredient.deletion <- dt.drinks.ingredient.deletion[!(dt.drinks.ingredient.deletion$ingredient %in% dt.ingredients.in.stock()$ingredient)]
+    })
+   
+    # Create a data table with all drinks that are possible with the ingredients at hand 
+    dt.drinks.feasible <- reactive({
+      dt.drinks.feasible <- dt.drinks[, list(unique(name))]
+      dt.drinks.feasible <- dt.drinks[!(dt.drinks$name %in% dt.drinks.deletion()$name), list(unique(name))]
+    })
+      
+    # Set up the igraph
+      current.possible.drinks <- dt.drinks[,
+                                           .(name = unique(name),
+                                             type = TRUE
+                                           )]
+      current.available.ingredients <- dt.drinks[,
+                                                 .(name = unique(ingredient),
+                                                   type = FALSE
+                                                 )]
+      all.available.vertices <- rbind(current.possible.drinks,
+                                      current.available.ingredients)
+
+
+      g.drinks.ingredients.available <- graph_from_data_frame(dt.drinks[,
+                                                                        .(name, ingredient)
+                                                                        ],
+                                                              directed = FALSE,
+                                                              vertices = all.available.vertices)
+
+      g.drinks.ingredients.available.bp <- bipartite.projection(g.drinks.ingredients.available)$proj2
+
+      # Create a reactive graph
+      g.drinks.feasible <- reactive({
+        V(g.drinks.ingredients.available.bp)$color <- ifelse(V(g.drinks.ingredients.available.bp) %in% dt.drinks.feasible()$V1, "green", "white")
+        plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 2,
+                    layout = layout_nicely, edge.arrow.size = 1)
+      })
+
+      # create the output for the graph
+    output$tester <- renderPlot({
+      g.drinks.feasible()
+    })
+    
+    # create the ourput for the feasible drinks
+    output$table.test <- renderTable({
+      dt.drinks.feasible()
+    })
     
   }
 
