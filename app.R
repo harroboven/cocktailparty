@@ -767,7 +767,7 @@ server <- function(input, output, session) {
     }
     
   # A reactive expression with the ggvis plot
-  vis <- reactive({
+  vis.drink.explorer <- reactive({
     #Lables for axes
     xvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.xvar]
     yvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.yvar]
@@ -785,14 +785,12 @@ server <- function(input, output, session) {
       add_axis("y", title = yvar_name) %>%
       set_options(width = 636, height = 636)
     })
+  
+  vis.drink.explorer %>% bind_shiny("drink_explorer")
     
-    vis %>% bind_shiny("drink_explorer")
-    
-    output$drink.explorer.n_drinks <- renderText({ 
-      
-      nrow(dt.drink.explorer()) 
-      
-      })
+  output$drink.explorer.n_drinks <- renderText({
+    nrow(dt.drink.explorer())
+    })
   
   
   ################################### PAGE 3 PROPOSAL ##################################
