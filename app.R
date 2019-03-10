@@ -132,49 +132,61 @@ ui <- fluidPage(
                                           verticalLayout(
                                             wellPanel(
                                               h4("Filter"),
-                                              sliderInput("complexity.filter", "Degree of Recipe Complexity",
+                                              sliderInput("drink.explorer.complexity.filter", "Degree of Recipe Complexity",
                                                           min = min(dt.drinks.filtered$complexity), 
                                                           max = max(dt.drinks.filtered$complexity), 
-                                                          value = c(median(dt.drinks.filtered$complexity), mean(dt.drinks.filtered$complexity)), 
+                                                          value = c(median(dt.drinks.filtered$complexity), 
+                                                                    mean(dt.drinks.filtered$complexity)
+                                                                    ), 
                                                           sep = ""
                                                           ),
-                                              sliderInput("commonality.filter", "Degree of Commonality", 
-                                                          min = 1, 
-                                                          max = 3, 
+                                              sliderInput("drink.explorer.commonality.filter", "Degree of Commonality",
+                                                          min = 1,
+                                                          max = 3,
                                                           value = c(1, 3),
                                                           sep = ""
                                                           ),
-                                              sliderInput("ingredients.cost.filter", "Ingredients Cost per Drink",
-                                                          min = min(dt.drinks.filtered$complexity), 
-                                                          max = max(dt.drinks.filtered$complexity), 
-                                                          value = c(median(dt.drinks.filtered$complexity), mean(dt.drinks.filtered$complexity)), 
+                                              sliderInput("drink.explorer.cost.filter", "Ingredients Cost per Drink",
+                                                          min = min(dt.drinks.filtered$adj_ingredients_cost),
+                                                          max = max(dt.drinks.filtered$adj_ingredients_cost),
+                                                          value = c(median(dt.drinks.filtered$adj_ingredients_cost), 
+                                                                    mean(dt.drinks.filtered$adj_ingredients_cost)
+                                                                    ),
                                                           sep = ""
                                                           ),
-                                              selectInput("alcoholic.filter", "Alcoholic Nature",
+                                              selectInput("drink.explorer.alcoholic.filter", "Alcoholic Nature",
                                                           l.is_alcoholic_values,
                                                           selected = "All"
-                                                          ), 
-                                              selectInput("category.filter", "Type of Drink",
-                                                          l.category_values, 
+                                                          ),
+                                              selectInput("drink.explorer.category.filter", "Type of Drink",
+                                                          l.category_values,
                                                           selected = "All"
-                                                          ), 
-                                              selectInput("glass.filter", "Glass Type",
-                                                          l.glass_type_values, 
+                                                          ),
+                                              selectInput("drink.explorer.glass.filter", "Glass Type",
+                                                          l.glass_type_values,
                                                           selected = "All"
                                                           )
-                                              ), 
+                                              ),
                                             wellPanel(
-                                              selectInput("xvar", "X-axis variable", axis_vars, selected = "complexity"),
-                                              selectInput("yvar", "Y-axis variable", axis_vars, selected = "ingredient_price")
+                                              selectInput("drink.explorer.xvar", 
+                                                          "X-axis variable", 
+                                                          v.drink.explorer.axis.vars, 
+                                                          selected = "complexity"
+                                                          ),
+                                              selectInput("drink.explorer.yvar", 
+                                                          "Y-axis variable", 
+                                                          v.drink.explorer.axis.vars, 
+                                                          selected = "complexity"
+                                                          )
                                               )
                                             )
                                           ),
                                    column(9,
                                           verticalLayout(
-                                            ggvisOutput("plot1"), 
+                                            ggvisOutput("drink_explorer"), 
                                             wellPanel(
                                               span("Number of drinks selected:", 
-                                                   textOutput("n_drinks")
+                                                   textOutput("drink.explorer.n_drinks")
                                                    )
                                               )
                                             )
@@ -478,12 +490,24 @@ ui <- fluidPage(
                       wellPanel(
                         h4("Filter"),
                         sliderInput("analysis.ingredient.price.filter", "Ingredient Price",
-                                    min = min(dt.ingredients.degrees.merged$adj_ingredient_price), 
-                                    max = max(dt.ingredients.degrees.merged$adj_ingredient_price), 
-                                    value = c(median(dt.ingredients.degrees.merged$adj_ingredient_price), mean(dt.ingredients.degrees.merged$adj_ingredient_price)), 
+                                    min = min(dt.ingredients.analysis$adj_ingredient_price), 
+                                    max = max(dt.ingredients.analysis$adj_ingredient_price), 
+                                    value = c(median(dt.ingredients.analysis$adj_ingredient_price), mean(dt.ingredients.analysis$adj_ingredient_price)), 
                                     sep = ""
                                     )
+                        ),
+                      wellPanel(
+                        selectInput("analysis.ingredients.xvar", 
+                                    "X-axis variable", 
+                                    v.analysis.ingredients.axis.vars, 
+                                    selected = "adj_ingredient_price"
+                        ),
+                        selectInput("analysis.ingredients.yvar", 
+                                    "Y-axis variable", 
+                                    v.analysis.ingredients.axis.vars, 
+                                    selected = "ingredient_degree"
                         )
+                      )
                       ),
                column(8,
                       verticalLayout(
@@ -501,7 +525,7 @@ ui <- fluidPage(
                )
              ),
   
-  ######################################### Page 7 Proposal ########################################
+  ######################################### Page 8 Proposal ########################################
   
   tabPanel("Cocktail Party Planner",
            verticalLayout(
@@ -555,7 +579,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 1 PROPOSAL ##################################
   
-  ############ Oberservation distribution chart ############
+   ############ Oberservation distribution chart ############
   output$drinks.dist.barChart <- renderPlot({
     
     # needed to adjust for NA values in ingredient costs
@@ -608,7 +632,7 @@ server <- function(input, output, session) {
       ylab("Frequency")
     })
   
-  ############ Summary statistics table ############
+   ############ Summary statistics table ############
   output$data.summary <- renderTable({
 
     dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
@@ -701,37 +725,37 @@ server <- function(input, output, session) {
   ################################### PAGE 2 PROPOSAL ##################################
 
   # Filter the drinks, returning a data frame
-  dt.drinks.ordered.filter <- reactive({
+  dt.drink.explorer <- reactive({
     # Due to dplyr issue #318, we need temp variables for input values
-    min.complexity <- input$complexity.filter[1]
-    max.complexity <- input$complexity.filter[2]
-    min.commonality <- input$commonality.filter[1]
-    max.commonality <- input$commonality.filter[2]  
-    min.ingredients.cost <- input$ingredients.cost.filter[1]
-    max.ingredients.cost <- input$ingredients.cost.filter[2] 
+    min.complexity <- input$drink.explorer.complexity.filter[1]
+    max.complexity <- input$drink.explorer.complexity.filter[2]
+    min.commonality <- input$drink.explorer.commonality.filter[1]
+    max.commonality <- input$drink.explorer.commonality.filter[2]
+    min.ingredients.cost <- input$drink.explorer.cost.filter[1]
+    max.ingredients.cost <- input$drink.explorer.cost.filter[2]
     
     # Apply filters
     m <- dt.drinks.filtered %>%
       filter(
         complexity >= min.complexity, 
         complexity <= max.complexity,
-        commonality >= min.commonality, 
+        commonality >= min.commonality,
         commonality <= max.commonality,
-        adj_ingredients_cost >= min.ingredients.cost, 
-        adj_ingredients_cost <= min.ingredients.cost
+        adj_ingredients_cost >= min.ingredients.cost,
+        adj_ingredients_cost <= max.ingredients.cost
         )
       
     # Filter by alcoholic nature
-    if (input$alcoholic.filter != "All") {
-      m <- m %>% filter(is_alcoholic %in% input$alcoholic.filter)
+    if (input$drink.explorer.alcoholic.filter != "All") {
+      m <- m %>% filter(is_alcoholic %in% input$drink.explorer.alcoholic.filter)
       }
     # Filter by drink type
-    if (input$category.filter != "All") {
-      m <- m %>% filter(category %in% input$category.filter)
+    if (input$drink.explorer.category.filter != "All") {
+      m <- m %>% filter(category %in% input$drink.explorer.category.filter)
       }
     # Filter by glass type
-    if (input$glass.filter != "All") {
-      m <- m %>% filter(glass_type %in% input$glass.filter)
+    if (input$drink.explorer.glass.filter != "All") {
+      m <- m %>% filter(glass_type %in% input$drink.explorer.glass.filter)
       }
       
     m <- as.data.frame(m)
@@ -740,12 +764,12 @@ server <- function(input, output, session) {
     })
     
   # Generating tooltip text
-  drink_tooltip <- function(x) {
+  drink.explorer.tooltip <- function(x) {
     if (is.null(x)) return(NULL)
     if (is.null(x$id)) return(NULL)
       
     # Pick out the drink with this ID
-    dt.drinks.filtered <- isolate(dt.drinks.ordered.filter())
+    dt.drinks.filtered <- isolate(dt.drink.explorer())
     drink <- dt.drinks.filtered[dt.drinks.filtered$id == x$id, ]
       
     paste0("<b>", drink$name, "</b><br>",
@@ -755,44 +779,42 @@ server <- function(input, output, session) {
     }
     
   # A reactive expression with the ggvis plot
-  vis <- reactive({
-    # Lables for axes
-    xvar_name <- names(axis_vars)[axis_vars == input$xvar]
-    yvar_name <- names(axis_vars)[axis_vars == input$yvar]
+  vis.drink.explorer <- reactive({
+    #Lables for axes
+    xvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.xvar]
+    yvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.yvar]
+
+    xvar <- prop("x", as.symbol(input$drink.explorer.xvar))
+    yvar <- prop("y", as.symbol(input$drink.explorer.yvar))
       
-    xvar <- prop("x", as.symbol(input$xvar))
-    yvar <- prop("y", as.symbol(input$yvar))
-      
-    dt.drinks.ordered.filter %>%
+    dt.drink.explorer %>%
       ggvis(x = xvar, y = yvar) %>%
       layer_points(size := 50, size.hover := 200,
                    fillOpacity := 0.2, fillOpacity.hover := 0.5, 
                    key := ~id) %>%
-      add_tooltip(drink_tooltip, "hover") %>%
+      add_tooltip(drink.explorer.tooltip, "hover") %>%
       add_axis("x", title = xvar_name) %>%
       add_axis("y", title = yvar_name) %>%
       set_options(width = 636, height = 636)
     })
+  
+  vis.drink.explorer %>% bind_shiny("drink_explorer")
     
-    vis %>% bind_shiny("plot1")
-    
-    output$n_drinks <- renderText({ 
-      
-      nrow(dt.drinks.ordered.filter()) 
-      
-      })
+  output$drink.explorer.n_drinks <- renderText({
+    nrow(dt.drink.explorer())
+    })
   
   
   ################################### PAGE 3 PROPOSAL ##################################
   
-  ############ Summary Table of drinks network ############
+   ############ Summary Table of drinks network ############
   output$drinks.network.summary <- renderTable({  
     
     l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
     l.num_edges <- list("Number of Edges", length(E(g.drinks.bp)))
-    l.mean_degree <- list("Average Degree", mean(degree(g.drinks.bp)))
+    l.mean_degree <- list("Average Degree", mean(dt.drinks.degree$drink_degree))
     l.clust_coeff <- list("Clustering Coefficient", transitivity(g.drinks.bp))
-    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.drinks.bp)))
+    l.mean_betweenness <- list("Average Betweenness", mean(dt.drinks.betweenness$drink_betweenness))
     l.mean_path_length <- list("Average Path Length", mean(distances(g.drinks.bp)))
     l.diameter <- list("Diameter", diameter(g.drinks.bp))
     
@@ -809,14 +831,14 @@ server <- function(input, output, session) {
     dt.drinks.network.summary
     })  
     
-  ############ Centrality Measures Table of drink network ############
+   ############ Centrality Measures Table of drink network ############
   output$drinks.centrality.table <- renderTable({ 
     
     drinks.centrality <- switch(input$drinks.centrality.table, 
-                                dg = degree(g.drinks.bp), 
-                                cl = closeness(g.drinks.bp), 
-                                bt = betweenness(g.drinks.bp), 
-                                ev = eigen_centrality(g.drinks.bp)
+                                dg = dt.drinks.degree$drink_degree, 
+                                cl = dt.drinks.closeness$drink_closeness, 
+                                bt = dt.drinks.betweenness$drink_betweenness, 
+                                ev = dt.drinks.eigenvector$drink_eigenvector
                                 )
       
     l.centrality.min <- list("Min ", min(drinks.centrality))
@@ -834,6 +856,12 @@ server <- function(input, output, session) {
     setnames(dt.drinks.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
     dt.drinks.centrality
     })  
+  
+   ################## drinks network graph by weight ######################
+  
+  output$plot.network.of.drinks <- renderPlot({
+    g.drinks.bp <- delete.edges(g.drinks.bp, 
+                                E(g.drinks.bp)[weight < input$weight.edges.drink])
     
   # Zanis new part
     
@@ -904,20 +932,34 @@ server <- function(input, output, session) {
       V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
       g.drinks.ingredients.custom <- graph()
       plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite) 
+
     })
+  
+   ################## graph for a single drink ######################
+ 
+  output$plot.network.of.one.drink <- renderPlot({
     
+    #g.one.drink <- delete.vertices(g.drinks.bp,
+    #                            V(g.drinks.bp)[degree < input$network.of.one.drink.degree])
     
+    g.one.drink <- make_ego_graph(g.drinks.bp, order = 1, V(g.drinks.bp)$name == 'Brainteaser')
+    plot(g.one.drink[['Brainteaser']])
+    #plot.igraph(, vertex.size = 1, edge.color = 'tomato', layout = layout_with_graphopt, edge.arrow.size = 4)
+    #   plot.igraph(induced.subgraph(g.drinks.bp, 
+    #                      ego(graph = g.drinks.bp, 1, 'Zoksel')[[2]]))
+  })
+  
   
   ################################### PAGE 4 PROPOSAL ##################################
   
-  ############ Summary Table of ingredient network ############
-  output$ingredients.network.summary <- renderTable({  
+   ############ Summary Table of ingredient network ############
+  output$ingredients.network.summary <- renderTable({
     
     l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
     l.num_edges <- list("Number of Edges", length(E(g.ingredients.bp)))
-    l.mean_degree <- list("Average Degree", mean(degree(g.ingredients.bp)))
+    l.mean_degree <- list("Average Degree", mean(dt.ingredients.degree$ingredient_degree))
     l.clust_coeff <- list("Clustering Coefficient", transitivity(g.ingredients.bp))
-    l.mean_betweenness <- list("Average Betweenness", mean(betweenness(g.ingredients.bp)))
+    l.mean_betweenness <- list("Average Betweenness", mean(dt.ingredients.betweenness$ingredient_betweenness))
     l.mean_path_length <- list("Average Path Length", mean(distances(g.ingredients.bp)))
     l.diameter <- list("Diameter", diameter(g.ingredients.bp))
     
@@ -928,21 +970,161 @@ server <- function(input, output, session) {
                                        l.mean_betweenness, 
                                        l.mean_path_length, 
                                        l.diameter
-    )
+                                       )
+    
     dt.ingredients.network.summary <- as.data.table(dt.ingredients.network.summary)
     setnames(dt.ingredients.network.summary, old = c("V1", "V2"), new = c("Name", "Value"))
     dt.ingredients.network.summary
+    })
+  
+   ############ Centrality Measures Table of ingredient network ############
+  output$ingredients.centrality.table <- renderTable({
+    
+    ingredients.centrality <- switch(input$ingredients.centrality.table, 
+                                     dg = dt.ingredients.degree$ingredient_degree, 
+                                     cl = dt.ingredients.closeness$ingredient_closeness, 
+                                     bt = dt.ingredients.betweenness$ingredient_betweenness, 
+                                     ev = dt.ingredients.eigenvector$ingredient_eigenvector
+                                     )
+    
+    l.centrality.min <- list("Min ", min(ingredients.centrality))
+    l.centrality.median <- list("Median ", median(ingredients.centrality))
+    l.centrality.sd <- list("SD ", sd(ingredients.centrality))
+    l.centrality.max <- list("Max ", max(ingredients.centrality))
+      
+    dt.ingredients.centrality  <- rbind(l.centrality.min, 
+                                        l.centrality.median, 
+                                        l.centrality.sd, 
+                                        l.centrality.max
+                                        )
+      
+    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
+    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
+    dt.ingredients.centrality
+    })  
+  
+   ################## ingredients network graph by weight ######################
+    
+    output$plot.network.of.ingredients <- renderPlot({
+      g.ingredients.bp <- delete.edges(g.ingredients.bp,
+                                       E(g.ingredients.bp)[weight < input$weight.edges.ingredient])
+      
+      deg.ingredients <- degree(g.ingredients.bp, mode = 'all')
+      plot.igraph(g.ingredients.bp, vertex.label = NA, vertex.size = deg.ingredients/2, 
+                  edge.color = 'tomato', layout = layout_on_sphere,
+                  edge.arrow.size = 1)
+      })
+  
+   ################## graph for a single ingredient ######################
+  
+    output$plot.network.of.one.ingredient <- renderPlot({
+      V(g.one.ingredient)
+      g.one.ingredient <- induced.subgraph(g.ingredients.bp, neighbors(g.ingredients.bp, V(g.ingredients.bp)$name == input$network.of.one.ingredient))
+      #V(g.one.ingredient)$name == input$network.of.one.ingredient
+      #V(g.one.ingredient)$degree < input$weight.edges.ingredients
+      plot.igraph(g.one.ingredient, vertex.size = 7, 
+                  edge.color = 'tomato', layout = layout_with_graphopt, 
+                  edge.arrow.size = 4)
+      # visIgraph(g.one.ingredient)
+      })
+  
+  ################################### PAGE 5 PROPOSAL ##################################
+  
+   ################## bipartite visualisation ######################
+
+  output$bipartite.drinks.ingredients <- renderPlot({
+    V(g.drinks.ingredients)$color <- c("steel blue", "orange")[V(g.drinks.ingredients)$type+1]
+    V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
+    
+    plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite)
+    })
+    
+  
+  ################################### PAGE 6 PROPOSAL ##################################
+  
+  output$drinks.network.analytics <- renderPlot({
+    
+    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + 
+      geom_point() + 
+      geom_smooth(method='lm')
   })
   
-  
   ################################### PAGE 7 PROPOSAL ##################################
+  
+  # Filter the drinks, returning a data frame
+  dt.analysis.ingredient.filter <- reactive({
+    # Due to dplyr issue #318, we need temp variables for input values
+    min.ingredient.price <- input$analysis.ingredient.price.filter[1]
+    max.ingredient.price <- input$analysis.ingredient.price.filter[2] 
+    
+    # Apply filters
+    m <- dt.ingredients.analysis %>%
+      filter(
+        adj_ingredient_price >= min.ingredient.price, 
+        adj_ingredient_price <= max.ingredient.price
+      )
+    
+    m <- as.data.frame(m)
+    
+    m
+  })
+  
+  # Generating tooltip text
+  ingredient_tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
+
+    #Pick out the drink with this ID
+    dt.ingredients.analysis <- isolate(dt.analysis.ingredient.filter())
+    analysis.ingredient <- dt.ingredients.analysis[dt.ingredients.analysis$id == x$id, ]
+
+    paste0("<b>", analysis.ingredient$ingredient, "</b><br>",
+           "Ingredient Price: ", round(analysis.ingredient$adj_ingredient_price, 2), "<br>",
+           "Degree of Ingredient: ", round(analysis.ingredient$ingredient_degree, 2), "<br>",
+           "Closeness of Ingredient: ", round(analysis.ingredient$ingredient_closeness, 2), "<br>",
+           "Betweenness of Ingredient: ", round(analysis.ingredient$ingredient_betweenness, 2), "<br>",
+           "Eigenvector of Ingredient: ", round(analysis.ingredient$ingredient_eigenvector, 2), "<br>"
+           )
+    }
+  
+  # A reactive expression with the ggvis plot
+  vis.ingredient.analysis <- reactive({
+    
+    #Lables for axes
+    xvar_name <- names(v.analysis.ingredients.axis.vars)[v.analysis.ingredients.axis.vars == input$analysis.ingredients.xvar]
+    yvar_name <- names(v.analysis.ingredients.axis.vars)[v.analysis.ingredients.axis.vars == input$analysis.ingredients.yvar]
+    
+    xvar <- prop("x", as.symbol(input$analysis.ingredients.xvar))
+    yvar <- prop("y", as.symbol(input$analysis.ingredients.yvar))
+    
+    dt.analysis.ingredient.filter %>%
+      ggvis(x = xvar, y = yvar) %>%
+      layer_points(size := 50, size.hover := 200,
+                   fillOpacity := 0.2, fillOpacity.hover := 0.5, 
+                   key := ~id) %>%
+      layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
+      add_tooltip(ingredient_tooltip, "hover") %>%
+      add_axis("x", title = xvar_name) %>%
+      add_axis("y", title = yvar_name) %>%
+      set_options(width = 636, height = 636)
+  })
+  
+  vis.ingredient.analysis %>% bind_shiny("ingredient_analysis")
+  
+  output$ingredient.analysis.n_ingredients <- renderText({ 
+    
+    nrow(dt.analysis.ingredient.filter()) 
+    
+  })
+  
+  ################################### PAGE 8 PROPOSAL ##################################
   
   output$ingredients.in.stock.table <- renderTable({
     dt.ingredients.in.stock <- as.data.table(c(input$ingredients.available))
     colnames(dt.ingredients.in.stock)[1] <- "Ingredients"
     dt.ingredients.in.stock
-    })
-    
+  })
+  
   
   # WIP!!!
   # output$amount.ingredients.in.stock.table <- renderTable({
@@ -958,7 +1140,7 @@ server <- function(input, output, session) {
   #   ingredient.amount.input.table <- data.table(ingredient.vector)
   #   ingredient.amount.input.table
   #   })
-
+  
   # 
   # output$amount.ingredients.in.stock.table <- reactive(renderTable({
   #   ingredient.table.length <- length(input$ingredients.available)
@@ -967,109 +1149,8 @@ server <- function(input, output, session) {
   #     ingredient.amount.input.table$V[i] <- textInput(("ingredient "+ i), input$ingredients.available[i], placeholder = "amount in ml")
   #   }
   # })
-  # )
-  
-  
-  
-  ############ Centrality Measures Table of ingredient network ############
-  output$ingredients.centrality.table <- renderTable({ 
+  # )  
     
-    ingredients.centrality <- switch(input$ingredients.centrality.table, 
-                                     dg = degree(g.ingredients.bp), 
-                                     cl = closeness(g.ingredients.bp), 
-                                     bt = betweenness(g.ingredients.bp), 
-                                     ev = eigen_centrality(g.ingredients.bp)
-                                     )
-    
-    l.centrality.min <- list("Min", min(ingredients.centrality))
-    l.centrality.median <- list("Median", median(ingredients.centrality))
-    l.centrality.sd <- list("SD", sd(ingredients.centrality))
-    l.centrality.max <- list("Max", max(ingredients.centrality))
-    
-    dt.ingredients.centrality  <- rbind(l.centrality.min, 
-                                   l.centrality.median, 
-                                   l.centrality.sd, 
-                                   l.centrality.max
-                                   )
-    
-    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
-    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
-    dt.ingredients.centrality
-  })
-  
-  ################################### PAGE 6 PROPOSAL ##################################
-  
-  output$drinks.network.analytics <- renderPlot({
-    
-    ggplot(dt.drink.degrees, aes(x = log_complexity, y = degree)) + 
-      geom_point() + 
-      geom_smooth(method='lm')
-  })
-  
-  ################################### PAGE 7 PROPOSAL ##################################
-  
-  # Filter the drinks, returning a data frame
-  dt.analysis.ingredient.price.filter <- reactive({
-    # Due to dplyr issue #318, we need temp variables for input values
-    min.ingredient.price <- input$analysis.ingredient.price.filter[1]
-    max.ingredient.price <- input$analysis.ingredient.price.filter[2] 
-    
-    # Apply filters
-    m <- dt.ingredients.degrees.merged %>%
-      filter(
-        adj_ingredient_price >= min.ingredient.price, 
-        adj_ingredient_price <= max.ingredient.price
-      )
-    
-    m <- as.data.frame(m)
-    
-    m
-  })
-  
-  # Generating tooltip text
-  ingredient_tooltip <- function(x) {
-    if (is.null(x)) return(NULL)
-    if (is.null(x$id)) return(NULL)
-    
-    #Pick out the drink with this ID
-    dt.ingredients.degrees.merged <- isolate(dt.analysis.ingredient.price.filter())
-    analysis.ingredient <- dt.ingredients.degrees.merged[dt.ingredients.degrees.merged$id == x$id, ]
-    
-    paste0("<b>", analysis.ingredient$ingredient, "</b><br>", 
-           "Degree of Ingredient: ", analysis.ingredient$degree, "<br>", 
-           "Ingredient Price: ", analysis.ingredient$ingredient_price
-           )
-    }
-  
-  # A reactive expression with the ggvis plot
-  vis <- reactive({
-
-    xvar <- prop("x", as.symbol("adj_ingredient_price"))
-    yvar <- prop("y", as.symbol("degree"))
-    
-    dt.analysis.ingredient.price.filter %>%
-      ggvis(x = xvar, y = yvar) %>%
-      layer_points(size := 50, size.hover := 200,
-                   fillOpacity := 0.2, fillOpacity.hover := 0.5, 
-                   key := ~id) %>%
-      layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
-      add_tooltip(ingredient_tooltip, "hover") %>%
-      add_axis("x", title = "adj_ingredient_price") %>%
-      add_axis("y", title = "degree") %>%
-      set_options(width = 636, height = 636)
-  })
-  
-  vis %>% bind_shiny("ingredient_analysis")
-  
-  output$ingredient.analysis.n_ingredients <- renderText({ 
-    
-    nrow(dt.analysis.ingredient.price.filter()) 
-    
-  })
-    
-    
-
-  
   }
 
 ############################################################# ShinyApp #############################################################
