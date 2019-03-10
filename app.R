@@ -1037,20 +1037,20 @@ server <- function(input, output, session) {
     m
   })
   
-  # # Generating tooltip text
-  # ingredient_tooltip <- function(x) {
-  #   if (is.null(x)) return(NULL)
-  #   if (is.null(x$id)) return(NULL)
-  #   
-  #   #Pick out the drink with this ID
-  #   dt.ingredients.analysis <- isolate(dt.analysis.ingredient.filter())
-  #   analysis.ingredient <- dt.ingredients.analysis[dt.ingredients.analysis$id == x$id, ]
-  #   
-  #   paste0("<b>", analysis.ingredient$ingredient, "</b><br>", 
-  #          "Degree of Ingredient: ", analysis.ingredient$degree, "<br>", 
-  #          "Ingredient Price: ", analysis.ingredient$ingredient_price
-  #          )
-  #   }
+  # Generating tooltip text
+  ingredient_tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
+
+    #Pick out the drink with this ID
+    dt.ingredients.analysis <- isolate(dt.analysis.ingredient.filter())
+    analysis.ingredient <- dt.ingredients.analysis[dt.ingredients.analysis$id == x$id, ]
+
+    paste0("<b>", analysis.ingredient$ingredient, "</b><br>",
+           "Degree of Ingredient: ", analysis.ingredient$ingredient_degree, "<br>",
+           "Ingredient Price: ", analysis.ingredient$adj_ingredient_price
+           )
+    }
   
   # A reactive expression with the ggvis plot
   vis.ingredient.analysis <- reactive({
@@ -1067,8 +1067,8 @@ server <- function(input, output, session) {
       layer_points(size := 50, size.hover := 200,
                    fillOpacity := 0.2, fillOpacity.hover := 0.5, 
                    key := ~id) %>%
-      # layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
-      # add_tooltip(ingredient_tooltip, "hover") %>%
+      layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
+      add_tooltip(ingredient_tooltip, "hover") %>%
       add_axis("x", title = xvar_name) %>%
       add_axis("y", title = yvar_name) %>%
       set_options(width = 636, height = 636)
