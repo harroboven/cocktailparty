@@ -279,9 +279,6 @@ ui <- fluidPage(
                                                       selected = NA,
                                                       choices = dt.drinks$name
                                           ),
-                                          sliderInput('network.of.one.drink.degree',
-                                                      label = 'Choose a degree',
-                                                      min = 1, max = 3, value = 3, step = 1),
                                           plotOutput(outputId = 'plot.network.of.one.drink')
                                           ),
                                    # right sub-column
@@ -350,7 +347,10 @@ ui <- fluidPage(
                                           # SliderInput - Network of drinks
                                           sliderInput('weight.edges.ingredient',
                                                       label = 'Min. weight of edges:', 
-                                                      min = 1, max = 15, value = 15, step = 1)
+                                                      min = 1, max = 15, value = 15, step = 1),
+                                          sliderInput('degree.vertices.ingredient',
+                                                      label = 'Max. degree of vertices: ',
+                                                      min = 1, max = 3, value = 3, step = 1)
                                           ),
                                    column(6,
                                           # right sub-column
@@ -435,7 +435,7 @@ ui <- fluidPage(
                                                     min = 1, max = 80, value = 80, step = 2),
                                         selectInput('alcoholic.nature',
                                                     label = 'Alcoholic nature',
-                                                    choices = dt.drinks$is_alcoholic),
+                                                    choices = dt.drinks$is_galcoholic),
                                         selectInput('drink.type',
                                                     label = 'Drink type',
                                                     choices = dt.drinks$category),
@@ -863,8 +863,76 @@ server <- function(input, output, session) {
     g.drinks.bp <- delete.edges(g.drinks.bp, 
                                 E(g.drinks.bp)[weight < input$weight.edges.drink])
     
-    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 2, edge.color = 'tomato',
-                layout = layout_on_sphere, edge.arrow.size = 1)
+  # Zanis new part
+    
+    # plot a graph for drinks with weight X
+    output$plot.network.of.drinks <- renderPlot({
+      g.drinks.bp <- delete.edges(g.drinks.bp, 
+                                  E(g.drinks.bp)[weight < input$weight.edges.drink])
+      
+      plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 2, edge.color = 'tomato',
+                  layout = layout_on_sphere, edge.arrow.size = 1)
+    })
+    
+    # plot a graph for ingredients with weight X
+    output$plot.network.of.ingredients <- renderPlot({
+      g.ingredients.bp <- delete.edges(g.ingredients.bp,
+                                       E(g.ingredients.bp)[weight < input$weight.edges.ingredient])
+      g.ingredients.bp <- delete.vertices(g.ingredients.bp, 
+                                       V(g.ingredients.bp)[degree < input$degree.vertices.ingredient])
+      plot.igraph(simplify(g.ingredients.bp), vertex.label = NA, vertex.size = deg.ingredients/2, 
+                  edge.color = 'tomato', layout = layout_on_sphere,
+                  edge.arrow.size = 1)
+    })
+    
+    
+    
+    # create a subgraph with one selected drink X
+    output$plot.network.of.one.drink <- renderPlot({
+
+      
+      neigh.nodes.drinks <- neighborhood(g.drinks.bp, order = 1, nodes = V(g.drinks.bp)$name == input$network.of.one.drink)[[1]]
+       V(g.drinks.bp)$color <- 'green'
+        V(g.drinks.bp)[name == input$network.of.one.drink]$color <- 'tomato'
+        V(g.drinks.bp)[name == input$network.of.one.drink]$label <- paste0(input$network.of.one.drink)
+      plot(induced.subgraph(g.drinks.bp, neigh.nodes.drinks),
+           layout = layout_with_graphopt) 
+      
+    })
+    
+    
+    # create a subgraph with one selected ingredient X
+    output$plot.network.of.one.ingredient <- renderPlot({
+      neigh.nodes.ingredients <- neighborhood(g.ingredients.bp, order = 1, nodes = V(g.ingredients.bp)$name == input$network.of.one.ingredient)[[1]]
+      V(g.ingredients.bp)$color <- 'grey'
+      V(g.ingredients.bp)[name == input$network.of.one.ingredient]$label <- paste0(input$network.of.one.ingredient)  
+      E(g.ingredients.bp)$ltly <- 'dotted'
+      V(g.ingredients.bp)[name == input$network.of.one.ingredient]$color <- 'tomato'
+      plot(induced.subgraph(g.ingredients.bp, neigh.nodes.ingredients),
+           layout = layout_with_graphopt) 
+      # visIgraph(g.one.ingredient)
+    })
+    
+    # bipartite visualisation
+    output$bipartite.drinks.ingredients <- renderPlot({
+      all.drinks.alco <- dt.drinks[is_alcoholic == input$alcoholic.nature][,
+                                   .(name = unique(name),
+                                     type = TRUE)
+                                   ]
+      all.drinks.type <- dt.drinks[category == input$drink.type][,
+                                   .(name = unique(name),
+                                     type = TRUE)
+                                   ]
+      all.drinks.glass <- dt.drinks[category == input$glass.type][,
+                                   .(name = unique(name),
+                                     type = TRUE)
+                                   ]
+      all.vertices.filtered <- rbind(all.drinks.alco, all.drinks.type, all.drinks.glass, all.ingredients)
+      V(g.drinks.ingredients)$color <- c("steel blue", "orange")[V(g.drinks.ingredients)$type+1]
+      V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
+      g.drinks.ingredients.custom <- graph()
+      plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite) 
+
     })
   
    ################## graph for a single drink ######################

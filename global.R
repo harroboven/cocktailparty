@@ -122,7 +122,7 @@ l.glass_type_values <- c("All", sort(unique(dt.drinks.filtered$glass_type),
 
 # # select input button proposal paage 7
 # 
-# l.all.ingredients <- c("All", dt.drinks[, .(name = unique(ingredient))])
+ l.all.ingredients <- c("All", dt.drinks[, .(name = unique(ingredient))])
 
 ############## Plot themes #################
 
