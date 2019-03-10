@@ -469,26 +469,52 @@ ui <- fluidPage(
                column(4,
                       wellPanel(
                         h4("Filter"),
+                        sliderInput("analysis.drinks.complexity.filter", "Degree of Recipe Complexity",
+                                    min = min(dt.drinks.analysis$complexity), 
+                                    max = max(dt.drinks.analysis$complexity), 
+                                    value = c(median(dt.drinks.analysis$complexity), 
+                                              mean(dt.drinks.analysis$complexity)
+                                    ), 
+                                    sep = ""
+                                    ),
+                        sliderInput("analysis.drinks.commonality.filter", "Degree of Commonality",
+                                    min = 1,
+                                    max = 3,
+                                    value = c(1, 3),
+                                    sep = ""
+                                    ),
                         sliderInput("analysis.drinks.cost.filter", "Ingredients Cost per Drink",
                                     min = min(dt.drinks.analysis$adj_ingredients_cost), 
                                     max = max(dt.drinks.analysis$adj_ingredients_cost), 
                                     value = c(median(dt.drinks.analysis$adj_ingredients_cost), mean(dt.drinks.analysis$adj_ingredients_cost)), 
                                     sep = ""
-                        )
-                      ),
+                                    ),
+                        selectInput("analysis.drinks.alcoholic.filter", "Alcoholic Nature",
+                                    l.is_alcoholic_values,
+                                    selected = "All"
+                                    ),
+                        selectInput("analysis.drinks.category.filter", "Type of Drink",
+                                    l.category_values,
+                                    selected = "All"
+                                    ),
+                        selectInput("analysis.drinks.glass.filter", "Glass Type",
+                                    l.glass_type_values,
+                                    selected = "All"
+                                    )
+                        ),
                       wellPanel(
                         selectInput("analysis.drinks.xvar", 
                                     "X-axis variable", 
                                     v.analysis.drinks.axis.vars, 
                                     selected = "adj_ingredients_cost"
-                        ),
+                                    ),
                         selectInput("analysis.drinks.yvar", 
                                     "Y-axis variable", 
                                     v.analysis.drinks.axis.vars, 
                                     selected = "drink_degree"
+                                    )
                         )
-                      )
-               ),
+                      ),
                column(8,
                       verticalLayout(
                         wellPanel(
@@ -1002,15 +1028,36 @@ server <- function(input, output, session) {
   # Filter the drinks, returning a data frame
   dt.analysis.drinks.filter <- reactive({
     # Due to dplyr issue #318, we need temp variables for input values
+    min.complexity <- input$analysis.drinks.complexity.filter[1]
+    max.complexity <- input$analysis.drinks.complexity.filter[2]
+    min.commonality <- input$analysis.drinks.commonality.filter[1]
+    max.commonality <- input$analysis.drinks.commonality.filter[2]
     min.ingredient.cost <- input$analysis.drinks.cost.filter[1]
     max.ingredient.cost <- input$analysis.drinks.cost.filter[2] 
     
     # Apply filters
     m <- dt.drinks.analysis %>%
       filter(
+        complexity >= min.complexity, 
+        complexity <= max.complexity,
+        commonality >= min.commonality,
+        commonality <= max.commonality,
         adj_ingredients_cost >= min.ingredient.cost, 
         adj_ingredients_cost <= max.ingredient.cost
       )
+    
+    # Filter by alcoholic nature
+    if (input$analysis.drinks.alcoholic.filter != "All") {
+      m <- m %>% filter(is_alcoholic %in% input$analysis.drinks.alcoholic.filter)
+    }
+    # Filter by drink type
+    if (input$analysis.drinks.category.filter != "All") {
+      m <- m %>% filter(category %in% input$analysis.drinks.category.filter)
+    }
+    # Filter by glass type
+    if (input$analysis.drinks.glass.filter != "All") {
+      m <- m %>% filter(glass_type %in% input$analysis.drinks.glass.filter)
+    }
     
     m <- as.data.frame(m)
     
