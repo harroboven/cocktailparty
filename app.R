@@ -468,15 +468,40 @@ ui <- fluidPage(
              fluidRow(
                column(4,
                       wellPanel(
-                        titlePanel("Filter")
+                        h4("Filter"),
+                        sliderInput("analysis.drinks.cost.filter", "Ingredients Cost per Drink",
+                                    min = min(dt.drinks.analysis$adj_ingredients_cost), 
+                                    max = max(dt.drinks.analysis$adj_ingredients_cost), 
+                                    value = c(median(dt.drinks.analysis$adj_ingredients_cost), mean(dt.drinks.analysis$adj_ingredients_cost)), 
+                                    sep = ""
                         )
                       ),
-               column(8,
                       wellPanel(
-                        plotOutput(outputId = "drinks.network.analytics")  
+                        selectInput("analysis.drinks.xvar", 
+                                    "X-axis variable", 
+                                    v.analysis.drinks.axis.vars, 
+                                    selected = "adj_ingredients_cost"
+                        ),
+                        selectInput("analysis.drinks.yvar", 
+                                    "Y-axis variable", 
+                                    v.analysis.drinks.axis.vars, 
+                                    selected = "drink_degree"
+                        )
+                      )
+               ),
+               column(8,
+                      verticalLayout(
+                        wellPanel(
+                          ggvisOutput("drinks_analysis")
+                        ),
+                        wellPanel(
+                          span("Number of Drinks selected:", 
+                               textOutput("drinks.analysis.n_drinks")
+                          )
                         )
                       )
                )
+             )
              )
            ),
   
@@ -515,7 +540,7 @@ ui <- fluidPage(
                           ggvisOutput("ingredient_analysis")
                         ),
                         wellPanel(
-                          span("Number of ingredients selected:", 
+                          span("Number of Ingredients selected:", 
                                textOutput("ingredient.analysis.n_ingredients")
                                )
                           )
@@ -974,11 +999,70 @@ server <- function(input, output, session) {
   
   ################################### PAGE 6 PROPOSAL ##################################
   
-  output$drinks.network.analytics <- renderPlot({
+  # Filter the drinks, returning a data frame
+  dt.analysis.drinks.filter <- reactive({
+    # Due to dplyr issue #318, we need temp variables for input values
+    min.ingredient.cost <- input$analysis.drinks.cost.filter[1]
+    max.ingredient.cost <- input$analysis.drinks.cost.filter[2] 
     
-    ggplot(dt.drinks.analysis, aes(x = log_complexity, y = drink_degree)) + 
-      geom_point() + 
-      geom_smooth(method='lm')
+    # Apply filters
+    m <- dt.drinks.analysis %>%
+      filter(
+        adj_ingredients_cost >= min.ingredient.cost, 
+        adj_ingredients_cost <= max.ingredient.cost
+      )
+    
+    m <- as.data.frame(m)
+    
+    m
+  })
+  
+  # Generating tooltip text
+  analysis.drinks_tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
+    
+    #Pick out the drink with this ID
+    dt.drinks.analysis <- isolate(dt.analysis.drinks.filter())
+    analysis.drink <- dt.drinks.analysis[dt.drinks.analysis$id == x$id, ]
+    
+    paste0("<b>", analysis.drink$name, "</b><br>",
+           "Ingredients Cost: ", round(analysis.drink$adj_ingredients_cost, 2), "<br>",
+           "Degree: ", round(analysis.drink$name_degree, 2), "<br>",
+           "Closeness: ", round(analysis.drink$name_closeness, 2), "<br>",
+           "Betweenness: ", round(analysis.drink$name_betweenness, 2), "<br>",
+           "Eigenvector: ", round(analysis.drink$name_eigenvector, 2), "<br>"
+    )
+  }
+  
+  # A reactive expression with the ggvis plot
+  vis.drinks.analysis <- reactive({
+    
+    #Lables for axes
+    xvar_name <- names(v.analysis.drinks.axis.vars)[v.analysis.drinks.axis.vars == input$analysis.drinks.xvar]
+    yvar_name <- names(v.analysis.drinks.axis.vars)[v.analysis.drinks.axis.vars == input$analysis.drinks.yvar]
+    
+    xvar <- prop("x", as.symbol(input$analysis.drinks.xvar))
+    yvar <- prop("y", as.symbol(input$analysis.drinks.yvar))
+    
+    dt.analysis.drinks.filter %>%
+      ggvis(x = xvar, y = yvar) %>%
+      layer_points(size := 50, size.hover := 200,
+                   fillOpacity := 0.2, fillOpacity.hover := 0.5, 
+                   key := ~id) %>%
+      layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
+      add_tooltip(analysis.drinks_tooltip, "hover") %>%
+      add_axis("x", title = xvar_name) %>%
+      add_axis("y", title = yvar_name) %>%
+      set_options(width = 636, height = 636)
+  })
+  
+  vis.drinks.analysis %>% bind_shiny("drinks_analysis")
+  
+  output$drinks.analysis.n_drinks <- renderText({ 
+    
+    nrow(dt.analysis.drinks.filter()) 
+    
   })
   
   ################################### PAGE 7 PROPOSAL ##################################
