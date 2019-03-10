@@ -579,7 +579,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 1 PROPOSAL ##################################
   
-  ############ Oberservation distribution chart ############
+   ############ Oberservation distribution chart ############
   output$drinks.dist.barChart <- renderPlot({
     
     # needed to adjust for NA values in ingredient costs
@@ -632,7 +632,7 @@ server <- function(input, output, session) {
       ylab("Frequency")
     })
   
-  ############ Summary statistics table ############
+   ############ Summary statistics table ############
   output$data.summary <- renderTable({
 
     dt.drinks.summary.name <- dt.drinks.filtered[, .(covariates = "Drinks",
@@ -807,7 +807,7 @@ server <- function(input, output, session) {
   
   ################################### PAGE 3 PROPOSAL ##################################
   
-  ############ Summary Table of drinks network ############
+   ############ Summary Table of drinks network ############
   output$drinks.network.summary <- renderTable({  
     
     l.num_nodes <- list("Number of Nodes", length(V(g.drinks.bp)))
@@ -831,7 +831,7 @@ server <- function(input, output, session) {
     dt.drinks.network.summary
     })  
     
-  ############ Centrality Measures Table of drink network ############
+   ############ Centrality Measures Table of drink network ############
   output$drinks.centrality.table <- renderTable({ 
     
     drinks.centrality <- switch(input$drinks.centrality.table, 
@@ -856,70 +856,35 @@ server <- function(input, output, session) {
     setnames(dt.drinks.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
     dt.drinks.centrality
     })  
+  
+   ################## drinks network graph by weight ######################
+  
+  output$plot.network.of.drinks <- renderPlot({
+    g.drinks.bp <- delete.edges(g.drinks.bp, 
+                                E(g.drinks.bp)[weight < input$weight.edges.drink])
     
-  ####################### Zanis new part #######################
-    
-    # plot a graph for drinks with weight X
-    output$plot.network.of.drinks <- renderPlot({
-      g.drinks.bp <- delete.edges(g.drinks.bp, 
-                                  E(g.drinks.bp)[weight < input$weight.edges.drink])
-      
-      plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 2, edge.color = 'tomato',
-                  layout = layout_on_sphere, edge.arrow.size = 1)
+    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 2, edge.color = 'tomato',
+                layout = layout_on_sphere, edge.arrow.size = 1)
     })
+  
+   ################## graph for a single drink ######################
+ 
+  output$plot.network.of.one.drink <- renderPlot({
     
-    # plot a graph for ingredients with weight X
-    output$plot.network.of.ingredients <- renderPlot({
-      g.ingredients.bp <- delete.edges(g.ingredients.bp,
-                                       E(g.ingredients.bp)[weight < input$weight.edges.ingredient])
-      
-      deg.ingredients <- degree(g.ingredients.bp, mode = 'all')
-      plot.igraph(g.ingredients.bp, vertex.label = NA, vertex.size = deg.ingredients/2, 
-                  edge.color = 'tomato', layout = layout_on_sphere,
-                  edge.arrow.size = 1)
-    })
+    #g.one.drink <- delete.vertices(g.drinks.bp,
+    #                            V(g.drinks.bp)[degree < input$network.of.one.drink.degree])
     
-    
-    
-    # create a subgraph with one selected drink X
-    output$plot.network.of.one.drink <- renderPlot({
-      
-      #g.one.drink <- delete.vertices(g.drinks.bp,
-      #                            V(g.drinks.bp)[degree < input$network.of.one.drink.degree])
-      
-      g.one.drink <- make_ego_graph(g.drinks.bp, order = 1, V(g.drinks.bp)$name == 'Brainteaser')
-      plot(g.one.drink[['Brainteaser']])
-      #plot.igraph(, vertex.size = 1, edge.color = 'tomato', layout = layout_with_graphopt, edge.arrow.size = 4)
-      #   plot.igraph(induced.subgraph(g.drinks.bp, 
-      #                      ego(graph = g.drinks.bp, 1, 'Zoksel')[[2]]))
-    })
-    
-    
-    # create a subgraph with one selected ingredient X
-    output$plot.network.of.one.ingredient <- renderPlot({
-      V(g.one.ingredient)
-      g.one.ingredient <- induced.subgraph(g.ingredients.bp, neighbors(g.ingredients.bp, V(g.ingredients.bp)$name == input$network.of.one.ingredient))
-      #V(g.one.ingredient)$name == input$network.of.one.ingredient
-      #V(g.one.ingredient)$degree < input$weight.edges.ingredients
-      plot.igraph(g.one.ingredient, vertex.size = 7,
-                  edge.color = 'tomato', layout = layout_with_graphopt,
-                  edge.arrow.size = 4)
-      # visIgraph(g.one.ingredient)
-    })
-    
-    # bipartite visualisation
-    output$bipartite.drinks.ingredients <- renderPlot({
-      V(g.drinks.ingredients)$color <- c("steel blue", "orange")[V(g.drinks.ingredients)$type+1]
-      V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
-      
-      plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite) 
-    })
-    
-    
+    g.one.drink <- make_ego_graph(g.drinks.bp, order = 1, V(g.drinks.bp)$name == 'Brainteaser')
+    plot(g.one.drink[['Brainteaser']])
+    #plot.igraph(, vertex.size = 1, edge.color = 'tomato', layout = layout_with_graphopt, edge.arrow.size = 4)
+    #   plot.igraph(induced.subgraph(g.drinks.bp, 
+    #                      ego(graph = g.drinks.bp, 1, 'Zoksel')[[2]]))
+  })
+  
   
   ################################### PAGE 4 PROPOSAL ##################################
   
-  ############ Summary Table of ingredient network ############
+   ############ Summary Table of ingredient network ############
   output$ingredients.network.summary <- renderTable({
     
     l.num_nodes <- list("Number of Nodes", length(V(g.ingredients.bp)))
@@ -944,7 +909,7 @@ server <- function(input, output, session) {
     dt.ingredients.network.summary
     })
   
-  ############ Centrality Measures Table of ingredient network ############
+   ############ Centrality Measures Table of ingredient network ############
   output$ingredients.centrality.table <- renderTable({
     
     ingredients.centrality <- switch(input$ingredients.centrality.table, 
@@ -970,67 +935,42 @@ server <- function(input, output, session) {
     dt.ingredients.centrality
     })  
   
-  ################################### PAGE 7 PROPOSAL ##################################
+   ################## ingredients network graph by weight ######################
+    
+    output$plot.network.of.ingredients <- renderPlot({
+      g.ingredients.bp <- delete.edges(g.ingredients.bp,
+                                       E(g.ingredients.bp)[weight < input$weight.edges.ingredient])
+      
+      deg.ingredients <- degree(g.ingredients.bp, mode = 'all')
+      plot.igraph(g.ingredients.bp, vertex.label = NA, vertex.size = deg.ingredients/2, 
+                  edge.color = 'tomato', layout = layout_on_sphere,
+                  edge.arrow.size = 1)
+      })
   
-  output$ingredients.in.stock.table <- renderTable({
-    dt.ingredients.in.stock <- as.data.table(c(input$ingredients.available))
-    colnames(dt.ingredients.in.stock)[1] <- "Ingredients"
-    dt.ingredients.in.stock
+   ################## graph for a single ingredient ######################
+  
+    output$plot.network.of.one.ingredient <- renderPlot({
+      V(g.one.ingredient)
+      g.one.ingredient <- induced.subgraph(g.ingredients.bp, neighbors(g.ingredients.bp, V(g.ingredients.bp)$name == input$network.of.one.ingredient))
+      #V(g.one.ingredient)$name == input$network.of.one.ingredient
+      #V(g.one.ingredient)$degree < input$weight.edges.ingredients
+      plot.igraph(g.one.ingredient, vertex.size = 7, 
+                  edge.color = 'tomato', layout = layout_with_graphopt, 
+                  edge.arrow.size = 4)
+      # visIgraph(g.one.ingredient)
+      })
+  
+  ################################### PAGE 5 PROPOSAL ##################################
+  
+   ################## bipartite visualisation ######################
+
+  output$bipartite.drinks.ingredients <- renderPlot({
+    V(g.drinks.ingredients)$color <- c("steel blue", "orange")[V(g.drinks.ingredients)$type+1]
+    V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
+    
+    plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite)
     })
     
-  
-  # WIP!!!
-  # output$amount.ingredients.in.stock.table <- renderTable({
-  #   ingredient.table.length <- length(input$ingredients.available)
-  #   ingredient.vector <- c(textInput(("ingredient "+ i),
-  #                                    input$ingredients.available[i],
-  #                                    placeholder = "amount in ml"))
-  #   # for(i in ingredient.table.length){
-  #   #   ingredient.vector <- c(ingredient.vector, textInput(("ingredient "+ i),
-  #   #                                    input$ingredients.available[i],
-  #   #                                    placeholder = "amount in ml"))
-  #   # }
-  #   ingredient.amount.input.table <- data.table(ingredient.vector)
-  #   ingredient.amount.input.table
-  #   })
-
-  # 
-  # output$amount.ingredients.in.stock.table <- reactive(renderTable({
-  #   ingredient.table.length <- length(input$ingredients.available)
-  #   ingredient.amount.input.table <- data.table()
-  #   for(i in ingredient.table.length){
-  #     ingredient.amount.input.table$V[i] <- textInput(("ingredient "+ i), input$ingredients.available[i], placeholder = "amount in ml")
-  #   }
-  # })
-  # )
-  
-  
-  
-  ############ Centrality Measures Table of ingredient network ############
-  output$ingredients.centrality.table <- renderTable({ 
-    
-    ingredients.centrality <- switch(input$ingredients.centrality.table, 
-                                     dg = degree(g.ingredients.bp), 
-                                     cl = closeness(g.ingredients.bp), 
-                                     bt = betweenness(g.ingredients.bp), 
-                                     ev = eigen_centrality(g.ingredients.bp)
-                                     )
-    
-    l.centrality.min <- list("Min", min(ingredients.centrality))
-    l.centrality.median <- list("Median", median(ingredients.centrality))
-    l.centrality.sd <- list("SD", sd(ingredients.centrality))
-    l.centrality.max <- list("Max", max(ingredients.centrality))
-    
-    dt.ingredients.centrality  <- rbind(l.centrality.min, 
-                                   l.centrality.median, 
-                                   l.centrality.sd, 
-                                   l.centrality.max
-                                   )
-    
-    dt.ingredients.centrality <- as.data.table(dt.ingredients.centrality)
-    setnames(dt.ingredients.centrality, old = c("V1", "V2"), new = c("Statistics", "Value"))
-    dt.ingredients.centrality
-  })
   
   ################################### PAGE 6 PROPOSAL ##################################
   
@@ -1108,7 +1048,40 @@ server <- function(input, output, session) {
     nrow(dt.analysis.ingredient.filter()) 
     
   })
-    
+  
+  ################################### PAGE 8 PROPOSAL ##################################
+  
+  output$ingredients.in.stock.table <- renderTable({
+    dt.ingredients.in.stock <- as.data.table(c(input$ingredients.available))
+    colnames(dt.ingredients.in.stock)[1] <- "Ingredients"
+    dt.ingredients.in.stock
+  })
+  
+  
+  # WIP!!!
+  # output$amount.ingredients.in.stock.table <- renderTable({
+  #   ingredient.table.length <- length(input$ingredients.available)
+  #   ingredient.vector <- c(textInput(("ingredient "+ i),
+  #                                    input$ingredients.available[i],
+  #                                    placeholder = "amount in ml"))
+  #   # for(i in ingredient.table.length){
+  #   #   ingredient.vector <- c(ingredient.vector, textInput(("ingredient "+ i),
+  #   #                                    input$ingredients.available[i],
+  #   #                                    placeholder = "amount in ml"))
+  #   # }
+  #   ingredient.amount.input.table <- data.table(ingredient.vector)
+  #   ingredient.amount.input.table
+  #   })
+  
+  # 
+  # output$amount.ingredients.in.stock.table <- reactive(renderTable({
+  #   ingredient.table.length <- length(input$ingredients.available)
+  #   ingredient.amount.input.table <- data.table()
+  #   for(i in ingredient.table.length){
+  #     ingredient.amount.input.table$V[i] <- textInput(("ingredient "+ i), input$ingredients.available[i], placeholder = "amount in ml")
+  #   }
+  # })
+  # )  
     
   }
 
