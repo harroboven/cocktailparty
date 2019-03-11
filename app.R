@@ -339,17 +339,19 @@ ui <- fluidPage(
                                           # SliderInput - Network of drinks
                                           sliderInput('weight.edges.drink',
                                                       label = 'Min. number of ingredients in common:', 
-                                                      min = 1, max = 15, value = 15, step = 1)
+                                                      min = 1, max = 10, value = 3, step = 1)
                                           ),
                                    # right sub-column
                                    column(12,
                                           # right sub-column
-                                          plotOutput(outputId = 'plot.network.of.drinks', width = "100%"))))),
+                                          
+                                          visNetworkOutput(outputId = 'plot.network.of.drinks')))),
+
                           # right object
                           column(6,
                                  wellPanel(
                                  # title of right column
-                                 titlePanel("Network of one Drinks"),
+                                 titlePanel("Network of one Drink"),
                                  fluidRow(
                                    # left sub-column
                                    column(12,
@@ -359,15 +361,13 @@ ui <- fluidPage(
                                           # Drink Choice
                                           selectInput('network.of.one.drink',
                                                       label = 'Network of one drink',
-                                                      selected = NA,
+                                                      selected = dt.drinks$name[744],
                                                       choices = dt.drinks$name
-                                          )),
-                                   # right sub-column
-                                   column(12,
-                                          plotOutput(outputId = 'plot.network.of.one.drink', width = "100%")
-                                          )
-                                   )
-                                 )
+                                          )))),
+                                  # a graphic plot for network of one drink
+                                 visNetworkOutput(outputId = 'plot.network.of.one.drink')
+                                   
+                                 
                           )
                           )
                         )
@@ -434,22 +434,20 @@ ui <- fluidPage(
                                           # left sub-column
                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                           p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
-                                          # SliderInput - Network of drinks
+                                          # SliderInput - Network of drinks based on their weights
                                           sliderInput('weight.edges.ingredient',
                                                       label = 'Min. weight of edges:', 
-                                                      min = 1, max = 15, value = 15, step = 1),
-                                          sliderInput('degree.vertices.ingredient',
-                                                      label = 'Max. degree of vertices: ',
-                                                      min = 1, max = 3, value = 3, step = 1)
-                                          ),
-                                   column(12,
-                                          # right sub-column
-                                          plotOutput(outputId = 'plot.network.of.ingredients', width = "100%"))))),
+                                                      min = 1, max = 10, value = 3, step = 1)
+                                          ))),
+                                 # a graphic plot for a network of ingredients 
+                                 visNetworkOutput(outputId = 'plot.network.of.ingredients')))),
+            ),
+
                           # right object
                           column(6,
                                  wellPanel(
                                  # title of right column
-                                 titlePanel("Network of one ingredients"),
+                                 titlePanel("Network of one ingredient"),
                                  fluidRow(
                                    # left sub-column
                                    column(12,
@@ -457,6 +455,7 @@ ui <- fluidPage(
                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                           # Drink Choice
                                           p("Choose ingredients", style = "font-family: 'times'; font-si16pt"),
+                                          # input selection for a network of one ingredient, which is linked to the server
                                           selectInput('network.of.one.ingredient',
                                                       label = 'Network of one ingredient',
                                                       selected = NA,
@@ -464,7 +463,8 @@ ui <- fluidPage(
                                           ),
                                    # right sub-column
                                    column(12,
-                                          plotOutput(outputId = 'plot.network.of.one.ingredient', width = "100%")
+                                          # a graphic plot for a network of one ingredient 
+                                          visNetworkOutput(outputId = 'plot.network.of.one.ingredient')
                                           )
                                    )
                                  )
@@ -493,7 +493,8 @@ ui <- fluidPage(
                                         p("Alcoholic nature", style = "font-family: 'times'; font-si16pt"),
                                         p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
                                         p("Max cost per drink", style = "font-family: 'times'; font-si16pt"),
-                                        # SliderInput - Network of drinks
+                                        # SliderInputs - Network of drinks
+                                        # Maximal cost of one ingredient and one drink 
                                         sliderInput('max.cost.ingredient',
                                                     label = 'Max cost per ingredient',
                                                     min = 1, max = 50, value = 50, step = 1),
@@ -1021,25 +1022,50 @@ server <- function(input, output, session) {
    ################## drinks network graph by weight ######################
   
   # plot a graph for drinks with weight X
-  output$plot.network.of.drinks <- renderPlot({
+  # 1. create an output by plot rendering 
+  output$plot.network.of.drinks <- renderVisNetwork({
+    # delete edges with weights smaller than indicated by the input
     g.drinks.bp <- delete.edges(g.drinks.bp, 
                                 E(g.drinks.bp)[weight < input$weight.edges.drink])
-    
-    plot.igraph(g.drinks.bp, vertex.label = NA, vertex.size = 2, edge.color = 'tomato',
-                layout = layout_on_sphere, edge.arrow.size = 1)
-  })
+    # delete unconnected vertices to make the plot look more appealing 
+    g.drinks.bp <- delete.vertices(g.drinks.bp, V(g.drinks.bp)[degree(g.drinks.bp) == 0])
+    # convert the igraph object into a VisNetwork one
+    vis.g.drinks.bp <- toVisNetworkData(g.drinks.bp)
+    # define nodes and edges 
+    # plot the graph 
+   visNetwork(nodes = vis.g.drinks.bp$nodes, edges = vis.g.drinks.bp$edges,
+              height = '500px', width = '200%') %>% 
+     # define relevant parameters 
+     visIgraphLayout(randomSeed = TRUE) %>% 
+     visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
+     visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
+     visEdges(smooth = FALSE) %>%
+     visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T))
+
+    })
+  
   
   ################## graph for a single drink ######################
-  
-  output$plot.network.of.one.drink <- renderPlot({
-    
-    
-    neigh.nodes.drinks <- neighborhood(g.drinks.bp, order = 1, nodes = V(g.drinks.bp)$name == input$network.of.one.drink)[[1]]
-    V(g.drinks.bp)$color <- 'green'
+  # create an output by rendering a vis plot 
+  output$plot.network.of.one.drink <- renderVisNetwork({
+    # extract the immeadiate neighbouring nodes of a selected drink 
+  neigh.nodes.drinks <- neighborhood(g.drinks.bp, order = 1, nodes = V(g.drinks.bp)$name == input$network.of.one.drink)[[1]]
+    # set the node colour, edge line pattern, colour the selected vertex into red, create labe lnames 
+    V(g.drinks.bp)$color <- 'grey'
+    E(g.drinks.bp)$ltly <- 'dotted'
     V(g.drinks.bp)[name == input$network.of.one.drink]$color <- 'tomato'
     V(g.drinks.bp)[name == input$network.of.one.drink]$label <- paste0(input$network.of.one.drink)
-    plot(induced.subgraph(g.drinks.bp, neigh.nodes.drinks),
-         layout = layout_with_graphopt) 
+    
+    # convert the igraph obejct into a VisNetwork one 
+  vis.g.drinks.bp.neighbourhood <- toVisNetworkData(induced.subgraph(g.drinks.bp, neigh.nodes.drinks))
+  visNetwork(nodes = vis.g.drinks.bp.neighbourhood$nodes, edges = vis.g.drinks.bp.neighbourhood$edges,
+             height = '500px', width = '100%')%>% 
+    # set plotting parameters 
+    visIgraphLayout(randomSeed = TRUE) %>% 
+    visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
+    visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
+    visEdges(smooth = FALSE) %>%
+    visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T))
     
   })
   
@@ -1098,14 +1124,26 @@ server <- function(input, output, session) {
   
    ################## ingredients network graph by weight ######################
     
-    output$plot.network.of.ingredients <- renderPlot({
+    output$plot.network.of.ingredients <- renderVisNetwork({
       g.ingredients.bp <- delete.edges(g.ingredients.bp,
                                        E(g.ingredients.bp)[weight < input$weight.edges.ingredient])
-      g.ingredients.bp <- delete.vertices(g.ingredients.bp, 
-                                          V(g.ingredients.bp)[degree < input$degree.vertices.ingredient])
-      plot.igraph(simplify(g.ingredients.bp), vertex.label = NA, vertex.size = deg.ingredients/2, 
-                  edge.color = 'tomato', layout = layout_on_sphere,
-                  edge.arrow.size = 1)
+      g.ingredients.bp <- delete.vertices(g.ingredients.bp, V(g.ingredients.bp)[degree(g.ingredients.bp) == 0])
+      deg.ingredients <- V(g.ingredients.bp)$degree
+      V(g.ingredients.bp)$size <- deg.ingredients/2
+      vis.g.ingredients.bp <- toVisNetworkData(g.ingredients.bp)
+      
+    visNetwork(nodes = vis.g.ingredients.bp$nodes, edges = vis.g.ingredients.bp$edges,
+               height = '500px', width = '100%') %>% 
+      visIgraphLayout(randomSeed = TRUE) %>% 
+      visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
+      visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
+      visEdges(smooth = FALSE) %>%
+      visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T))
+      
+      
+    #  plot.igraph(g.ingredients.bp,vertex.label = NA, vertex.size = deg.ingredients/2, 
+     #             edge.color = 'tomato', layout = layout_on_sphere,
+      #            edge.arrow.size = 1)
     })
     
 
@@ -1113,15 +1151,26 @@ server <- function(input, output, session) {
   
    ################## graph for a single ingredient ######################
   
-    output$plot.network.of.one.ingredient <- renderPlot({
+  # create an output by rendering a vis plot 
+  output$plot.network.of.one.ingredient <- renderVisNetwork({
+      # extract the immeadiate neighbouring nodes of a selected drink 
       neigh.nodes.ingredients <- neighborhood(g.ingredients.bp, order = 1, nodes = V(g.ingredients.bp)$name == input$network.of.one.ingredient)[[1]]
+      # set the node colour, edge line pattern, colour the selected vertex into red, create labe lnames 
       V(g.ingredients.bp)$color <- 'grey'
       V(g.ingredients.bp)[name == input$network.of.one.ingredient]$label <- paste0(input$network.of.one.ingredient)  
       E(g.ingredients.bp)$ltly <- 'dotted'
       V(g.ingredients.bp)[name == input$network.of.one.ingredient]$color <- 'tomato'
-      plot(induced.subgraph(g.ingredients.bp, neigh.nodes.ingredients),
-           layout = layout_with_graphopt) 
-      # visIgraph(g.one.ingredient)
+      # convert the igraph obejct into a VisNetwork one 
+      vis.g.ingredients.bp.neighbourhood <- toVisNetworkData(induced.subgraph(g.ingredients.bp, neigh.nodes.ingredients))
+      # plot 
+       visNetwork(nodes = vis.g.ingredients.bp.neighbourhood$nodes, edges = vis.g.ingredients.bp.neighbourhood$edges,
+                 height = '500px', width = '100%')%>% 
+        # set plotting parameters 
+        visIgraphLayout(randomSeed = TRUE) %>% 
+        visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
+        visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
+        visEdges(smooth = FALSE) %>%
+        visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T))     
     })
 
   
