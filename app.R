@@ -21,33 +21,65 @@ ui <- fluidPage(
              #Start Page
              fluidRow(
                column(12,
-                      h1("Welcome to the Shiny Drinks App")),
+                      h1("Welcome to the Shiny Drinks App", style="text-align: center;")),
                #left column
-               column(4,
-                      wellPanel(
-                        img(src = 'Cocktail-pic.jpg', height = 350, width = 460)
-                        )
-                      ),
+                 column(12,
+                        wellPanel(img(src = 'Cocktail picture2.jpg', width = "100%", 
+                            style="display: block; margin-left: auto; margin-right: auto;"))),
+                 # column(6,
+                 #        wellPanel(
+                 #          p("Table of Content", style = "font-family: 'times'; font-si16pt; font-size: 26pt"),
+                 #        tags$ol(
+                 #          tags$li("Data Summary"),
+                 #          tags$li("Network Exploration"), 
+                 #          tags$li("Network Analysis"))
+                 #        )),
                #right column
-               column(8, 
+               column(12, 
                       wellPanel(
                         verticalLayout(
                           # header of right column
                           titlePanel("Let's have some drinks!"),
                           # content of right column
-                          p("Nothing can beat a refreshing drink at the right time in the right location. Drinks offer more than simply a nice taste, but they can be a great conversation starter, an expression of friendship or simply a tool to accelerate the night. Thus, a well-prepared host of a party knows its audience and plans to offer the appropriate drinks. In recent years the number of drinks has skyrocketed with ever new and extravagant creations. For many hosts the drinks jungle can become a challenge and the decision of which ingredients to buy a daunting task. Some drinks share the same ingredients, which can be reused or even utilized to hedge the risk of being left with a large stock of a certain ingredient. Simultaneously, many host find themselves with a remaining stock of existing ingredients, which are already at hand and could be used as the foundation for the upcoming event. To cut it short, an appropriate planning tool that gives an overview of the drinks landscape, visualizes connecting ingredients between cocktails and that allows to consider the existing drinks in stock.", 
-                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"
-                            ),
-                          p("To tackle this issue, the shiny drinks app provides an analytics tool that examines different drinks, their ingredients and the relationship among them to optimize decision making along relevant parameters / constraints. As such, this app can help the host of a private party in optimizing ingredient purchase decisions to avoid being left with an excessive amount of a certain ingredient. For actors in the hospitality industry the application could for instance be leveraged to optimize the drinks portfolio in order to most effectively provide both traditional and extravagant drinks, or to offer large as well as smaller cocktails. Lastly, the application can also be a fun gadget for people who want to learn more about the connections between different cocktails.",
+                          p("Nothing can beat a refreshing drink at the right time in the right location. 
+                            Drinks offer more than simply a nice taste, but they can be a great conversation starter, 
+                            an expression of friendship or simply a tool to accelerate the night. Thus, a well-prepared
+                            host of a party knows its audience and plans to offer the appropriate drinks.", 
+                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"),
+                          p("In recent years the number of drinks has skyrocketed with ever new and extravagant creations. 
+                            For many hosts the drinks jungle can become a challenge and the decision of which ingredients 
+                            to buy a daunting task. Some drinks share the same ingredients, which can be reused or even 
+                            utilized to hedge the risk of being left with a large stock of a certain ingredient. Simultaneously,
+                            many hosts already have certain ingredients in stock, which could be used as the foundation for an
+                            upcoming event.", 
+                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"),
+                          p("To cut it short, an appropriate planning tool that gives an overview of the drinks landscape,
+                            visualizes connecting ingredients between cocktails and that allows to consider the existing drinks 
+                            in stock.", 
+                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"),
+                          p("To tackle this issue, the shiny drinks app provides an analytics tool that examines different drinks, 
+                            their ingredients and the relationship among them to optimize decision making along relevant parameters.
+                            As such, this app can help the host of a private party in optimizing ingredient purchase decisions to 
+                            avoid being left with an excessive amount of a certain ingredient. For actors in the hospitality industry
+                            the application could for instance be leveraged to optimize the drinks portfolio in order to most 
+                            effectively provide both traditional and extravagant drinks, or to offer large as well as smaller 
+                            cocktails. Lastly, the application can also be a fun gadget for people who want to learn more about the 
+                            connections between different cocktails.",
                             style = "font-family: 'times'; font-si16pt; font-size: 20pt"
                             ),
                           p("Let's have some drinks!", 
                             style = "font-family: 'times'; font-si16pt; font-size: 20pt"
-                            )
-                          )
-                        )
+                            )))),
+               column(12,
+                      wellPanel(
+                        p("Table of Content", style = "font-family: 'times'; font-si16pt; font-size: 26pt"),
+                        tags$ol(
+                          tags$li("Data Summary"),
+                          tags$li("Network Exploration"), 
+                          tags$li("Network Analysis"))
                       )
-               ),
+               )
+             ),
   
   ######################################### Part 1 ########################################
   
@@ -63,20 +95,21 @@ ui <- fluidPage(
                         # 1st block of page
                         fluidRow(
                           # left column
-                          column(6,
+                          column(12,
                                  verticalLayout(
-                                   #Header of left column
-                                   titlePanel("Explanation of Summary"),
+                                   wellPanel(
                                    #content of left column
                                    p("On this page a descriptive overview of the entire data set is provided. ", 
                                      style = "font-family: 'times'; font-si16pt; font-size: 16pt"
                                    ),
-                                   p("In the first half a static table summarizes the data. Specifically, the app contain information on drinks and ingredients. For the ingredients, the price is considered the most important covariate. Concerning drinks, a variety of covariates is considered.", 
+                                   p("In the first half a static table summarizes the data. Specifically, the app contain information
+                                     on drinks and ingredients. For the ingredients, the price is considered the most important 
+                                     covariate. Concerning drinks, a variety of covariates is considered.", 
                                      style = "font-family: 'times'; font-si16pt; font-size: 16pt"
                                    ),
                                    p("In the second half of this page, the distribution of drinks is visualized. The criteria by which the drinks shall be distributed can be selected via button input.", 
                                      style = "font-family: 'times'; font-si16pt; font-size: 16pt"
-                                   )
+                                   ))
                                  )
                           ),
                           # right column
@@ -90,34 +123,50 @@ ui <- fluidPage(
                                      tableOutput("data.summary")
                                      )
                                    )
-                                 )
+                                 ),
+                          column(6,
+                                 wellPanel(
+                                   titlePanel("Summary Statistics"),
+                                   p("TABLE PLACEHOLDER")
+                                 ))
                           ),
                         # 2nd block of page
                         fluidRow(
                           # left column
                           column(6,
-                                 wellPanel(
-                                   verticalLayout(
-                                     #Header of left column
-                                     titlePanel("Distribution of Observations"),
-                                     #content of left column
-                                     p("Please choose a parameter by which you would like to group the drinks", 
-                                       style = "font-family: 'times'; font-si16pt"
-                                       ),
-                                     # RadioButtons - distribution of obs.
-                                     radioButtons(inputId = 'drinks.dist', 
-                                                  label = 'Drinks distributed by:', 
-                                                  choices = 
-                                                    list('Alcoholic nature' = 'an',
-                                                         'Drink type' = 'dt',
-                                                         'Glass type' = 'gt',
-                                                         'Complexity' = 'cp',
-                                                         'Commonality' = 'cm', 
-                                                         'Ingredient Price' = 'ip',
-                                                         'Ingredients Cost per Drink' = 'ic'
-                                                         )
-                                                  )
-                                     )
+                                 verticalLayout(
+                                   wellPanel(
+                                     verticalLayout(
+                                       #Header of left column
+                                       titlePanel("Distribution of Observations"),
+                                       #content of left column
+                                       p("Please choose a parameter* by which you would like to group the drinks", 
+                                         style = "font-family: 'times'; font-si16pt; font-size: 16pt"
+                                         ),
+                                       # RadioButtons - distribution of obs.
+                                       radioButtons(inputId = 'drinks.dist', 
+                                                    label = 'Drinks distributed by:', 
+                                                    choices = 
+                                                      list('Alcoholic nature' = 'an',
+                                                           'Drink type' = 'dt',
+                                                           'Glass type' = 'gt',
+                                                           'Complexity' = 'cp',
+                                                           'Commonality' = 'cm', 
+                                                           'Ingredient Price' = 'ip',
+                                                           'Ingredients Cost per Drink' = 'ic'
+                                                           )
+                                                    )
+                                       )
+                                     ),
+                                   wellPanel(
+                                     p("*Parameter explanation"),
+                                     p("Alcoholic Nature = whether a drink contains alcohol or not", style = "font-style: italic"),
+                                     p("Drink Categories = the type of drink such as: shot, cocktail, etc.", style = "font-style: italic"),
+                                     p("Glass Type = the class that the drink is typically served in such as: long glass", style = "font-style: italic"),
+                                     p("Complexity of Recipe = the degree of difficulty of mixing the drink ", style = "font-style: italic"),
+                                     p("Commonality = the degree to which the drink is known to the average drink consumer", style = "font-style: italic"),
+                                     p("Ingredient Price = the price of an average package size of the respective ingredient", style = "font-style: italic")
+                                   )
                                    )
                                  ),
                           # right column
@@ -128,7 +177,7 @@ ui <- fluidPage(
                                      titlePanel(" "),
                                      # content of right object
                                      # Distribution Barchart
-                                     plotOutput(outputId = "drinks.dist.barChart")
+                                     plotOutput(outputId = "drinks.dist.barChart", width = "100%")
                                      )
                                    )
                                  )
@@ -139,85 +188,89 @@ ui <- fluidPage(
              ######################################### Page 2 Proposal ########################################
              
              # 2nd Drop-down item
-             tabPanel("Drinks Explorer", 
-                                 titlePanel("Drinks explorer"),
-                                 fluidRow(
-                                   column(12,
+             tabPanel("Drinks Data Explorer", 
+                      wellPanel(        
+                      titlePanel("Drinks Data Explorer")),
+                      fluidRow(
+                        column(12,
+                               wellPanel(
                                              h4("On this page you have the opportunity to explore all drinks and customize your visualization.
                                              Initially the borders for the three continuous filters is set to the average and median. The
                                              categorical filters are set to include all drinks. At the bottom you can define the axes along
-                                             which the drinks will be plotted")),
-                                   column(3,
-                                          verticalLayout(
-                                            wellPanel(
-                                              h4("Filter"),
-                                              sliderInput("drink.explorer.complexity.filter", "Degree of Recipe Complexity",
-                                                          min = 0, 
-                                                          max = max(dt.drinks.filtered$complexity) + 2, 
-                                                          value = c(median(dt.drinks.filtered$complexity), 
-                                                                    mean(dt.drinks.filtered$complexity)
-                                                                    ), 
-                                                          sep = ""
-                                                          ),
-                                              sliderInput("drink.explorer.commonality.filter", "Degree of Commonality",
-                                                          min = 1,
-                                                          max = 3,
-                                                          value = c(1, 3),
-                                                          sep = ""
-                                                          ),
-                                              sliderInput("drink.explorer.cost.filter", "Ingredients Cost per Drink",
-                                                          min = 0,
-                                                          max = round(max(dt.drinks.filtered$adj_ingredients_cost), 0) + 2,
-                                                          value = c(median(dt.drinks.filtered$adj_ingredients_cost), 
-                                                                    mean(dt.drinks.filtered$adj_ingredients_cost)
-                                                                    ),
-                                                          sep = ""
-                                                          ),
-                                              selectInput("drink.explorer.alcoholic.filter", "Alcoholic Nature",
-                                                          l.is_alcoholic_values,
-                                                          selected = "All"
-                                                          ),
-                                              selectInput("drink.explorer.category.filter", "Type of Drink",
-                                                          l.category_values,
-                                                          selected = "All"
-                                                          ),
-                                              selectInput("drink.explorer.glass.filter", "Glass Type",
-                                                          l.glass_type_values,
-                                                          selected = "All"
-                                                          )
-                                              ),
-                                            wellPanel(
-                                              selectInput("drink.explorer.xvar", 
-                                                          "X-axis variable", 
-                                                          v.drink.explorer.axis.vars, 
-                                                          selected = "complexity"
-                                                          ),
-                                              selectInput("drink.explorer.yvar", 
-                                                          "Y-axis variable", 
-                                                          v.drink.explorer.axis.vars, 
-                                                          selected = "complexity"
-                                                          )
-                                              )
-                                            )
-                                          ),
-                                   column(9,
-                                          verticalLayout(
-                                            ggvisOutput("drink_explorer"), 
-                                            wellPanel(
-                                              span("Number of drinks selected:", 
-                                                   textOutput("drink.explorer.n_drinks")
-                                                   )
-                                              )
-                                            )
-                                          )
+
+                                             which the drinks will be plotted"))),
+                        column(3,
+                               verticalLayout(
+                                 wellPanel(
+                                   h3("Filter"),
+                                   sliderInput("drink.explorer.complexity.filter", "Degree of Recipe Complexity",
+                                               min = min(dt.drinks.filtered$complexity),
+                                               max = max(dt.drinks.filtered$complexity),
+                                               value = c(median(dt.drinks.filtered$complexity),
+                                                         mean(dt.drinks.filtered$complexity)
+                                                         ),
+                                               sep = ""
+                                               ),
+                                   sliderInput("drink.explorer.commonality.filter", "Degree of Commonality",
+                                               min = 1,
+                                               max = 3,
+                                               value = c(1, 3),
+                                               sep = ""
+                                               ),
+                                   sliderInput("drink.explorer.cost.filter", "Ingredients Cost per Drink",
+                                               min = min(dt.drinks.filtered$adj_ingredients_cost),
+                                               max = max(dt.drinks.filtered$adj_ingredients_cost),
+                                               value = c(median(dt.drinks.filtered$adj_ingredients_cost),
+                                                         mean(dt.drinks.filtered$adj_ingredients_cost)
+                                                         ),
+                                               sep = ""
+                                               ),
+                                   selectInput("drink.explorer.alcoholic.filter", "Alcoholic Nature",
+                                               l.is_alcoholic_values,
+                                               selected = "All"
+                                               ),
+                                   selectInput("drink.explorer.category.filter", "Type of Drink",
+                                               l.category_values,
+                                               selected = "All"
+                                               ),
+                                   selectInput("drink.explorer.glass.filter", "Glass Type",
+                                               l.glass_type_values,
+                                               selected = "All"
+                                               )
+                                   ),
+                                 wellPanel(
+                                   h3("Axes parameter seletion"),
+                                   selectInput("drink.explorer.xvar", 
+                                               "X-axis variable", 
+                                               v.drink.explorer.axis.vars, 
+                                               selected = "complexity"
+                                               ),
+                                   selectInput("drink.explorer.yvar", 
+                                               "Y-axis variable", 
+                                               v.drink.explorer.axis.vars, 
+                                               selected = "complexity"
+                                               )
                                    )
+                                 )
+                               ),
+                        column(9,
+                               verticalLayout(
+                                 ggvisOutput("drink_explorer"), 
+                                 wellPanel(
+                                   span("Number of drinks selected:", 
+                                        textOutput("drink.explorer.n_drinks")
+                                        )
+                                   )
+                                 )
+                               )
+                        )
                       )
              ),
   
   ######################################### Part 2 ########################################
   
   # 2nd tabpanel
-  navbarMenu("Networking Exploration", 
+  navbarMenu("Network Exploration", 
              
              ######################################### Page 3 Proposal ########################################
              
@@ -229,9 +282,11 @@ ui <- fluidPage(
                         # 1st block of page
                         fluidRow(
                           column(12,
+                                 wellPanel(
                                    h4("On this page you get to further explore the network. The network of drinks is summarized
                                       along basic summary statistics, as well as, centrality measures. In the second half of the
                                       page the entire, as well as, a subset of the drinks network are visualized")
+                                 )
                                  ),
                           # left column 
                           column(6,
@@ -269,11 +324,12 @@ ui <- fluidPage(
                         fluidRow(
                           # left column
                           column(6,
+                                 wellPanel(
                                  # title of left column
                                  titlePanel("Network of Drinks"),
                                  fluidRow(
                                    # left sub-column
-                                   column(6,
+                                   column(12,
                                           # left sub-column
                                           p("This visualization provides an overview of the strength of similarity among cocktails.
                                             Specifically, the weight of the edges represents the number of ingredients that two
@@ -286,32 +342,33 @@ ui <- fluidPage(
                                                       min = 1, max = 15, value = 15, step = 1)
                                           ),
                                    # right sub-column
-                                   column(6,
+                                   column(12,
                                           # right sub-column
-                                          plotOutput(outputId = 'plot.network.of.drinks')))),
+                                          plotOutput(outputId = 'plot.network.of.drinks', width = "100%"))))),
                           # right object
                           column(6,
+                                 wellPanel(
                                  # title of right column
                                  titlePanel("Network of one Drinks"),
                                  fluidRow(
                                    # left sub-column
-                                   column(6,
+                                   column(12,
                                           # Introtext
                                           p("This visualization provides an overview of the neighbouring network of one drink.", 
                                             style = "font-family: 'times'; font-si16pt; font-size: 16pt"),
                                           # Drink Choice
-                                          p("Choose drink", style = "font-family: 'times'; font-si16pt"),
                                           selectInput('network.of.one.drink',
                                                       label = 'Network of one drink',
                                                       selected = NA,
                                                       choices = dt.drinks$name
                                           )),
                                    # right sub-column
-                                   column(6,
-                                          plotOutput(outputId = 'plot.network.of.one.drink')
+                                   column(12,
+                                          plotOutput(outputId = 'plot.network.of.one.drink', width = "100%")
                                           )
                                    )
                                  )
+                          )
                           )
                         )
                       ), 
@@ -325,10 +382,13 @@ ui <- fluidPage(
                         titlePanel("Exploration by ingredients"),
                         # 1st block of page
                         fluidRow(
-                          column(12,
-                                 h4("On this page you get to further explore the network. The network of ingredients is summarized
+                            column(12,
+                                   wellPanel(
+                                    h4("On this page you get to further explore the network. The network of ingredients is summarized
                                     along basic summary statistics, as well as, centrality measures. In the second half of the
-                                    page the entire, as well as, a subset of the ingredients network are visualized")),
+                                    page the entire, as well as, a subset of the ingredients network are visualized")
+                                    )
+                                 ),
                           # left column
                           column(6,
                                  wellPanel(
@@ -365,11 +425,12 @@ ui <- fluidPage(
                         fluidRow(
                           # left column
                           column(6,
+                                 wellPanel(
                                  # title of left column
                                  titlePanel("Network of Ingredients"),
                                  # 1st sub-block
                                  fluidRow(
-                                   column(6,
+                                   column(12,
                                           # left sub-column
                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                           p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
@@ -381,16 +442,17 @@ ui <- fluidPage(
                                                       label = 'Max. degree of vertices: ',
                                                       min = 1, max = 3, value = 3, step = 1)
                                           ),
-                                   column(6,
+                                   column(12,
                                           # right sub-column
-                                          plotOutput(outputId = 'plot.network.of.ingredients')))),
+                                          plotOutput(outputId = 'plot.network.of.ingredients', width = "100%"))))),
                           # right object
                           column(6,
+                                 wellPanel(
                                  # title of right column
                                  titlePanel("Network of one ingredients"),
                                  fluidRow(
                                    # left sub-column
-                                   column(6,
+                                   column(12,
                                           # Introtext
                                           p("Introtext", style = "font-family: 'times'; font-si16pt"),
                                           # Drink Choice
@@ -401,10 +463,11 @@ ui <- fluidPage(
                                                       choices = dt.drinks$ingredient)
                                           ),
                                    # right sub-column
-                                   column(6,
-                                          plotOutput(outputId = 'plot.network.of.one.ingredient')
+                                   column(12,
+                                          plotOutput(outputId = 'plot.network.of.one.ingredient', width = "100%")
                                           )
                                    )
+                                 )
                                  )
                           )
                         )
@@ -496,11 +559,13 @@ ui <- fluidPage(
              titlePanel("Centrality Explorer by Drinks"),
              fluidRow(
                column(12,
+                      wellPanel(
                         h4("This page allows you to explore the relation between the characteristics of drinks and their centrality.")
+                      )
                       ),
                column(4,
                       wellPanel(
-                        h4("Filter"),
+                        h3("Filter"),
                         sliderInput("analysis.drinks.complexity.filter", "Degree of Recipe Complexity",
                                     min = 0, 
                                     max = max(dt.drinks.analysis$complexity) + 2, 
@@ -535,6 +600,7 @@ ui <- fluidPage(
                                     )
                         ),
                       wellPanel(
+                        h3("Axes parameter seletion"),
                         selectInput("analysis.drinks.xvar", 
                                     "X-axis variable", 
                                     v.analysis.drinks.axis.vars, 
@@ -549,9 +615,7 @@ ui <- fluidPage(
                       ),
                column(8,
                       verticalLayout(
-                        wellPanel(
-                          ggvisOutput("drinks_analysis")
-                        ),
+                          ggvisOutput("drinks_analysis"),
                         wellPanel(
                           span("Number of Drinks selected:", 
                                textOutput("drinks.analysis.n_drinks")
@@ -570,10 +634,12 @@ ui <- fluidPage(
              titlePanel("Centrality Explorer by Ingredients"),
              fluidRow(
                column(12,
-                      h4("This page allows you to explore the relation between the characteristics of ingredients and their centrality.")),
+                      wellPanel(
+                        h4("This page allows you to explore the relation between the characteristics of ingredients and their centrality."))
+                      ),
                column(4,
                       wellPanel(
-                        h4("Filter"),
+                        h3("Filter"),
                         sliderInput("analysis.ingredient.price.filter", "Ingredient Price",
                                     min = 0, 
                                     max = round(max(dt.ingredients.analysis$adj_ingredient_price), 0) + 2, 
@@ -582,6 +648,7 @@ ui <- fluidPage(
                                     )
                         ),
                       wellPanel(
+                        h3("Axes parameter seletion"),
                         selectInput("analysis.ingredients.xvar", 
                                     "X-axis variable", 
                                     v.analysis.ingredients.axis.vars, 
@@ -596,9 +663,7 @@ ui <- fluidPage(
                       ),
                column(8,
                       verticalLayout(
-                        wellPanel(
-                          ggvisOutput("ingredient_analysis")
-                        ),
+                          ggvisOutput("ingredient_analysis"),
                         wellPanel(
                           span("Number of Ingredients selected:", 
                                textOutput("ingredient.analysis.n_ingredients")
@@ -873,9 +938,25 @@ server <- function(input, output, session) {
                    fillOpacity := 0.2, fillOpacity.hover := 0.5, 
                    key := ~id) %>%
       add_tooltip(drink.explorer.tooltip, "hover") %>%
-      add_axis("x", title = xvar_name) %>%
-      add_axis("y", title = yvar_name) %>%
-      set_options(width = 636, height = 636)
+      add_axis("x", title = xvar_name, 
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =+ 25))
+               ) %>%
+      add_axis("y", title = yvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =- 25))
+               ) %>%
+      add_axis("x", orient = "top", ticks = 0, 
+               title = "Parameter Relations",
+               properties = axis_props(
+                 axis = list(stroke = "white"),
+                 labels = list(fontSize = 0, stroke = "grey"),
+                 title = list(fontSize = 20))
+               ) %>%
+      
+      set_options(width = "100%", height = 636)
     })
   
   vis.drink.explorer %>% bind_shiny("drink_explorer")
@@ -1146,9 +1227,24 @@ server <- function(input, output, session) {
                    key := ~id) %>%
       layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
       add_tooltip(analysis.drinks_tooltip, "hover") %>%
-      add_axis("x", title = xvar_name) %>%
-      add_axis("y", title = yvar_name) %>%
-      set_options(width = 636, height = 636)
+      add_axis("x", title = xvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =+ 25, stroke = "grey"))
+               ) %>%
+      add_axis("y", title = yvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =- 25, stroke = "grey"))
+               ) %>%
+      add_axis("x", orient = "top", ticks = 0, 
+               title = "Centrality by drink drink parameters",
+               properties = axis_props(
+                 axis = list(stroke = "white"),
+                 labels = list(fontSize = 0, stroke = "grey"),
+                 title = list(fontSize = 20))
+               ) %>%
+      set_options(width = "100%", height = 636)
   })
   
   vis.drinks.analysis %>% bind_shiny("drinks_analysis")
@@ -1214,9 +1310,24 @@ server <- function(input, output, session) {
                    key := ~id) %>%
       layer_model_predictions(model = "lm", stroke := "red", fill := "red") %>%
       add_tooltip(ingredient_tooltip, "hover") %>%
-      add_axis("x", title = xvar_name) %>%
-      add_axis("y", title = yvar_name) %>%
-      set_options(width = 636, height = 636)
+      add_axis("x", title = xvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =+ 25, stroke = "grey"))
+               ) %>%
+      add_axis("y", title = yvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =- 25, stroke = "grey"))
+               ) %>%
+      add_axis("x", orient = "top", ticks = 0, 
+               title = "Centrality by Ingredient Price",
+               properties = axis_props(
+                 axis = list(stroke = "white"),
+                 labels = list(fontSize = 0, stroke = "grey"),
+                 title = list(fontSize = 20))
+               ) %>%
+      set_options(width = "100%", height = 636)
   })
   
   vis.ingredient.analysis %>% bind_shiny("ingredient_analysis")
