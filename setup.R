@@ -99,6 +99,10 @@ standardize.unit <- function(unit) {
 
 dt.longdrinks$std.unit <- mapply(standardize.unit, dt.longdrinks$unit)
 
+# Delete category homemade liquer & all punch recipes because they are prepared in much larger quantities (up to >21l)
+dt.longdrinks <- dt.longdrinks[category != "Homemade Liqueur", ]
+dt.longdrinks <- dt.longdrinks[category != "Punch / Party Drink", ]
+
 # Make a new column called "std.category" in which to reduce "category" to "cocktail", "shot" and "other"
 nonstandard.categories <- unique(dt.longdrinks[, category])
 standard.categories <- c("cocktail", "shot", "other")
@@ -193,11 +197,11 @@ dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
 
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
-dt.pricing <- fread("data/ingredients_overview_updated.csv", header = TRUE)
+
+dt.pricing <- fread("data/ingredients_overview_updated4.csv", header = TRUE)
 
 # Identify double ingredients and prepare help column to work with them later on
 dt.pricing <- dt.pricing[, adj_ingredient := ifelse(double_observation == "", Ingredient, double_observation), by = "Ingredient"]
-
 
 # Remove observation marked as duplicates dt.commonality (may create orphaned ingredients, sth to look out for).
 # Will leave pricing for later because for drinks to be correct, duplicate ingredients will need to be replaced by their synonym.

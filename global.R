@@ -10,6 +10,9 @@ dt.drinks <- dt.longdrinks
 dt.drinks <- dt.drinks[, 
                        complexity := str_count(dt.drinks$instructions)]
 
+# Delete observations with missing or fraudulent complexity data
+dt.drinks <- dt.drinks[complexity > 0 & complexity < 550,  ]
+
 # change name of column for better understanding
 setnames(dt.drinks, 
          old = "price", 
@@ -29,55 +32,83 @@ setnames(dt.drinks,
 dt.drinks[, 
           c("thumbnail", "era") := NULL]
 
-# add values for missing quantities
+# Adjust quantities of ingredients used that are provided in percentage
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "shot.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity1 := quantity * 44, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "short.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity2 := quantity * 120, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "chalice.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity3 := quantity * 330, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "long.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity4 := quantity * 340, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "other" & measurement != "piece" & measurement != "pieces", adj_quantity5 := quantity * 340, by = "ingredient"]
+dt.drinks <- dt.drinks[, adj_quantity6 := ifelse(!is.na(adj_quantity1), adj_quantity1,
+                                                 ifelse(!is.na(adj_quantity2), adj_quantity2,
+                                                        ifelse(!is.na(adj_quantity3), adj_quantity3,
+                                                               ifelse(!is.na(adj_quantity4), adj_quantity4,
+                                                                      ifelse(!is.na(adj_quantity5), adj_quantity5,
+                                                                             NA
+                                                                             )
+                                                                      )
+                                                               )
+                                                        )
+                                                 )
+                       ]
+
+############ add values for missing quantities ##############
 # add values for missing ml quantities
 dt.drinks <- dt.drinks[measurement == "ml", 
                        quantity_help_ml := median(na.omit(quantity)), 
                        by = "glass_type"]
 
 # add values for missing g quantities
-dt.drinks <- dt.drinks[measurement == "g", 
-                       quantity_help_g := median(na.omit(quantity)), 
-                       by = "glass_type"]
-
-# add values for missing piece quantities
-dt.drinks <- dt.drinks[measurement == "piece", 
-                       quantity_help_piece := 1, 
-                       by = "glass_type"]
-
-# add values for missing pieces quantities
-dt.drinks <- dt.drinks[measurement == "pieces", 
-                       quantity_help_pieces := 1, 
-                       by = "glass_type"]
+dt.drinks <- dt.drinks[measurement == "g", quantity_help_g := 2.5]
 
 # add values for missing "" quantities
 dt.drinks <- dt.drinks[measurement == "", 
                        quantity_help_SPACE := median(na.omit(quantity)), 
                        by = "glass_type"]
 
-dt.drinks <- dt.drinks[, adj_quantity1 := ifelse(measurement == "piece", quantity_help_piece, NA)]
-dt.drinks <- dt.drinks[, adj_quantity2 := ifelse(measurement == "pieces", quantity_help_pieces, NA)]
-dt.drinks <- dt.drinks[, adj_quantity3 := ifelse(!is.na(adj_quantity1), adj_quantity1, 
-                                                 ifelse(!is.na(adj_quantity2), adj_quantity2, 
+dt.drinks <- dt.drinks[, adj_quantity7 := ifelse(measurement == "piece", 1, NA)]
+dt.drinks <- dt.drinks[, adj_quantity8 := ifelse(measurement == "pieces", 1, NA)]
+dt.drinks <- dt.drinks[, adj_quantity9 := ifelse(!is.na(adj_quantity7), adj_quantity7, 
+                                                 ifelse(!is.na(adj_quantity8), adj_quantity8, 
                                                         NA
+                                                        )
                                                  )
-)
-]
+                       ]
 
 # Convert all quantity columns into one column
-dt.drinks <- dt.drinks[, adj_quantity := ifelse(!is.na(adj_quantity3), adj_quantity3,
-                                                ifelse(!is.na(quantity), quantity, 
-                                                       ifelse(!is.na(quantity_help_ml), quantity_help_ml, 
-                                                              ifelse(!is.na(quantity_help_g), quantity_help_g, 
-                                                                     quantity_help_SPACE
+dt.drinks <- dt.drinks[, adj_quantity := ifelse(!is.na(adj_quantity6), adj_quantity6, 
+                                                ifelse(!is.na(adj_quantity9), adj_quantity9, 
+                                                       ifelse(!is.na(quantity), quantity, 
+                                                              ifelse(!is.na(quantity_help_ml), quantity_help_ml, 
+                                                                     ifelse(!is.na(quantity_help_g), quantity_help_g, 
+                                                                            quantity_help_SPACE
+                                                                            )
+                                                                     )
                                                               )
                                                        )
                                                 )
-)
-]
+                       ]
+
 # delete help quantity columns
 dt.drinks <- dt.drinks[, 
-                       c("adj_quantity1", "adj_quantity2", "adj_quantity3", "quantity_help_ml", "quantity_help_g", "quantity_help_piece", "quantity_help_pieces", "quantity_help_SPACE") := NULL]
+                       c("adj_quantity1", 
+                         "adj_quantity2", 
+                         "adj_quantity3", 
+                         "adj_quantity4", 
+                         "adj_quantity5", 
+                         "adj_quantity6", 
+                         "adj_quantity7", 
+                         "adj_quantity8", 
+                         "adj_quantity9", 
+                         "quantity_help_ml", 
+                         "quantity_help_g", 
+                         "quantity_help_piece", 
+                         "quantity_help_pieces", 
+                         "quantity_help_SPACE") := NULL]
+
+# delete help quantity columns
+dt.drinks <- dt.drinks[, 
+                       c("adj_quantity1", "adj_quantity2", "adj_quantity3", "adj_quantity4", "adj_quantity5", "adj_quantity6", "adj_quantity7", "adj_quantity8", "adj_quantity9", "quantity_help_ml", "quantity_help_g", "quantity_help_piece", "quantity_help_pieces", "quantity_help_SPACE") := NULL]
+
 
 # cost of a single ingredient per drink
 dt.drinks <- dt.drinks[, 
