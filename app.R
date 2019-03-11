@@ -143,11 +143,10 @@ ui <- fluidPage(
                                  titlePanel("Drinks explorer"),
                                  fluidRow(
                                    column(12,
-                                          wellPanel(
                                              h4("On this page you have the opportunity to explore all drinks and customize your visualization.
                                              Initially the borders for the three continuous filters is set to the average and median. The
                                              categorical filters are set to include all drinks. At the bottom you can define the axes along
-                                             which the drinks will be plotted"))),
+                                             which the drinks will be plotted")),
                                    column(3,
                                           verticalLayout(
                                             wellPanel(
