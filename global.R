@@ -10,6 +10,9 @@ dt.drinks <- dt.longdrinks
 dt.drinks <- dt.drinks[, 
                        complexity := str_count(dt.drinks$instructions)]
 
+# Delete observations with missing or fraudulent complexity data
+dt.drinks <- dt.drinks[complexity > 0 & complexity < 550,  ]
+
 # change name of column for better understanding
 setnames(dt.drinks, 
          old = "price", 
@@ -101,10 +104,6 @@ dt.drinks <- dt.drinks[,
                          "quantity_help_piece", 
                          "quantity_help_pieces", 
                          "quantity_help_SPACE") := NULL]
-
-# Clean for unreasonable ingredient amounts
-
-
 
 # delete help quantity columns
 dt.drinks <- dt.drinks[, 

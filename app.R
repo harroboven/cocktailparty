@@ -152,8 +152,8 @@ ui <- fluidPage(
                                             wellPanel(
                                               h4("Filter"),
                                               sliderInput("drink.explorer.complexity.filter", "Degree of Recipe Complexity",
-                                                          min = min(dt.drinks.filtered$complexity), 
-                                                          max = max(dt.drinks.filtered$complexity), 
+                                                          min = 0, 
+                                                          max = max(dt.drinks.filtered$complexity) + 2, 
                                                           value = c(median(dt.drinks.filtered$complexity), 
                                                                     mean(dt.drinks.filtered$complexity)
                                                                     ), 
@@ -166,8 +166,8 @@ ui <- fluidPage(
                                                           sep = ""
                                                           ),
                                               sliderInput("drink.explorer.cost.filter", "Ingredients Cost per Drink",
-                                                          min = min(dt.drinks.filtered$adj_ingredients_cost),
-                                                          max = max(dt.drinks.filtered$adj_ingredients_cost),
+                                                          min = 0,
+                                                          max = round(max(dt.drinks.filtered$adj_ingredients_cost), 0) + 2,
                                                           value = c(median(dt.drinks.filtered$adj_ingredients_cost), 
                                                                     mean(dt.drinks.filtered$adj_ingredients_cost)
                                                                     ),
@@ -502,8 +502,8 @@ ui <- fluidPage(
                       wellPanel(
                         h4("Filter"),
                         sliderInput("analysis.drinks.complexity.filter", "Degree of Recipe Complexity",
-                                    min = min(dt.drinks.analysis$complexity), 
-                                    max = max(dt.drinks.analysis$complexity), 
+                                    min = 0, 
+                                    max = max(dt.drinks.analysis$complexity) + 2, 
                                     value = c(median(dt.drinks.analysis$complexity), 
                                               mean(dt.drinks.analysis$complexity)
                                     ), 
@@ -516,8 +516,8 @@ ui <- fluidPage(
                                     sep = ""
                                     ),
                         sliderInput("analysis.drinks.cost.filter", "Ingredients Cost per Drink",
-                                    min = min(dt.drinks.analysis$adj_ingredients_cost), 
-                                    max = max(dt.drinks.analysis$adj_ingredients_cost), 
+                                    min = 0, 
+                                    max = round(max(dt.drinks.analysis$adj_ingredients_cost), 0) + 2, 
                                     value = c(median(dt.drinks.analysis$adj_ingredients_cost), mean(dt.drinks.analysis$adj_ingredients_cost)), 
                                     sep = ""
                                     ),
@@ -575,8 +575,8 @@ ui <- fluidPage(
                       wellPanel(
                         h4("Filter"),
                         sliderInput("analysis.ingredient.price.filter", "Ingredient Price",
-                                    min = min(dt.ingredients.analysis$adj_ingredient_price), 
-                                    max = max(dt.ingredients.analysis$adj_ingredient_price), 
+                                    min = 0, 
+                                    max = round(max(dt.ingredients.analysis$adj_ingredient_price), 0) + 2, 
                                     value = c(median(dt.ingredients.analysis$adj_ingredient_price), mean(dt.ingredients.analysis$adj_ingredient_price)), 
                                     sep = ""
                                     )
