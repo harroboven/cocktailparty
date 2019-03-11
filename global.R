@@ -57,7 +57,6 @@ dt.drinks <- dt.drinks[measurement == "ml",
 # add values for missing g quantities
 dt.drinks <- dt.drinks[measurement == "g", quantity_help_g := 2.5]
 
-
 # add values for missing "" quantities
 dt.drinks <- dt.drinks[measurement == "", 
                        quantity_help_SPACE := median(na.omit(quantity)), 
@@ -107,6 +106,11 @@ dt.drinks <- dt.drinks[,
 
 
 
+# delete help quantity columns
+dt.drinks <- dt.drinks[, 
+                       c("adj_quantity1", "adj_quantity2", "adj_quantity3", "adj_quantity4", "adj_quantity5", "adj_quantity6", "adj_quantity7", "adj_quantity8", "adj_quantity9", "quantity_help_ml", "quantity_help_g", "quantity_help_piece", "quantity_help_pieces", "quantity_help_SPACE") := NULL]
+
+
 # cost of a single ingredient per drink
 dt.drinks <- dt.drinks[, 
                        cost_used_ingredient := 
@@ -123,7 +127,7 @@ dt.drinks <- dt.drinks[,
                        adj_ingredients_cost := ifelse(!is.na(ingredients_cost), 
                                                       ingredients_cost, 
                                                       99
-                                                      ), 
+                       ), 
                        by = "id"]
 
 # Create adjusted ingredient price to handle NA values
@@ -137,7 +141,7 @@ dt.drinks <- dt.drinks[,
 # Reorder the columns for convenience
 dt.drinks <- dt.drinks[, 
                        c("id", "ingredient", "quantity", "adj_quantity", "measurement", "package_size", "ingredient_price", "adj_ingredient_price", "cost_used_ingredient", "name", "is_alcoholic", 
-                           "category", "glass_type", "commonality", "complexity", "ingredients_cost", "adj_ingredients_cost", "double_observation")]
+                         "category", "glass_type", "commonality", "complexity", "ingredients_cost", "adj_ingredients_cost", "double_observation")]
 
 ######## Buttons ##########
 # preparing dt.drinks for button work by ensuring that only unique drinks
@@ -172,16 +176,16 @@ chart.theme.1 <- theme(plot.title = element_text(family = "Helvetica", face = "b
 all.drinks <- dt.drinks[, 
                         .(name = unique(name), 
                           type = TRUE
-                          )
+                        )
                         ]
 all.ingredients <- dt.drinks[, 
                              .(name = unique(ingredient), 
                                type = FALSE
-                               )
+                             )
                              ]
 all.vertices <- rbind(all.drinks, 
                       all.ingredients
-                      )
+)
 #all.vertices <- all.vertices[!duplicated(all.vertices$id)]
 
 g.drinks.ingredients <- graph_from_data_frame(dt.drinks[, 
@@ -189,7 +193,7 @@ g.drinks.ingredients <- graph_from_data_frame(dt.drinks[,
                                                         ], 
                                               directed = FALSE,
                                               vertices = all.vertices
-                                              )
+)
 g.drinks.bp <- bipartite.projection(g.drinks.ingredients)$proj2
 g.ingredients.bp <- bipartite.projection(g.drinks.ingredients)$proj1
 
@@ -198,7 +202,7 @@ v.drink.explorer.axis.vars <- c(
   "Recipe Complexity" = "complexity",
   "Commonality" = "commonality",
   "Ingredients Cost per Drink" = "adj_ingredients_cost"
-  )
+)
 
 ################################### centrality measures ##################################
 
@@ -279,7 +283,7 @@ dt.drinks.analysis <- dt.drinks.centrality.complete[,
                                                          drink_closeness, 
                                                          drink_betweenness, 
                                                          drink_eigenvector
-                                                         )
+                                                    )
                                                     ]
 
 dt.drinks.analysis <- unique(dt.drinks.analysis)
@@ -328,4 +332,4 @@ v.analysis.ingredients.axis.vars <- c(
   "Closeness" = "ingredient_closeness", 
   "Betweenness" = "ingredient_betweenness", 
   "Eigenvector" = "ingredient_eigenvector"
-  )
+)

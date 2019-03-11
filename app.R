@@ -20,10 +20,12 @@ ui <- fluidPage(
   navbarPage(title = "Shiny Drinks", 
              #Start Page
              fluidRow(
+               column(12,
+                      h1("Welcome to the Shiny Drinks App")),
                #left column
                column(4,
                       wellPanel(
-                        img(src = 'cocktail-glass.png', height = 300, width = 300)
+                        img(src = 'Cocktail-pic.jpg', height = 350, width = 460)
                         )
                       ),
                #right column
@@ -33,8 +35,14 @@ ui <- fluidPage(
                           # header of right column
                           titlePanel("Let's have some drinks!"),
                           # content of right column
-                          p("***Relevance Text***", 
-                            style = "font-family: 'times'; font-si16pt"
+                          p("Nothing can beat a refreshing drink at the right time in the right location. Drinks offer more than simply a nice taste, but they can be a great conversation starter, an expression of friendship or simply a tool to accelerate the night. Thus, a well-prepared host of a party knows its audience and plans to offer the appropriate drinks. In recent years the number of drinks has skyrocketed with ever new and extravagant creations. For many hosts the drinks jungle can become a challenge and the decision of which ingredients to buy a daunting task. Some drinks share the same ingredients, which can be reused or even utilized to hedge the risk of being left with a large stock of a certain ingredient. Simultaneously, many host find themselves with a remaining stock of existing ingredients, which are already at hand and could be used as the foundation for the upcoming event. To cut it short, an appropriate planning tool that gives an overview of the drinks landscape, visualizes connecting ingredients between cocktails and that allows to consider the existing drinks in stock.", 
+                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"
+                            ),
+                          p("To tackle this issue, the shiny drinks app provides an analytics tool that examines different drinks, their ingredients and the relationship among them to optimize decision making along relevant parameters / constraints. As such, this app can help the host of a private party in optimizing ingredient purchase decisions to avoid being left with an excessive amount of a certain ingredient. For actors in the hospitality industry the application could for instance be leveraged to optimize the drinks portfolio in order to most effectively provide both traditional and extravagant drinks, or to offer large as well as smaller cocktails. Lastly, the application can also be a fun gadget for people who want to learn more about the connections between different cocktails.",
+                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"
+                            ),
+                          p("Let's have some drinks!", 
+                            style = "font-family: 'times'; font-si16pt; font-size: 20pt"
                             )
                           )
                         )
@@ -60,8 +68,14 @@ ui <- fluidPage(
                                    #Header of left column
                                    titlePanel("Explanation of Summary"),
                                    #content of left column
-                                   p("INTROTEXT", 
-                                     style = "font-family: 'times'; font-si16pt"
+                                   p("On this page a descriptive overview of the entire data set is provided. ", 
+                                     style = "font-family: 'times'; font-si16pt; font-size: 16pt"
+                                   ),
+                                   p("In the first half a static table summarizes the data. Specifically, the app contain information on drinks and ingredients. For the ingredients, the price is considered the most important covariate. Concerning drinks, a variety of covariates is considered.", 
+                                     style = "font-family: 'times'; font-si16pt; font-size: 16pt"
+                                   ),
+                                   p("In the second half of this page, the distribution of drinks is visualized. The criteria by which the drinks shall be distributed can be selected via button input.", 
+                                     style = "font-family: 'times'; font-si16pt; font-size: 16pt"
                                    )
                                  )
                           ),
@@ -87,7 +101,7 @@ ui <- fluidPage(
                                      #Header of left column
                                      titlePanel("Distribution of Observations"),
                                      #content of left column
-                                     p("INTROTEXT", 
+                                     p("Please choose a parameter by which you would like to group the drinks", 
                                        style = "font-family: 'times'; font-si16pt"
                                        ),
                                      # RadioButtons - distribution of obs.
@@ -128,6 +142,11 @@ ui <- fluidPage(
              tabPanel("Drinks Explorer", 
                                  titlePanel("Drinks explorer"),
                                  fluidRow(
+                                   column(12,
+                                             h4("On this page you have the opportunity to explore all drinks and customize your visualization.
+                                             Initially the borders for the three continuous filters is set to the average and median. The
+                                             categorical filters are set to include all drinks. At the bottom you can define the axes along
+                                             which the drinks will be plotted")),
                                    column(3,
                                           verticalLayout(
                                             wellPanel(
@@ -209,6 +228,11 @@ ui <- fluidPage(
                         titlePanel("Network Exploration by Drinks"),
                         # 1st block of page
                         fluidRow(
+                          column(12,
+                                   h4("On this page you get to further explore the network. The network of drinks is summarized
+                                      along basic summary statistics, as well as, centrality measures. In the second half of the
+                                      page the entire, as well as, a subset of the drinks network are visualized")
+                                 ),
                           # left column 
                           column(6,
                                  wellPanel(
@@ -251,11 +275,14 @@ ui <- fluidPage(
                                    # left sub-column
                                    column(6,
                                           # left sub-column
-                                          p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                          p("Minimum weight of edges:", style = "font-family: 'times'; font-si16pt"),
+                                          p("This visualization provides an overview of the strength of similarity among cocktails.
+                                            Specifically, the weight of the edges represents the number of ingredients that two
+                                            cocktails have in common.", 
+                                            style = "font-family: 'times'; font-si16pt; font-size: 16pt"),
+                                          
                                           # SliderInput - Network of drinks
                                           sliderInput('weight.edges.drink',
-                                                      label = 'Min. weight of edges:', 
+                                                      label = 'Min. number of ingredients in common:', 
                                                       min = 1, max = 15, value = 15, step = 1)
                                           ),
                                    # right sub-column
@@ -270,20 +297,18 @@ ui <- fluidPage(
                                    # left sub-column
                                    column(6,
                                           # Introtext
-                                          p("Introtext", style = "font-family: 'times'; font-si16pt"),
+                                          p("This visualization provides an overview of the neighbouring network of one drink.", 
+                                            style = "font-family: 'times'; font-si16pt; font-size: 16pt"),
                                           # Drink Choice
                                           p("Choose drink", style = "font-family: 'times'; font-si16pt"),
-                                          p("PLACEHOLDER DROP DOWN"),
                                           selectInput('network.of.one.drink',
                                                       label = 'Network of one drink',
                                                       selected = NA,
                                                       choices = dt.drinks$name
-                                          ),
-                                          plotOutput(outputId = 'plot.network.of.one.drink')
-                                          ),
+                                          )),
                                    # right sub-column
                                    column(6,
-                                          p("Placeholder Crazy Network Graph")
+                                          plotOutput(outputId = 'plot.network.of.one.drink')
                                           )
                                    )
                                  )
@@ -300,11 +325,15 @@ ui <- fluidPage(
                         titlePanel("Exploration by ingredients"),
                         # 1st block of page
                         fluidRow(
+                          column(12,
+                                 h4("On this page you get to further explore the network. The network of ingredients is summarized
+                                    along basic summary statistics, as well as, centrality measures. In the second half of the
+                                    page the entire, as well as, a subset of the ingredients network are visualized")),
                           # left column
                           column(6,
                                  wellPanel(
                                    # title of left object
-                                   titlePanel("Table with summary statistics"),
+                                   titlePanel("Summary Statistics of the Network of Ingredients"),
                                    # content of left object
                                    tableOutput("ingredients.network.summary")
                                    )
@@ -466,6 +495,9 @@ ui <- fluidPage(
            verticalLayout(
              titlePanel("Centrality Explorer by Drinks"),
              fluidRow(
+               column(12,
+                        h4("This page allows you to explore the relation between the characteristics of drinks and their centrality.")
+                      ),
                column(4,
                       wellPanel(
                         h4("Filter"),
@@ -537,6 +569,8 @@ ui <- fluidPage(
            verticalLayout(
              titlePanel("Centrality Explorer by Ingredients"),
              fluidRow(
+               column(12,
+                      h4("This page allows you to explore the relation between the characteristics of ingredients and their centrality.")),
                column(4,
                       wellPanel(
                         h4("Filter"),
@@ -583,8 +617,11 @@ ui <- fluidPage(
            verticalLayout(
              titlePanel("Cocktail Planner"),
              fluidRow(
+               column(12,
+                      h4("On this page you get to plan your cocktail night. You can specify the drinks that you already have
+                         in stock and the drinks that you can create with those. Afterwards you can add additional ingredients
+                         and see how the list and the network of feasible cocktails extends.")),
                wellPanel(
-                 h4("Please specify the cocktail ingredients currently in stock"),
                  selectInput("ingredients.available",
                              "Available Stock",
                              l.all.ingredients,
@@ -600,7 +637,11 @@ ui <- fluidPage(
                    # Table output of all possible drinks
                    column(6,
                             p("These are the drinks you can mix with the ingredients in stock"),
-                          tableOutput("table.test"))
+                          tableOutput("table.test")),
+                   column(6,
+                          p("Hello")),
+                   column(6,
+                          plotOutput("plot.ingredients.in.stock"))
                  )
                )
              )
@@ -1213,11 +1254,11 @@ server <- function(input, output, session) {
       
     # Set up the igraph
       current.possible.drinks <- dt.drinks[,
-                                           .(name = unique(name),
+                                           list(name = unique(name),
                                              type = TRUE
                                            )]
       current.available.ingredients <- dt.drinks[,
-                                                 .(name = unique(ingredient),
+                                                 list(name = unique(ingredient),
                                                    type = FALSE
                                                  )]
       all.available.vertices <- rbind(current.possible.drinks,
@@ -1225,17 +1266,18 @@ server <- function(input, output, session) {
 
 
       g.drinks.ingredients.available <- graph_from_data_frame(dt.drinks[,
-                                                                        .(name, ingredient)
+                                                                        list(name, ingredient)
                                                                         ],
                                                               directed = FALSE,
                                                               vertices = all.available.vertices)
 
       g.drinks.ingredients.available.bp <- bipartite.projection(g.drinks.ingredients.available)$proj2
+      
 
       # Create a reactive graph
       g.drinks.feasible <- reactive({
         V(g.drinks.ingredients.available.bp)$color <- ifelse(V(g.drinks.ingredients.available.bp) %in% dt.drinks.feasible()$V1, "green", "white")
-        plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 2,
+        plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 3,
                     layout = layout_nicely, edge.arrow.size = 1)
       })
 
@@ -1248,6 +1290,19 @@ server <- function(input, output, session) {
     output$table.test <- renderTable({
       dt.drinks.feasible()
     })
+    
+    # Additional graph output try
+    
+    output$plot.ingredients.in.stock <- renderPlot({
+      neigh.nodes.ingredients.in.stock <- adjacent_vertices(g.drinks.ingredients.available.bp, dt.drinks.feasible()$V1)
+      # V(g.drinks.ingredients.available.bp)$color <- 'grey'
+      # V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()]$label <- paste0(dt.drinks.feasible())  
+      # E(g.drinks.ingredients.available.bp)$ltly <- 'dotted'
+      # V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()]$color <- 'tomato'
+      # plot(induced.subgraph(g.ingredients.bp, neigh.nodes.ingredients.in.stock), layout = layout_with_graphopt) 
+      # visIgraph(g.one.ingredient)
+    })
+    
     
   }
 

@@ -42,8 +42,8 @@ dt.drinks <- dt.drinks[, -empty.columns, with = FALSE]
 for (i in 1:12) {
   # In dt.drinks a (new) column called "ingredients.with.amount(1,2,3 etc.)" equals
   dt.drinks[, paste0("ingredients.with.amount", i)] <-
-  # The ingredient and the amount of that ingredient separated by an underscore
-  paste(dt.drinks[[paste0("strIngredient", i)]],dt.drinks[[paste0("strMeasure", i)]] , sep = "_")
+    # The ingredient and the amount of that ingredient separated by an underscore
+    paste(dt.drinks[[paste0("strIngredient", i)]],dt.drinks[[paste0("strMeasure", i)]] , sep = "_")
 }
 
 # Delete the single "_" and "_\n" now in the data table
@@ -183,7 +183,7 @@ kill.dashes <- function(quantity) {
 
 dt.longdrinks$quantity <- mapply(kill.dashes, dt.longdrinks$quantity)
 
-# Make "quantity" column numeric, delete the rest of the crap
+# Make "quantity" column numeric, delete the rest
 dt.longdrinks$quantity <- gsub("-", "", dt.longdrinks$quantity)
 dt.longdrinks$quantity <- gsub("[(]", "", dt.longdrinks$quantity)
 dt.longdrinks$quantity <- gsub("[)]", "", dt.longdrinks$quantity)
@@ -196,6 +196,7 @@ dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
 
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
+
 dt.pricing <- fread("data/ingredients_overview_updated3.csv", header = TRUE)
 
 # Identify double ingredients and prepare help column to work with them later on
