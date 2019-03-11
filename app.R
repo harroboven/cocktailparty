@@ -197,6 +197,7 @@ ui <- fluidPage(
                                              h4("On this page you have the opportunity to explore all drinks and customize your visualization.
                                              Initially the borders for the three continuous filters is set to the average and median. The
                                              categorical filters are set to include all drinks. At the bottom you can define the axes along
+
                                              which the drinks will be plotted"))),
                         column(3,
                                verticalLayout(
@@ -566,8 +567,8 @@ ui <- fluidPage(
                       wellPanel(
                         h3("Filter"),
                         sliderInput("analysis.drinks.complexity.filter", "Degree of Recipe Complexity",
-                                    min = min(dt.drinks.analysis$complexity), 
-                                    max = max(dt.drinks.analysis$complexity), 
+                                    min = 0, 
+                                    max = max(dt.drinks.analysis$complexity) + 2, 
                                     value = c(median(dt.drinks.analysis$complexity), 
                                               mean(dt.drinks.analysis$complexity)
                                     ), 
@@ -580,8 +581,8 @@ ui <- fluidPage(
                                     sep = ""
                                     ),
                         sliderInput("analysis.drinks.cost.filter", "Ingredients Cost per Drink",
-                                    min = min(dt.drinks.analysis$adj_ingredients_cost), 
-                                    max = max(dt.drinks.analysis$adj_ingredients_cost), 
+                                    min = 0, 
+                                    max = round(max(dt.drinks.analysis$adj_ingredients_cost), 0) + 2, 
                                     value = c(median(dt.drinks.analysis$adj_ingredients_cost), mean(dt.drinks.analysis$adj_ingredients_cost)), 
                                     sep = ""
                                     ),
@@ -640,8 +641,8 @@ ui <- fluidPage(
                       wellPanel(
                         h3("Filter"),
                         sliderInput("analysis.ingredient.price.filter", "Ingredient Price",
-                                    min = min(dt.ingredients.analysis$adj_ingredient_price), 
-                                    max = max(dt.ingredients.analysis$adj_ingredient_price), 
+                                    min = 0, 
+                                    max = round(max(dt.ingredients.analysis$adj_ingredient_price), 0) + 2, 
                                     value = c(median(dt.ingredients.analysis$adj_ingredient_price), mean(dt.ingredients.analysis$adj_ingredient_price)), 
                                     sep = ""
                                     )
