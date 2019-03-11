@@ -42,8 +42,8 @@ dt.drinks <- dt.drinks[, -empty.columns, with = FALSE]
 for (i in 1:12) {
   # In dt.drinks a (new) column called "ingredients.with.amount(1,2,3 etc.)" equals
   dt.drinks[, paste0("ingredients.with.amount", i)] <-
-  # The ingredient and the amount of that ingredient separated by an underscore
-  paste(dt.drinks[[paste0("strIngredient", i)]],dt.drinks[[paste0("strMeasure", i)]] , sep = "_")
+    # The ingredient and the amount of that ingredient separated by an underscore
+    paste(dt.drinks[[paste0("strIngredient", i)]],dt.drinks[[paste0("strMeasure", i)]] , sep = "_")
 }
 
 # Delete the single "_" and "_\n" now in the data table
@@ -192,7 +192,11 @@ dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
 
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
-dt.pricing <- fread("data/Ingredients_overview.csv", header = TRUE)
+dt.pricing <- fread("data/ingredients_overview.csv", header = TRUE)
+
+# Identify double ingredients and prepare help column to work with them later on
+dt.pricing <- dt.pricing[, adj_ingredient := ifelse(double_observation == "", Ingredient, double_observation), by = "Ingredient"]
+
 
 # Remove observation marked as duplicates dt.commonality (may create orphaned ingredients, sth to look out for).
 # Will leave pricing for later because for drinks to be correct, duplicate ingredients will need to be replaced by their synonym.
@@ -205,9 +209,13 @@ dt.commonality <- dt.commonality[, c("name", "common_final")]
 dt.commonality.longdrinks <- merge(dt.longdrinks, dt.commonality, by = "name")
 
 # Merge dt.pricing with dt.commonality.longdrinks for pricing data (assuming the ingredient is unique)
-dt.pricing <- dt.pricing[, c("Ingredient", "measurement", "package size", "price", "double_observation")]
+dt.pricing <- dt.pricing[, c("Ingredient", "adj_ingredient", "measurement", "package size", "price")]
 setnames(dt.pricing, old = c("Ingredient", "package size"), new = c("ingredient", "package_size"))
 dt.commonality.longdrinks.pricing <- merge(dt.commonality.longdrinks, dt.pricing, by = "ingredient")
+
+# Replace "ingredient" column by "adj_ingredient" column
+dt.commonality.longdrinks.pricing <- dt.commonality.longdrinks.pricing[, ingredient := NULL]
+setnames(dt.commonality.longdrinks.pricing, old = "adj_ingredient", new = "ingredient")
 
 # Turn this rather long and ugly name back into dt.longdrinks for convenience and backwards compatibility
 dt.longdrinks <- dt.commonality.longdrinks.pricing
