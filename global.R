@@ -55,20 +55,37 @@ dt.drinks <- dt.drinks[measurement == "",
                        quantity_help_SPACE := median(na.omit(quantity)), 
                        by = "glass_type"]
 
+# Adjust quantities of ingredients used that are provided in percentage
+
+# Shot quantity = 44 ml
+# cocktail = 120 ml
+# longdrink = 280 ml
+
+
+dt.drinks <- dt.drinks[, adj_quantity1 := ifelse(measurement == "piece", quantity_help_piece, NA)]
+dt.drinks <- dt.drinks[, adj_quantity2 := ifelse(measurement == "pieces", quantity_help_pieces, NA)]
+dt.drinks <- dt.drinks[, adj_quantity3 := ifelse(!is.na(adj_quantity1), adj_quantity1, 
+                                                 ifelse(!is.na(adj_quantity2), adj_quantity2, 
+                                                        NA
+                                                 )
+)
+]
+
 # Convert all quantity columns into one column
-dt.drinks <- dt.drinks[, 
-                       adj_quantity := ifelse(!is.na(quantity), quantity, 
-                                              ifelse(!is.na(quantity_help_ml), quantity_help_ml, 
-                                                     ifelse(!is.na(quantity_help_g), quantity_help_g, 
-                                                            ifelse(!is.na(quantity_help_piece), quantity_help_piece, 
-                                                                   ifelse(!is.na(quantity_help_pieces), quantity_help_pieces, 
-                                                                          quantity_help_SPACE
-                                                                          )
-                                                                   )
-                                                            )
-                                                     )
-                                              )
-                       ]
+dt.drinks <- dt.drinks[, adj_quantity := ifelse(!is.na(adj_quantity3), adj_quantity3,
+                                                ifelse(!is.na(quantity), quantity, 
+                                                       ifelse(!is.na(quantity_help_ml), quantity_help_ml, 
+                                                              ifelse(!is.na(quantity_help_g), quantity_help_g, 
+                                                                     quantity_help_SPACE
+                                                              )
+                                                       )
+                                                )
+)
+]
+
+
+
+
 # delete help quantity columns
 dt.drinks <- dt.drinks[, 
                        c("quantity_help_ml", "quantity_help_g", "quantity_help_piece", "quantity_help_pieces", "quantity_help_SPACE") := NULL]
