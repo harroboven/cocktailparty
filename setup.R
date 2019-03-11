@@ -179,7 +179,7 @@ kill.dashes <- function(quantity) {
 
 dt.longdrinks$quantity <- mapply(kill.dashes, dt.longdrinks$quantity)
 
-# Make "quantity" column numeric, delete the rest of the crap
+# Make "quantity" column numeric, delete the rest
 dt.longdrinks$quantity <- gsub("-", "", dt.longdrinks$quantity)
 dt.longdrinks$quantity <- gsub("[(]", "", dt.longdrinks$quantity)
 dt.longdrinks$quantity <- gsub("[)]", "", dt.longdrinks$quantity)
