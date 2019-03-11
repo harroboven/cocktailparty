@@ -11,6 +11,7 @@
 # installed.packages("dplyr")
 # install.packages("RSQLite")
 # install.packages("dbplyr")
+# install.packages("visNetwork")
 
 
 

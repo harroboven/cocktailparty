@@ -344,8 +344,11 @@ ui <- fluidPage(
                                    # right sub-column
                                    column(12,
                                           # right sub-column
-                                          
-                                          visNetworkOutput(outputId = 'plot.network.of.drinks')))),
+                                          visNetworkOutput(outputId = 'plot.network.of.drinks')
+                                          )
+                                   )
+                                 )
+                                 ),
 
                           # right object
                           column(6,
@@ -363,15 +366,18 @@ ui <- fluidPage(
                                                       label = 'Network of one drink',
                                                       selected = dt.drinks$name[744],
                                                       choices = dt.drinks$name
-                                          )))),
-                                  # a graphic plot for network of one drink
-                                 visNetworkOutput(outputId = 'plot.network.of.one.drink')
-                                   
-                                 
-                          )
+                                                      )
+                                          ),
+                                   column(12, 
+                                          # a graphic plot for network of one drink
+                                          visNetworkOutput(outputId = 'plot.network.of.one.drink')
+                                          )
+                                 )
+                                 )
                           )
                         )
-                      ), 
+                      )
+             ),
              
              ######################################### Page 4 Proposal ########################################
              
@@ -438,11 +444,14 @@ ui <- fluidPage(
                                           sliderInput('weight.edges.ingredient',
                                                       label = 'Min. weight of edges:', 
                                                       min = 1, max = 10, value = 3, step = 1)
-                                          ))),
-                                 # a graphic plot for a network of ingredients 
-                                 visNetworkOutput(outputId = 'plot.network.of.ingredients')))),
-            ),
-
+                                          ),
+                                   column(12,
+                                          # a graphic plot for a network of ingredients 
+                                          visNetworkOutput(outputId = 'plot.network.of.ingredients')
+                                          )
+                                   )
+                                 )
+                                 ),
                           # right object
                           column(6,
                                  wellPanel(
