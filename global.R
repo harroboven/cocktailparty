@@ -30,11 +30,11 @@ dt.drinks[,
           c("thumbnail", "era") := NULL]
 
 # Adjust quantities of ingredients used that are provided in percentage
-dt.drinks <- dt.drinks[quantity < 1 & glass_type == "shot.glasses", adj_quantity1 := quantity * 44, by = "ingredient"]
-dt.drinks <- dt.drinks[quantity < 1 & glass_type == "short.glasses", adj_quantity2 := quantity * 120, by = "ingredient"]
-dt.drinks <- dt.drinks[quantity < 1 & glass_type == "chalice.glasses", adj_quantity3 := quantity * 330, by = "ingredient"]
-dt.drinks <- dt.drinks[quantity < 1 & glass_type == "long.glasses", adj_quantity4 := quantity * 340, by = "ingredient"]
-dt.drinks <- dt.drinks[quantity < 1 & glass_type == "other", adj_quantity5 := quantity * 340, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "shot.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity1 := quantity * 44, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "short.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity2 := quantity * 120, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "chalice.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity3 := quantity * 330, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "long.glasses" & measurement != "piece" & measurement != "pieces", adj_quantity4 := quantity * 340, by = "ingredient"]
+dt.drinks <- dt.drinks[ingredient != "nutmeg" & ingredient != "cinnamon" & quantity < 1 & glass_type == "other" & measurement != "piece" & measurement != "pieces", adj_quantity5 := quantity * 340, by = "ingredient"]
 dt.drinks <- dt.drinks[, adj_quantity6 := ifelse(!is.na(adj_quantity1), adj_quantity1,
                                                  ifelse(!is.na(adj_quantity2), adj_quantity2,
                                                         ifelse(!is.na(adj_quantity3), adj_quantity3,
@@ -55,9 +55,8 @@ dt.drinks <- dt.drinks[measurement == "ml",
                        by = "glass_type"]
 
 # add values for missing g quantities
-dt.drinks <- dt.drinks[measurement == "g", 
-                       quantity_help_g := median(na.omit(quantity)), 
-                       by = "glass_type"]
+dt.drinks <- dt.drinks[measurement == "g", quantity_help_g := 2.5]
+
 
 # add values for missing "" quantities
 dt.drinks <- dt.drinks[measurement == "", 
@@ -103,6 +102,10 @@ dt.drinks <- dt.drinks[,
                          "quantity_help_piece", 
                          "quantity_help_pieces", 
                          "quantity_help_SPACE") := NULL]
+
+# Clean for unreasonable ingredient amounts
+
+
 
 # cost of a single ingredient per drink
 dt.drinks <- dt.drinks[, 
