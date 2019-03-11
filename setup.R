@@ -192,7 +192,7 @@ dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
 
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
-dt.pricing <- fread("data/ingredients_overview.csv", header = TRUE)
+dt.pricing <- fread("data/ingredients_overview_updated.csv", header = TRUE)
 
 # Identify double ingredients and prepare help column to work with them later on
 dt.pricing <- dt.pricing[, adj_ingredient := ifelse(double_observation == "", Ingredient, double_observation), by = "Ingredient"]
