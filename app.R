@@ -12,7 +12,7 @@ actionLink <- function(inputId, ...) {
 
 ui <- fluidPage(
   #Overall theme of our Shiny App
-  theme = shinytheme("flatly"), 
+  # theme = shinytheme("flatly"), 
   
   ######################################### Welcome Page ########################################
   
