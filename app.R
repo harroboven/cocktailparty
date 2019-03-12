@@ -1,3 +1,4 @@
+
 # Load the necessary libraries
 library(data.table)
 library(ggplot2)
@@ -88,8 +89,8 @@ ui <- fluidPage(
                             p("   - Exploration by Ingredients"),
                           tags$li("Network Analysis"),
                             p("   - Exploring Centrality Characteristics by Drinks"),
-                            p("   - Exploring Centrality Characteristics by Ingredients"),
-                            p("   - Cocktail Party Planner"))
+                            p("   - Exploring Centrality Characteristics by Ingredients")
+                          )
                       )
                )
              ),
@@ -621,50 +622,30 @@ ui <- fluidPage(
                )
              )
   
-  ######################################### Page 8 Proposal ########################################
   
-# Create the tab for the advanced analysis
-  # tabPanel("Cocktail Party Planner",
-  #          verticalLayout(
-  #            titlePanel("Cocktail Planner"),
-  #            fluidRow(
-  #              column(12,
-  #                     h4("On this page you get to plan your cocktail night. You can specify the drinks that you already have
-  #                        in stock and the drinks that you can create with those. Afterwards you can add additional ingredients
-  #                        and see how the list and the network of feasible cocktails extends.")),
-  #              wellPanel(
-  #                selectInput("ingredients.available",
-  #                            "Available Stock",
-  #                            l.all.ingredients,
-  #                            selected = "water",
-  #                            multiple = TRUE),
-  #                fluidRow(
-  #                  # Table with all ingredients at hand
-  #                  column(6,
-  #                         uiOutput("ingredients.in.stock")),
-  #                  # Oveview graph
-  #                  column(6,
-  #                         plotOutput(outputId = "g.drinks.feasible.network")),
-  #                  column(6,
-  #                         visNetworkOutput(outputId = "plot.only.feasible.drinks")),
-  #                  # Table output of all possible drinks
-  #                  column(6,
-  #                           p("These are the drinks you can mix with the ingredients in stock"),
-  #                         tableOutput("dt.feasible.drinks")),
-  #                  column(6,
-  #                         tableOutput("dt.feasible.drinks.all"))
-  #                )
-  #              )
-  #            )
-  #            )
-  #            )
-           )
+  
+  
+  )
   )
 )
 
 
 
 ############################################################# SERVER #############################################################
+
+library(data.table)
+library(ggplot2)
+library(stringr)
+library(reshape2)
+library(shinyWidgets)
+library(igraph, quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
+library(shinythemes)
+library(ggvis)
+library(dplyr)
+library(RSQLite)
+library(dbplyr)
+library(visNetwork, quietly = TRUE)
+
 
 server <- function(input, output, session) {
   
@@ -1082,10 +1063,6 @@ server <- function(input, output, session) {
       visEdges(smooth = FALSE) %>%
       visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T))
 
-
-    #  plot.igraph(g.ingredients.bp,vertex.label = NA, vertex.size = deg.ingredients/2,
-     #             edge.color = 'tomato', layout = layout_on_sphere,
-      #            edge.arrow.size = 1)
     })
 
 
@@ -1303,237 +1280,8 @@ server <- function(input, output, session) {
 
   })
   
-  ################################### PAGE 8 PROPOSAL ##################################
+  
  
-  #   # Create a reactive data table that allows to specify all ingredients that are already in stock
-  #   dt.ingredients.in.stock <- reactive({
-  #     dt.ingredients.in.stock <- data.table(ingredient = input$ingredients.available)
-  #   })
-  # 
-  #   # The output for the stock of ingredients
-  #   output$ingredients.in.stock <- renderTable({
-  #     dt.ingredients.in.stock()
-  #   })
-  # 
-  #   # Find drinks that can be build with the selected ingredients
-  #   # Create a data table where all drinks are deleted whose ingredients are already in stock
-  #   dt.drinks.deletion <- reactive({
-  #     dt.drinks.ingredient.deletion <- dt.drinks[, list(ingredient, name)]
-  #     dt.drinks.ingredient.deletion <- dt.drinks.ingredient.deletion[!(dt.drinks.ingredient.deletion$ingredient %in% dt.ingredients.in.stock()$ingredient)]
-  #   })
-  # 
-  #   # Create a data table with all drinks that are possible with the ingredients at hand
-  #   dt.drinks.feasible <- reactive({
-  #     dt.drinks.feasible <- dt.drinks[, list(unique(name))]
-  #     dt.drinks.feasible <- dt.drinks[!(dt.drinks$name %in% dt.drinks.deletion()$name), list(unique(name))]
-  #   })
-  # 
-  #   # Set up the igraph
-  #     current.possible.drinks <- dt.drinks[,
-  #                                          list(name = unique(name),
-  #                                            type = TRUE
-  #                                          )]
-  #     current.available.ingredients <- dt.drinks[,
-  #                                                list(name = unique(ingredient),
-  #                                                  type = FALSE
-  #                                                )]
-  #     all.available.vertices <- rbind(current.possible.drinks,
-  #                                     current.available.ingredients)
-  # 
-  # 
-  #     g.drinks.ingredients.available <- graph_from_data_frame(dt.drinks[,
-  #                                                                       list(name, ingredient)
-  #                                                                       ],
-  #                                                             directed = FALSE,
-  #                                                             vertices = all.available.vertices)
-  # 
-  #     g.drinks.ingredients.available.bp <- bipartite.projection(g.drinks.ingredients.available)$proj2
-  # 
-  # 
-  # 
-  # 
-  # 
-  # 
-  # 
-  # 
-  # 
-  # 
-  # 
-  #     # # Create a reactive graph
-  #     # g.drinks.feasible <- reactive({
-  #     #   V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()$V1]$color <- "green"
-  #     #   plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 3,
-  #     #               layout = layout_nicely, edge.arrow.size = 1)
-  #     # })
-  # 
-  #     # create the output for the graph
-  #   output$g.drinks.feasible.network <- renderPlot({
-  #     V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()$V1]$color <- "green"
-  #     plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 3,
-  #                 layout = layout_nicely, edge.arrow.size = 1)
-  #   })
-  #   #
-  #   # # create the output for the feasible drinks
-  #   # output$dt.feasible.drinks <- renderTable({
-  #   #   dt.drinks.feasible()
-  #   # })
-  # 
-  #   #######################TEST PLOTS#####################################################
-  # 
-  #   # Visnetwork of only feasible drinks (HERE THE EDGES DONT SHOW, ULI LINK)
-  #   output$plot.only.feasible.drinks <- renderVisNetwork({
-  #     visNetwork(as.data.frame(dt.drinks.feasible()$V1, dt.edge.list()))
-  #   })
-  # 
-  #   ## Test table: Currently shows the edge list (which shows that the edges are correct)
-  #   output$dt.feasible.drinks.all <- renderTable({
-  #     dt.edge.list()
-  #   })
-  # 
-  # ###### The following three blocks are just to create the edge list that is needed right above this line
-  # 
-  #   # Get all infromation for all drinks that are feasible with the selected ingredients
-  #   dt.all.of.only.feasible <- reactive({
-  #     dt.all.of.only.feasible <- dt.drinks[name %in% dt.drinks.feasible()$V1]
-  #   })
-  # 
-  #   # Create an igraph with only the feasible drinks
-  #   g.drinks.ingredients.available.latest <- reactive({
-  #     g.drinks.ingredients.available.latest <- graph_from_data_frame(dt.all.of.only.feasible()[, list(name, ingredient)],
-  #                                                                    directed = FALSE,
-  #                                                                    vertices = all.available.vertices)
-  #   })
-  #   # Create the edgelist of the previously created graph
-  #   dt.edge.list <- reactive({
-  #     as_edgelist(bipartite.projection(g.drinks.ingredients.available.latest())$proj2)
-  #   })
-  # 
-  # 
-  #   #--------------------------------------
-
-    
-    
-    #### visnetwork attempt for the first graph #####
-    # output$g.drinks.feasible.new <- renderVisNetwork({
-    #   # V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()$V1]$color <- "green"
-    #   #plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 3,
-    #   #layout = layout_nicely, edge.arrow.size = 1)
-    #   vis.g.drinks.ingredients.available.bp <- toVisNetworkData(g.drinks.ingredients.available.bp)
-    #   visNetwork(nodes = vis.g.drinks.ingredients.available.bp$nodes, edges = vis.g.drinks.ingredients.available.bp$edges, height = "500pt", width = "100%")
-    # })
-    
-    
-    ######## THE FOLLOWING IS ALL SPARE #######
-    
-    # output$plot.tester <- renderVisNetwork({
-    #   visNetwork(as.data.frame(dt.drinks.feasible()$V1), toVisNetworkData(g.drinks.ingredients.available.bp)$edges)
-    # })
-    
-    # output$plot.tester <- renderVisNetwork({
-    #   visNetwork((g.drinks.ingredients.available.bp)$nodes, toVisNetworkData(g.drinks.ingredients.available.bp)$edges)
-    # })
-    
-    
-    # Create the edgelist of the previously created graph
-    # dt.edge.list <- reactive({
-    #   as_edgelist(g.drinks.ingredients.available.latest())
-    # })
-    # 
-    
-    # 
-    # g.drinks.ingredients.available.latest.bp <- reactive({
-    #   g.drinks.ingredients.available.latest.bp <- bipartite.projection(g.drinks.ingredients.available.latest())$proj1
-    # })
-    # 
-    
-    
-    ###### TEST 2 via edge list
-      
-    # g.drinks.ingredients.available.latest <- reactive({
-    #   g.drinks.ingredients.available.latest <- graph_from_data_frame(dt.all.of.only.feasible()[, list(name, ingredient)],
-    #                                                                  directed = FALSE,
-    #                                                                  vertices = all.available.vertices)
-    # })
-    # 
-    # g.drinks.ingredients.available.latest.bp <- reactive({
-    #   g.drinks.ingredients.available.latest <- bipartite.projection(g.drinks.ingredients.available.latest())$proj2
-    # })
-    # 
-    # 
-    
-    # 
-    # dt.all.of.only.feasible <- reactive({
-    #   dt.all.of.only.feasible <- dt.drinks[name %in% dt.drinks.feasible()$V1][, list(name, ingredient)]
-    # })
-    # 
-    # g.3d.one <- reactive({
-    #   visNetwork(as.data.frame(dt.drinks.feasible()$V1, as.data.frame(dt.edge.list())))
-    # })
-    
-    
-    
-    # g.drinks.feasible2 <- reactive({
-    #   #V(g.drinks.ingredients.available.bp)$color <- ifelse(V(g.drinks.ingredients.available.bp) %in% dt.drinks.feasible()$V1, "green", "white")
-    #   g.availability.graph <- induced_subgraph(g.drinks.ingredients.available.bp, as.vector(dt.drinks.feasible()$V1))
-    # })
-    # 
-    
-    
-    
-    # 
-    # 
-    # ##### ADVANCED
-    # 
-    # dt.all.of.only.feasible.bp() <- reactive({
-    # dt.all.of.only.feasible <- dt.drinks[, list(name, ingredient)][name %in% dt.drinks.feasible()$V1]
-    # dt.all.of.only.feasible <- graph_from_data_frame(dt.all.of.only.feasible,
-    #                                                         directed = FALSE,
-    #                                                         vertices = all.available.vertices)
-    # dt.all.of.only.feasible.bp <- bipartite.projection(dt.all.of.only.feasible)$proj2
-    # })
-    # 
-    # 
-    # g.feasible.ones <- reactive({
-    #   plot.igraph(dt.all.of.only.feasible.bp(), vertex.label = NA, vertex.size = 3,
-    #               layout = layout_nicely, edge.arrow.size = 1)
-    # })
-    # 
-    # output$tester1 <- renderPlot({
-    #   g.feasible.ones()
-    # })
-    # 
-    # #######ADVANCED END
-    # 
-    # 
-    # g.drinks.feasible2 <- reactive({
-    #   #V(g.drinks.ingredients.available.bp)$color <- ifelse(V(g.drinks.ingredients.available.bp) %in% dt.drinks.feasible()$V1, "green", "white")
-    #   dt.availability.graph <- dt.drinks.feasible()$V1
-    # })
-    # 
-    # # output$table.tester2 <- renderTable({
-    # #   g.drinks.feasible2
-    # # })
-    # 
-    # output$table.tester1 <- renderTable({
-    #   dt.all.of.only.feasible()
-    # })
-    # 
-    # output$table.tester2 <- renderTable({
-    #   dt.availability.graph <- dt.drinks.feasible()$data
-    # })
-    # 
-    # # Additional graph output try
-    # 
-    # output$plot.ingredients.in.stock <- renderPlot({
-    #   neigh.nodes.ingredients.in.stock <- adjacent_vertices(g.drinks.ingredients.available.bp, dt.drinks.feasible()$V1)
-    #   # V(g.drinks.ingredients.available.bp)$color <- 'grey'
-    #   # V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()]$label <- paste0(dt.drinks.feasible())  
-    #   # E(g.drinks.ingredients.available.bp)$ltly <- 'dotted'
-    #   # V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()]$color <- 'tomato'
-    #   # plot(induced.subgraph(g.ingredients.bp, neigh.nodes.ingredients.in.stock), layout = layout_with_graphopt) 
-    #   # visIgraph(g.one.ingredient)
-    # })
-    
     
   }
 

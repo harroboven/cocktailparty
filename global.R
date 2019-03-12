@@ -223,3 +223,4 @@ v.analysis.ingredients.axis.vars <- c(
   "Betweenness" = "ingredient_betweenness", 
   "Eigenvector" = "ingredient_eigenvector"
 )
+
