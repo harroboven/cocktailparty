@@ -1,17 +1,17 @@
 # Global.R here
 
 # If necessary, install the following libraries
-# install.packages("data.table")
-# install.packages("ggplot2")
-# install.packages("reshape2")
-# install.packages("stringr")
-# install.packages("shinyWidgets")
-# install.packages("shinythemes")
-# install.packages("ggvis")
-# install.packages("dplyr")
-# install.packages("RSQLite")
-# install.packages("dbplyr")
-# install.packages("visNetwork")
+install.packages("data.table")
+install.packages("ggplot2")
+install.packages("reshape2")
+install.packages("stringr")
+install.packages("shinyWidgets")
+install.packages("shinythemes")
+install.packages("ggvis")
+install.packages("dplyr")
+install.packages("RSQLite")
+install.packages("dbplyr")
+install.packages("visNetwork")
 
 
 
@@ -186,7 +186,7 @@ l.category_values <- c("All", sort(unique(dt.drinks.filtered$category),
 l.glass_type_values <- c("All", sort(unique(dt.drinks.filtered$glass_type), 
                                      decreasing = FALSE))
 
-# # select input button proposal page 7
+# # select input button proposal page 8
 
 l.all.ingredients <- c("All", dt.drinks[, .(name = unique(ingredient))])
 
