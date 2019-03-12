@@ -169,7 +169,7 @@ dt.drinks <- dt.drinks[,
 # Reorder the columns for convenience
 dt.drinks <- dt.drinks[, 
                        c("id", "ingredient", "quantity", "adj_quantity", "measurement", "package_size", "ingredient_price", "adj_ingredient_price", "cost_used_ingredient", "name", "is_alcoholic", 
-                         "category", "glass_type", "commonality", "complexity", "ingredients_cost", "adj_ingredients_cost", "double_observation")]
+                         "category", "glass_type", "commonality", "complexity", "ingredients_cost", "adj_ingredients_cost")]
 
 ######## Buttons ##########
 # preparing dt.drinks for button work by ensuring that only unique drinks
