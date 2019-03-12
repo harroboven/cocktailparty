@@ -1,34 +1,5 @@
 # This script gives the output needed for the proposal for our cocktailparty :)
 
-# If necessary, install the following libraries
-# install.packages("data.table")
-# install.packages("ggplot2")
-# install.packages("reshape2")
-# install.packages("stringr")
-# install.packages("shinyWidgets")
-# install.packages("shinythemes")
-# install.packages("ggvis")
-# installed.packages("dplyr")
-# install.packages("RSQLite")
-# install.packages("dbplyr")
-# install.packages("visNetwork")
-
-
-
-# Load the necessary libraries
-library(data.table)
-library(ggplot2)
-library(stringr)
-library(reshape2)
-library(shinyWidgets)
-library(igraph, quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
-library(shinythemes)
-library(ggvis)
-library(dplyr)
-library(RSQLite)
-library(dbplyr)
-library(visNetwork, quietly = TRUE)
-
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 

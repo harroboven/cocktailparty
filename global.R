@@ -1,5 +1,34 @@
 # Global.R here
 
+# If necessary, install the following libraries
+# install.packages("data.table")
+# install.packages("ggplot2")
+# install.packages("reshape2")
+# install.packages("stringr")
+# install.packages("shinyWidgets")
+# install.packages("shinythemes")
+# install.packages("ggvis")
+# install.packages("dplyr")
+# install.packages("RSQLite")
+# install.packages("dbplyr")
+# install.packages("visNetwork")
+
+
+
+# Load the necessary libraries
+library(data.table)
+library(ggplot2)
+library(stringr)
+library(reshape2)
+library(shinyWidgets)
+library(igraph, quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
+library(shinythemes)
+library(ggvis)
+library(dplyr)
+library(RSQLite)
+library(dbplyr)
+library(visNetwork, quietly = TRUE)
+
 ########## Data loading ###########
 # Instruction that loads prepared data into memory
 dt.longdrinks <- readRDS("./data/longdrinks.rds")
