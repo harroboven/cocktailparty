@@ -3,6 +3,8 @@
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
 
+library(data.table)
+
 # Load the data set, turn it into a data table, call it "drinks" and call first column "id"
 dt.drinks <- fread("data/all_drinks.csv", header = TRUE)
 setnames(dt.drinks, "V1", "id")
@@ -217,6 +219,7 @@ dt.longdrinks$std.quantity <- mapply(standardize.quantity, dt.longdrinks$name, d
 
 # Save it into an RDS file loaded by global.R
 saveRDS(dt.longdrinks, file = "./data/longdrinks.rds")
+save.image()
 
 # Write cleaned dataset to csv, so you guys can work with it directly :)
 # After comment it out so the whole script can be run without saving a million copies.

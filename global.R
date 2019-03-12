@@ -31,7 +31,7 @@ library(visNetwork, quietly = TRUE)
 
 ########## Data loading ###########
 # Instruction that loads prepared data into memory
-dt.longdrinks <- readRDS("./data/longdrinks.rds")
+load(".RData")
 dt.drinks <- dt.longdrinks
 
 ########### Additional covariates ###############
