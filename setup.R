@@ -11,7 +11,7 @@
 # installed.packages("dplyr")
 # install.packages("RSQLite")
 # install.packages("dbplyr")
-# install.packages("networkD3")
+# install.packages("visNetwork")
 
 
 
@@ -21,14 +21,13 @@ library(ggplot2)
 library(stringr)
 library(reshape2)
 library(shinyWidgets)
-library(igraph)
+library(igraph, quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
 library(shinythemes)
 library(ggvis)
 library(dplyr)
 library(RSQLite)
 library(dbplyr)
-library(networkD3)
-library(visNetwork)
+library(visNetwork, quietly = TRUE)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
 # setwd("/Users/Harro/Dropbox/BIM - Master/Network Data Analytics/Group Project/cocktailparty")
@@ -200,7 +199,7 @@ dt.longdrinks$quantity <- mapply(as.numeric, dt.longdrinks$quantity)
 # Load the other datasets with the pricing data and commonality data
 dt.commonality <- fread("data/drinks_common.csv", header = TRUE)
 
-dt.pricing <- fread("data/ingredients_overview_updated3.csv", header = TRUE)
+dt.pricing <- fread("data/ingredients_overview_updated4.csv", header = TRUE)
 
 # Identify double ingredients and prepare help column to work with them later on
 dt.pricing <- dt.pricing[, adj_ingredient := ifelse(double_observation == "", Ingredient, double_observation), by = "Ingredient"]
