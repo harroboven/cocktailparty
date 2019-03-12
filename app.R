@@ -711,19 +711,22 @@ ui <- fluidPage(
                              multiple = TRUE),
                  fluidRow(
                    # Table with all ingredients at hand
-                   column(6,
-                          uiOutput("ingredients.in.stock")),
-                   # Oveview graph
-                   column(6,
-                          plotOutput(outputId = "g.drinks.feasible.network")),
-                   column(6,
-                          visNetworkOutput(outputId = "plot.only.feasible.drinks")),
-                   # Table output of all possible drinks
-                   column(6,
+                     column(3,
+                            p("These are the ingredients you can identified as being in stock"),
+                            uiOutput("ingredients.in.stock")),
+                     column(3,
+                            # Table output of all possible drinks
                             p("These are the drinks you can mix with the ingredients in stock"),
-                          tableOutput("dt.feasible.drinks")),
-                   column(6,
-                          tableOutput("dt.feasible.drinks.all"))
+                            tableOutput("table.tester1")),
+                     column(6,
+                          verticalLayout(
+                                   # Oveview graph
+                                   column(6,
+                                          plotOutput(outputId = "g.drinks.feasible.network")),
+                                   column(6,
+                                          visNetworkOutput(outputId = "plot.only.feasible.drinks"))
+                   )
+                   )
                  )
                )
              )
@@ -1465,8 +1468,8 @@ server <- function(input, output, session) {
       # create the output for the graph
     output$g.drinks.feasible.network <- renderPlot({
       V(g.drinks.ingredients.available.bp)[name %in% dt.drinks.feasible()$V1]$color <- "green"
-      plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 3,
-                  layout = layout_nicely, edge.arrow.size = 1)
+      plot.igraph(g.drinks.ingredients.available.bp, vertex.label = NA, vertex.size = 2,
+                  layout = layout_nicely, edge.arrow.size = 0.5, main = "Drinks network - feasible drinks colored green", width = "100%")
     })
     # 
     # # create the output for the feasible drinks
@@ -1478,7 +1481,7 @@ server <- function(input, output, session) {
     
     # Visnetwork of only feasible drinks (HERE THE EDGES DONT SHOW, ULI LINK)
     output$plot.only.feasible.drinks <- renderVisNetwork({
-      visNetwork(as.data.frame(dt.drinks.feasible()$V1, dt.edge.list()))
+      visNetwork(as.data.frame(dt.drinks.feasible()$V1, dt.edge.list()), main = "Nodes of feasible drinks")
     })
 
     ## Test table: Currently shows the edge list (which shows that the edges are correct)
@@ -1488,7 +1491,7 @@ server <- function(input, output, session) {
     
   ###### The following three blocks are just to create the edge list that is needed right above this line
     
-    # Get all infromation for all drinks that are feasible with the selected ingredients
+    # Get all infomation for all drinks that are feasible with the selected ingredients
     dt.all.of.only.feasible <- reactive({
       dt.all.of.only.feasible <- dt.drinks[name %in% dt.drinks.feasible()$V1]
     })
@@ -1502,6 +1505,11 @@ server <- function(input, output, session) {
     # Create the edgelist of the previously created graph
     dt.edge.list <- reactive({
       as_edgelist(bipartite.projection(g.drinks.ingredients.available.latest())$proj2)
+    })
+    
+    
+    output$table.tester1 <- renderTable({
+      dt.drinks.feasible()
     })
     
     
