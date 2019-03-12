@@ -1,3 +1,18 @@
+
+# Load the necessary libraries
+library(data.table)
+library(ggplot2)
+library(stringr)
+library(reshape2)
+library(shinyWidgets)
+library(igraph, quietly = TRUE, warn.conflicts = FALSE, verbose = FALSE)
+library(shinythemes)
+library(ggvis)
+library(dplyr)
+library(RSQLite)
+library(dbplyr)
+library(visNetwork, quietly = TRUE)
+
 # This script gives the output needed for the proposal for our cocktailparty :)
 
 # Set working directory to Collaborative Cocktail Party (change to your own if necessary!)
