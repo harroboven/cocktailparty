@@ -1052,7 +1052,6 @@ server <- function(input, output, session) {
    visNetwork(nodes = vis.g.drinks.bp$nodes, edges = vis.g.drinks.bp$edges,
               height = '500px', width = '200%') %>% 
      # define relevant parameters 
-     visIgraphLayout(randomSeed = TRUE) %>% 
      visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
      visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
      visEdges(smooth = FALSE) %>%
@@ -1077,7 +1076,6 @@ server <- function(input, output, session) {
   visNetwork(nodes = vis.g.drinks.bp.neighbourhood$nodes, edges = vis.g.drinks.bp.neighbourhood$edges,
              height = '500px', width = '100%')%>% 
     # set plotting parameters 
-    visIgraphLayout(randomSeed = TRUE) %>% 
     visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
     visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
     visEdges(smooth = FALSE) %>%
@@ -1150,7 +1148,6 @@ server <- function(input, output, session) {
       
     visNetwork(nodes = vis.g.ingredients.bp$nodes, edges = vis.g.ingredients.bp$edges,
                height = '500px', width = '100%') %>% 
-      visIgraphLayout(randomSeed = TRUE) %>% 
       visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
       visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
       visEdges(smooth = FALSE) %>%
@@ -1182,7 +1179,6 @@ server <- function(input, output, session) {
        visNetwork(nodes = vis.g.ingredients.bp.neighbourhood$nodes, edges = vis.g.ingredients.bp.neighbourhood$edges,
                  height = '500px', width = '100%')%>% 
         # set plotting parameters 
-        visIgraphLayout(randomSeed = TRUE) %>% 
         visInteraction(dragNodes = TRUE, dragView = TRUE, zoomView = TRUE, hideEdgesOnDrag = FALSE, hideNodesOnDrag = FALSE, hover = TRUE) %>%
         visPhysics(stabilization = FALSE, solver = 'barnesHut') %>% 
         visEdges(smooth = FALSE) %>%
