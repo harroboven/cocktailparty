@@ -40,14 +40,6 @@ ui <- fluidPage(
                  column(12,
                         wellPanel(img(src = 'Cocktail picture2.jpg', width = "100%", 
                             style="display: block; margin-left: auto; margin-right: auto;"))),
-                 # column(6,
-                 #        wellPanel(
-                 #          p("Table of Content", style = "font-family: 'times'; font-si16pt; font-size: 26pt"),
-                 #        tags$ol(
-                 #          tags$li("Data Summary"),
-                 #          tags$li("Network Exploration"), 
-                 #          tags$li("Network Analysis"))
-                 #        )),
                #right column
                column(12, 
                       wellPanel(
@@ -169,8 +161,6 @@ ui <- fluidPage(
                                                            'Complexity' = 'cp',
                                                            'Commonality' = 'cm', 
                                                            'Ingredient Price' = 'ip'
-                                                           #,
-                                                           #'Ingredients Cost per Drink' = 'ic'
                                                            )
                                                     )
                                        )
@@ -182,8 +172,6 @@ ui <- fluidPage(
                                      p("Glass Type = the class that the drink is typically served in such as: long glass", style = "font-style: italic"),
                                      p("Complexity of Recipe = the degree of difficulty of mixing the drink ", style = "font-style: italic"),
                                      p("Commonality = the degree to which the drink is known to the average drink consumer", style = "font-style: italic")
-                                     #,
-                                     #p("Ingredient Price = the price of an average package size of the respective ingredient", style = "font-style: italic")
                                    )
                                    )
                                  ),
@@ -216,7 +204,6 @@ ui <- fluidPage(
                                              h4("On this page you have the opportunity to explore all drinks and customize your visualization.
                                              Initially the borders for the three continuous filters is set to the average and median. The
                                              categorical filters are set to include all drinks. At the bottom you can define the axes along
-
                                              which the drinks will be plotted"))),
                         column(3,
                                verticalLayout(
@@ -383,7 +370,7 @@ ui <- fluidPage(
                                           # Drink Choice
                                           selectInput('network.of.one.drink',
                                                       label = 'Network of one drink',
-                                                      selected = dt.drinks$name[744],
+                                                      selected = NA,
                                                       choices = dt.drinks$name
                                                       )
                                           ),
