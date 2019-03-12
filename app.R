@@ -12,7 +12,7 @@ actionLink <- function(inputId, ...) {
 
 ui <- fluidPage(
   #Overall theme of our Shiny App
-  # theme = shinytheme("flatly"), 
+   # theme = shinytheme("flatly"), 
   
   ######################################### Welcome Page ########################################
   
@@ -198,80 +198,81 @@ ui <- fluidPage(
              tabPanel("Drinks Data Explorer", 
                       wellPanel(        
                       titlePanel("Drinks Data Explorer"))
-                      # ,
-                      # fluidRow(
-                      #   column(12,
-                      #          wellPanel(
-                      #                        h4("On this page you have the opportunity to explore all drinks and customize your visualization.
-                      #                        Initially the borders for the three continuous filters is set to the average and median. The
-                      #                        categorical filters are set to include all drinks. At the bottom you can define the axes along
-                      # 
-                      #                        which the drinks will be plotted"))),
-                      #   column(3,
-                      #          verticalLayout(
-                      #            wellPanel(
-                      #              h3("Filter"),
-                      #              sliderInput("drink.explorer.complexity.filter", "Degree of Recipe Complexity",
-                      #                          min = 0,
-                      #                          max = max(dt.drinks.filtered$complexity) + 1,
-                      #                          value = c(median(dt.drinks.filtered$complexity),
-                      #                                    mean(dt.drinks.filtered$complexity)
-                      #                                    ),
-                      #                          sep = ""
-                      #                          ),
-                      #              sliderInput("drink.explorer.commonality.filter", "Degree of Commonality",
-                      #                          min = 1,
-                      #                          max = 3,
-                      #                          value = c(1, 3),
-                      #                          sep = ""
-                      #                          ),
-                      #              sliderInput("drink.explorer.cost.filter", "Ingredients Cost per Drink",
-                      #                          min = 0,
-                      #                          max = round(max(dt.drinks.filtered$adj_ingredients_cost), 0) + 2,
-                      #                          value = c(median(dt.drinks.filtered$adj_ingredients_cost),
-                      #                                    mean(dt.drinks.filtered$adj_ingredients_cost)
-                      #                                    ),
-                      #                          sep = ""
-                      #                          ),
-                      #              selectInput("drink.explorer.alcoholic.filter", "Alcoholic Nature",
-                      #                          l.is_alcoholic_values,
-                      #                          selected = "All"
-                      #                          ),
-                      #              selectInput("drink.explorer.category.filter", "Type of Drink",
-                      #                          l.category_values,
-                      #                          selected = "All"
-                      #                          ),
-                      #              selectInput("drink.explorer.glass.filter", "Glass Type",
-                      #                          l.glass_type_values,
-                      #                          selected = "All"
-                      #                          )
-                      #              ),
-                      #            wellPanel(
-                      #              h3("Axes parameter seletion"),
-                      #              selectInput("drink.explorer.xvar", 
-                      #                          "X-axis variable", 
-                      #                          v.drink.explorer.axis.vars, 
-                      #                          selected = "complexity"
-                      #                          ),
-                      #              selectInput("drink.explorer.yvar", 
-                      #                          "Y-axis variable", 
-                      #                          v.drink.explorer.axis.vars, 
-                      #                          selected = "complexity"
-                      #                          )
-                      #              )
-                      #            )
-                      #          ),
-                      #   column(9,
-                      #          verticalLayout(
-                      #            ggvisOutput("drink_explorer"), 
-                      #            wellPanel(
-                      #              span("Number of drinks selected:", 
-                      #                   textOutput("drink.explorer.n_drinks")
-                      #                   )
-                      #              )
-                      #            )
-                      #          )
-                      #   )
+                      ,
+                      fluidRow(
+                        column(12,
+                               wellPanel(
+                                             h4("On this page you have the opportunity to explore all drinks and customize your visualization.
+                                             Initially the borders for the three continuous filters is set to the average and median. The
+                                             categorical filters are set to include all drinks. At the bottom you can define the axes along
+
+                                             which the drinks will be plotted"))),
+                        column(3,
+                               verticalLayout(
+                                 wellPanel(
+                                   h3("Filter"),
+                                   sliderInput("drink.explorer.complexity.filter", "Degree of Recipe Complexity",
+                                               min = 0,
+                                               max = max(dt.drinks.filtered$complexity) + 1,
+                                               value = c(median(dt.drinks.filtered$complexity),
+                                                         mean(dt.drinks.filtered$complexity)
+                                                         ),
+                                               sep = ""
+                                               ),
+                                   sliderInput("drink.explorer.commonality.filter", "Degree of Commonality",
+                                               min = 1,
+                                               max = 3,
+                                               value = c(1, 3),
+                                               sep = ""
+                                               ),
+                                   sliderInput("drink.explorer.cost.filter", "Ingredients Cost per Drink",
+                                               min = 0,
+                                               max = round(max(dt.drinks.filtered$adj_ingredients_cost), 0) + 2,
+                                               value = c(median(dt.drinks.filtered$adj_ingredients_cost),
+                                                         mean(dt.drinks.filtered$adj_ingredients_cost)
+                                                         ),
+                                               sep = ""
+                                               ),
+                                   selectInput("drink.explorer.alcoholic.filter", "Alcoholic Nature",
+                                               l.is_alcoholic_values,
+                                               selected = "All"
+                                               ),
+                                   selectInput("drink.explorer.category.filter", "Type of Drink",
+                                               l.category_values,
+                                               selected = "All"
+                                               ),
+                                   selectInput("drink.explorer.glass.filter", "Glass Type",
+                                               l.glass_type_values,
+                                               selected = "All"
+                                               )
+                                   )
+                                 #,
+                                 # wellPanel(
+                                 #   h3("Axes parameter seletion"),
+                                 #   selectInput("drink.explorer.xvar",
+                                 #               "X-axis variable",
+                                 #               v.drink.explorer.axis.vars,
+                                 #               selected = "complexity"
+                                 #               ),
+                                 #   selectInput("drink.explorer.yvar",
+                                 #               "Y-axis variable",
+                                 #               v.drink.explorer.axis.vars,
+                                 #               selected = "complexity"
+                                 #               )
+                                 #   )
+                                 )
+                               ),
+                        column(9,
+                               verticalLayout(
+                                 ggvisOutput("drink_explorer"),
+                                 wellPanel(
+                                   span("Number of drinks selected:",
+                                        textOutput("drink.explorer.n_drinks")
+                                        )
+                                   )
+                                 )
+                               )
+                        )
                       )
              ),
   
@@ -490,81 +491,6 @@ ui <- fluidPage(
                         #          )
                         #   )
                         )
-                      ),
-             
-             ######################################### Page 5 Proposal ########################################
-             
-             # 3rd Drop-down item
-             tabPanel("Bipartite visualization", 
-                      verticalLayout(
-                        # header of whole page
-                        titlePanel("Bipartite visualization")
-                        ,
-                        # 1st block of page
-                        fluidRow(
-                          # left column
-                          column(6,
-                                 # title of left object
-                                 titlePanel("Bipartite overview"),
-                                 # introtext
-                                 p("Introtext", style = "font-family: 'times'; font-si16pt"),
-                                 p("Please choose your drink filters", style = "font-family: 'times'; font-si16pt"),
-                                 column(4,
-                                        p("Alcoholic nature", style = "font-family: 'times'; font-si16pt"),
-                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                                        p("Max cost per drink", style = "font-family: 'times'; font-si16pt"),
-                                        # SliderInputs - Network of drinks
-                                        # Maximal cost of one ingredient and one drink
-                                        sliderInput('max.cost.ingredient',
-                                                    label = 'Max cost per ingredient',
-                                                    min = 1, max = 50, value = 50, step = 1),
-                                        sliderInput('max.cost.drink',
-                                                    label = 'Max cost for at least one drink',
-                                                    min = 1, max = 50, value = 100, step = 1)),
-                                 column(4,
-                                        p("Drink type", style = "font-family: 'times'; font-si16pt"),
-                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                                        p("Preparation complexity", style = "font-family: 'times'; font-si16pt"),
-                                        # SliderInput - Network of drinks
-                                        sliderInput('preparation.complexity',
-                                                    label = 'Preparation complexity',
-                                                    min = 1, max = 50, value = 50, step = 1)),
-                                 column(4,
-                                        p("Glass type", style = "font-family: 'times'; font-si16pt"),
-                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                                        p("Popularity", style = "font-family: 'times'; font-si16pt"),
-                                        # SliderInput - Network of drinks
-                                        sliderInput('popularity',
-                                                    label = 'Popularity',
-                                                    min = 1, max = 20, value = 80, step = 2)),
-                                 p("Please choose your ingredient filters", style = "font-family: 'times'; font-si16pt"),
-                                 column(4,
-                                        p("Glass type", style = "font-family: 'times'; font-si16pt"),
-                                        p("Placeholder dropdown", style = "font-family: 'times'; font-si16pt"),
-                                        p("Popularity", style = "font-family: 'times'; font-si16pt"),
-                                        # SliderInput - Network of drinks
-                                        sliderInput('Popularity',
-                                                    label = 'Popularity',
-                                                    min = 1, max = 80, value = 80, step = 2),
-                                        selectInput('alcoholic.nature',
-                                                    label = 'Alcoholic nature',
-                                                    choices = dt.drinks$is_galcoholic),
-                                        selectInput('drink.type',
-                                                    label = 'Drink type',
-                                                    choices = dt.drinks$category),
-                                        selectInput('glass.type',
-                                                    label = 'Glass type',
-                                                    choices = dt.drinks$glass_type))
-                                 ),
-                          # right column
-                          column(6,
-                                 # title of right object
-                                 titlePanel("Bipartite overview"),
-                                 # content of right object
-                                 img(src = 'A.png', height = 300, width = 300)
-                                 )
-                          )
-                         )
                       )
              ), 
   
@@ -892,102 +818,110 @@ server <- function(input, output, session) {
   
   ################################### PAGE 2 PROPOSAL ##################################
 
-  # # Filter the drinks, returning a data frame
-  # dt.drink.explorer <- reactive({
-  #   # Due to dplyr issue #318, we need temp variables for input values
-  #   min.complexity <- input$drink.explorer.complexity.filter[1]
-  #   max.complexity <- input$drink.explorer.complexity.filter[2]
-  #   min.commonality <- input$drink.explorer.commonality.filter[1]
-  #   max.commonality <- input$drink.explorer.commonality.filter[2]
-  #   min.ingredients.cost <- input$drink.explorer.cost.filter[1]
-  #   max.ingredients.cost <- input$drink.explorer.cost.filter[2]
-  #   
-  #   # Apply filters
-  #   m <- dt.drinks.filtered %>%
-  #     filter(
-  #       complexity >= min.complexity, 
-  #       complexity <= max.complexity,
-  #       commonality >= min.commonality,
-  #       commonality <= max.commonality,
-  #       adj_ingredients_cost >= min.ingredients.cost,
-  #       adj_ingredients_cost <= max.ingredients.cost
-  #       )
-  #     
-  #   # Filter by alcoholic nature
-  #   if (input$drink.explorer.alcoholic.filter != "All") {
-  #     m <- m %>% filter(is_alcoholic %in% input$drink.explorer.alcoholic.filter)
-  #     }
-  #   # Filter by drink type
-  #   if (input$drink.explorer.category.filter != "All") {
-  #     m <- m %>% filter(category %in% input$drink.explorer.category.filter)
-  #     }
-  #   # Filter by glass type
-  #   if (input$drink.explorer.glass.filter != "All") {
-  #     m <- m %>% filter(glass_type %in% input$drink.explorer.glass.filter)
-  #     }
-  #     
-  #   m <- as.data.frame(m)
-  #     
-  #   m
-  #   })
-  #   
-  # # Generating tooltip text
-  # drink.explorer.tooltip <- function(x) {
-  #   if (is.null(x)) return(NULL)
-  #   if (is.null(x$id)) return(NULL)
-  #     
-  #   # Pick out the drink with this ID
-  #   dt.drinks.filtered <- isolate(dt.drink.explorer())
-  #   drink <- dt.drinks.filtered[dt.drinks.filtered$id == x$id, ]
-  #     
-  #   paste0("<b>", drink$name, "</b><br>",
-  #         "Alcoholic Nature: ", drink$is_alcoholic, "<br>",
-  #         "Drink Type: ", drink$category
-  #         )
-  #   }
-  #   
-  # # A reactive expression with the ggvis plot
-  # vis.drink.explorer <- reactive({
-  #   #Lables for axes
-  #   xvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.xvar]
-  #   yvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.yvar]
-  # 
-  #   xvar <- prop("x", as.symbol(input$drink.explorer.xvar))
-  #   yvar <- prop("y", as.symbol(input$drink.explorer.yvar))
-  #     
-  #   dt.drink.explorer %>%
-  #     ggvis(x = xvar, y = yvar) %>%
-  #     layer_points(size := 50, size.hover := 200,
-  #                  fillOpacity := 0.2, fillOpacity.hover := 0.5, 
-  #                  key := ~id) %>%
-  #     add_tooltip(drink.explorer.tooltip, "hover") %>%
-  #     add_axis("x", title = xvar_name, 
-  #              properties = axis_props(
-  #                labels = list(fontSize = 16, stroke = "grey"),
-  #                title = list(fontSize = 16, dy =+ 25))
-  #              ) %>%
-  #     add_axis("y", title = yvar_name,
-  #              properties = axis_props(
-  #                labels = list(fontSize = 16, stroke = "grey"),
-  #                title = list(fontSize = 16, dy =- 25))
-  #              ) %>%
-  #     add_axis("x", orient = "top", ticks = 0, 
-  #              title = "Parameter Relations",
-  #              properties = axis_props(
-  #                axis = list(stroke = "white"),
-  #                labels = list(fontSize = 0, stroke = "grey"),
-  #                title = list(fontSize = 20))
-  #              ) %>%
-  #     
-  #     set_options(width = "100%", height = 636)
-  #   })
-  # 
-  # vis.drink.explorer %>% bind_shiny("drink_explorer")
-  #   
-  # output$drink.explorer.n_drinks <- renderText({
-  #   nrow(dt.drink.explorer())
-  #   })
-  # 
+  # Filter the drinks, returning a data frame
+  dt.drink.explorer <- reactive({
+    # Due to dplyr issue #318, we need temp variables for input values
+    min.complexity <- input$drink.explorer.complexity.filter[1]
+    max.complexity <- input$drink.explorer.complexity.filter[2]
+    min.commonality <- input$drink.explorer.commonality.filter[1]
+    max.commonality <- input$drink.explorer.commonality.filter[2]
+    min.ingredients.cost <- input$drink.explorer.cost.filter[1]
+    max.ingredients.cost <- input$drink.explorer.cost.filter[2]
+
+    # Apply filters
+    m <- dt.drinks.filtered %>%
+      filter(
+        complexity >= min.complexity,
+        complexity <= max.complexity,
+        commonality >= min.commonality,
+        commonality <= max.commonality,
+        adj_ingredients_cost >= min.ingredients.cost,
+        adj_ingredients_cost <= max.ingredients.cost
+        )
+
+    # Filter by alcoholic nature
+    if (input$drink.explorer.alcoholic.filter != "All") {
+      m <- m %>% filter(is_alcoholic %in% input$drink.explorer.alcoholic.filter)
+      }
+    # Filter by drink type
+    if (input$drink.explorer.category.filter != "All") {
+      m <- m %>% filter(category %in% input$drink.explorer.category.filter)
+      }
+    # Filter by glass type
+    if (input$drink.explorer.glass.filter != "All") {
+      m <- m %>% filter(glass_type %in% input$drink.explorer.glass.filter)
+      }
+
+    m <- as.data.frame(m)
+
+    m
+    })
+
+  # Generating tooltip text
+  drink.explorer.tooltip <- function(x) {
+    if (is.null(x)) return(NULL)
+    if (is.null(x$id)) return(NULL)
+
+    # Pick out the drink with this ID
+    dt.drinks.filtered <- isolate(dt.drink.explorer())
+    drink <- dt.drinks.filtered[dt.drinks.filtered$id == x$id, ]
+
+    paste0("<b>", drink$name, "</b><br>",
+          "Alcoholic Nature: ", drink$is_alcoholic, "<br>",
+          "Drink Type: ", drink$category
+          )
+    }
+
+  # A reactive expression with the ggvis plot
+  vis.drink.explorer <- reactive({
+    #Lables for axes
+    # xvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.xvar]
+    # yvar_name <- names(v.drink.explorer.axis.vars)[v.drink.explorer.axis.vars == input$drink.explorer.yvar]
+    
+    xvar_name <- "complexity"
+    yvar_name <- "complexity"
+     
+    # xvar <- prop("x", as.symbol(input$drink.explorer.xvar))
+    # yvar <- prop("y", as.symbol(input$drink.explorer.yvar))
+    
+    xvar <- prop("x", as.symbol("complexity"))
+    yvar <- prop("y", as.symbol("complexity"))
+    
+    
+
+    dt.drink.explorer %>%
+      ggvis(x = xvar, y = yvar) %>%
+      layer_points(size := 50, size.hover := 200,
+                   fillOpacity := 0.2, fillOpacity.hover := 0.5,
+                   key := ~id) %>%
+      add_tooltip(drink.explorer.tooltip, "hover") %>%
+      add_axis("x", title = xvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =+ 25))
+               ) %>%
+      add_axis("y", title = yvar_name,
+               properties = axis_props(
+                 labels = list(fontSize = 16, stroke = "grey"),
+                 title = list(fontSize = 16, dy =- 25))
+               ) %>%
+      add_axis("x", orient = "top", ticks = 0,
+               title = "Parameter Relations",
+               properties = axis_props(
+                 axis = list(stroke = "white"),
+                 labels = list(fontSize = 0, stroke = "grey"),
+                 title = list(fontSize = 20))
+               ) %>%
+
+      set_options(width = "100%", height = 636)
+    })
+
+  vis.drink.explorer %>% bind_shiny("drink_explorer")
+
+  output$drink.explorer.n_drinks <- renderText({
+    nrow(dt.drink.explorer())
+    })
+
   
   ################################### PAGE 3 PROPOSAL ##################################
   
@@ -1191,31 +1125,6 @@ server <- function(input, output, session) {
   #       visOptions(highlightNearest = list(enabled = T, degree = 1, hover = T))     
   #   })
 
-  
-  ################################### PAGE 5 PROPOSAL ##################################
-  
-   ################## bipartite visualisation ######################
-
-  output$bipartite.drinks.ingredients <- renderPlot({
-    all.drinks.alco <- dt.drinks[is_alcoholic == input$alcoholic.nature][,
-                                                                         .(name = unique(name),
-                                                                           type = TRUE)
-                                                                         ]
-    all.drinks.type <- dt.drinks[category == input$drink.type][,
-                                                               .(name = unique(name),
-                                                                 type = TRUE)
-                                                               ]
-    all.drinks.glass <- dt.drinks[category == input$glass.type][,
-                                                                .(name = unique(name),
-                                                                  type = TRUE)
-                                                                ]
-    all.vertices.filtered <- rbind(all.drinks.alco, all.drinks.type, all.drinks.glass, all.ingredients)
-    V(g.drinks.ingredients)$color <- c("steel blue", "orange")[V(g.drinks.ingredients)$type+1]
-    V(g.drinks.ingredients)$shape <- c("square", "circle")[V(g.drinks.ingredients)$type+1]
-    g.drinks.ingredients.custom <- graph()
-    plot(g.drinks.ingredients, vertex.label=NA, vertex.size=7, layout=layout_as_bipartite)
-
-  })
 
   
   ################################### PAGE 6 PROPOSAL ##################################
